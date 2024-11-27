@@ -4,11 +4,16 @@ namespace MPowerKit.GoogleMaps;
 
 public static class BuilderExtensions
 {
-    public static MauiAppBuilder UseMPowerKitGoogleMaps(this MauiAppBuilder builder)
+    public static MauiAppBuilder UseMPowerKitGoogleMaps(this MauiAppBuilder builder
+#if IOS
+        , string iosApiKey
+#endif
+        )
     {
         builder
             .ConfigureLifecycleEvents(events =>
             {
+#if ANDROID
                 events.AddAndroid(android =>
                 {
                     var service = IPlatformApplication.Current?.Services.GetRequiredService<IMapsLifecycle>();
@@ -55,15 +60,28 @@ public static class BuilderExtensions
                         IPlatformApplication.Current?.Services.GetRequiredService<IMapsLifecycle>()?.SendOnLowMemory();
                     });
                 });
+#endif
+
+#if IOS
+                events.AddiOS(b => b.FinishedLaunching((a, o) =>
+                {
+                    MapsInitializer.Init(iosApiKey);
+                    return true;
+                }));
+#endif
             })
             .ConfigureMauiHandlers(h => h.AddHandler<GoogleMap, GoogleMapHandler>())
             .ConfigureImageSources(static services =>
             {
+#if ANDROID
                 services.AddService<IViewImageSource, ViewImageSourceService>();
                 services.AddService<ViewImageSource, ViewImageSourceService>();
+#endif
             });
 
+#if ANDROID
         builder.Services.AddSingleton<IMapsLifecycle, MapsLifecycle>();
+#endif
 
         return builder;
     }

@@ -67,6 +67,8 @@ public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     protected override void ConnectHandler(MapView platformView)
     {
+        base.ConnectHandler(platformView);
+
         Lifecycle!.OnStart += MapsLifecycle_OnStart;
         Lifecycle.OnResume += MapsLifecycle_OnResume;
         Lifecycle.OnPause += MapsLifecycle_OnPause;
@@ -117,6 +119,8 @@ public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
         NativeMap = null;
         Lifecycle = null;
+
+        base.DisconnectHandler(platformView);
     }
 
     protected virtual void MapsLifecycle_OnStart() => PlatformView?.OnStart();

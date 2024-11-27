@@ -4,6 +4,7 @@ using NPin =
 #if ANDROID
     Android.Gms.Maps.Model.Marker;
 #else
+    Google.Maps.Marker;
 #endif
 
 namespace MPowerKit.GoogleMaps;
@@ -13,13 +14,17 @@ public class Pin : VisualElement
     public virtual void ShowInfoWindow()
     {
         var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
+#if ANDROID
         native?.ShowInfoWindow();
+#endif
     }
 
     public virtual void HideInfoWindow()
     {
         var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
+#if ANDROID
         native?.HideInfoWindow();
+#endif
     }
 
     protected override void OnBindingContextChanged()
