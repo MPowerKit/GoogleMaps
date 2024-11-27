@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPowerKit.GoogleMaps", "MPowerKit.GoogleMaps\MPowerKit.GoogleMaps.csproj", "{D73351BD-8DCD-4053-8182-C6D3D21C1421}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{9DCCCAE1-47F0-4916-9573-66E242888CB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D73351BD-8DCD-4053-8182-C6D3D21C1421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D73351BD-8DCD-4053-8182-C6D3D21C1421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73351BD-8DCD-4053-8182-C6D3D21C1421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D73351BD-8DCD-4053-8182-C6D3D21C1421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E0D257E8-F7AB-4AE9-907F-6F8D6AC83BA7}
+	EndGlobalSection
+EndGlobal
