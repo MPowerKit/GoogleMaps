@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+
 using Microsoft.Maui.Controls.Shapes;
+
 using MPowerKit.GoogleMaps;
 
 namespace Sample;
@@ -27,6 +29,18 @@ public partial class MainPage
         };
         gmap.Polylines = polylines;
 
+        var polygons = new ObservableCollection<Polygon>
+        {
+            new()
+            {
+                StrokeThickness = 10,
+                Fill = new SolidColorBrush(Colors.Purple.WithAlpha(0.3f)),
+                Stroke = new SolidColorBrush(Colors.Orange),
+                Points = new PointCollection() { new Point(0, 0), new Point(0, 30), new Point(30, 0), new Point(0, 0) }
+            }
+        };
+        gmap.Polygons = polygons;
+
         //var pins = new ObservableCollection<Pin>
         //{
         //    new() { Position = new(50,50), Icon = "map_pin.png", Title = "sdhsdhsdh", Snippet = "sdhsdgf", Draggable = true }
@@ -34,19 +48,19 @@ public partial class MainPage
         //gmap.MapStyleJsonFileName = "map_style.json";
         //gmap.Pins = pins;
 
-        //var circles = new ObservableCollection<Circle>
-        //{
-        //    new()
-        //    {
-        //        Center = new(50,50),
-        //        StrokeThickness = 5,
-        //        Stroke = Colors.Red.WithAlpha(0.5f),
-        //        Fill = Colors.Red,
-        //        Radius = Distance.FromKMeters(500),
-        //    }
-        //};
+        var circles = new ObservableCollection<Circle>
+        {
+            new()
+            {
+                Center = new(50,40),
+                StrokeThickness = 5,
+                Stroke = Colors.Blue,
+                Fill = Colors.Green.WithAlpha(0.3f),
+                Radius = Distance.FromKMeters(500),
+            }
+        };
 
-        //gmap.Circles = circles;
+        gmap.Circles = circles;
 
         //gmap.NativeMapReady += Gmap_NativeMapReady;
 

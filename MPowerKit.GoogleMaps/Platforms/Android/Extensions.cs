@@ -18,27 +18,27 @@ public static class Extensions
 {
     public static LatLng ToLatLng(this Point point)
     {
-        return new LatLng(point.X, point.Y);
+        return new(point.X, point.Y);
     }
 
     public static Point ToCrossPlatformPoint(this LatLng latlng)
     {
-        return new Point(latlng.Latitude, latlng.Longitude);
+        return new(latlng.Latitude, latlng.Longitude);
     }
 
     public static Android.Graphics.Point ToNativePoint(this Point point, Context context)
     {
-        return new Android.Graphics.Point((int)context.ToPixels(point.X), (int)context.ToPixels(point.Y));
+        return new((int)context.ToPixels(point.X), (int)context.ToPixels(point.Y));
     }
 
     public static Point ToCrossPlatformPoint(this Android.Graphics.Point point, Context context)
     {
-        return new Point(context.FromPixels(point.X), context.FromPixels(point.Y));
+        return new(context.FromPixels(point.X), context.FromPixels(point.Y));
     }
 
     public static NCameraPosition ToNative(this VCameraPosition position)
     {
-        return new NCameraPosition(
+        return new(
             position.Target.ToLatLng(),
             position.Zoom,
             position.Tilt,
@@ -48,7 +48,7 @@ public static class Extensions
 
     public static VCameraPosition ToCrossPlatform(this NCameraPosition position)
     {
-        return new VCameraPosition
+        return new()
         {
             Target = position.Target.ToCrossPlatformPoint(),
             Zoom = position.Zoom,
@@ -64,7 +64,7 @@ public static class Extensions
 
     public static MapRegion ToCrossPlatform(this VisibleRegion visibleRegion)
     {
-        return new MapRegion(
+        return new(
             visibleRegion.LatLngBounds.ToCrossPlatform(),
             visibleRegion.FarLeft.ToCrossPlatformPoint(),
             visibleRegion.FarRight.ToCrossPlatformPoint(),
@@ -75,12 +75,12 @@ public static class Extensions
 
     public static LatLngBounds ToCrossPlatform(this Android.Gms.Maps.Model.LatLngBounds bounds)
     {
-        return new LatLngBounds(bounds.Southwest.ToCrossPlatformPoint(), bounds.Northeast.ToCrossPlatformPoint());
+        return new(bounds.Southwest.ToCrossPlatformPoint(), bounds.Northeast.ToCrossPlatformPoint());
     }
 
     public static Android.Gms.Maps.Model.LatLngBounds ToNative(this LatLngBounds bounds)
     {
-        return new Android.Gms.Maps.Model.LatLngBounds(
+        return new(
             bounds.SouthWest.ToLatLng(),
             bounds.NorthEast.ToLatLng()
         );
@@ -88,7 +88,7 @@ public static class Extensions
 
     public static PointOfInterest ToCrossPlatform(this Android.Gms.Maps.Model.PointOfInterest poi)
     {
-        return new PointOfInterest(poi.LatLng.ToCrossPlatformPoint(), poi.PlaceId, poi.Name);
+        return new(poi.LatLng.ToCrossPlatformPoint(), poi.PlaceId, poi.Name);
     }
 
     public static List<PatternItem> ToPatternItems(this float[] strokeDashPattern)
@@ -135,7 +135,7 @@ public static class Extensions
 
     public static Bitmap ToBitmap(this Android.Views.View v)
     {
-        Bitmap b = Bitmap.CreateBitmap(v.Width, v.Height, Bitmap.Config.Argb8888!);
+        var b = Bitmap.CreateBitmap(v.Width, v.Height, Bitmap.Config.Argb8888!);
         Canvas c = new(b);
         v.Draw(c);
         return b;
@@ -161,12 +161,12 @@ public static class Extensions
 
     public static MapCapabilities ToCrossPlatform(this Android.Gms.Maps.Model.MapCapabilities capabilities)
     {
-        return new MapCapabilities(capabilities.IsAdvancedMarkersAvailable, capabilities.IsDataDrivenStylingAvailable);
+        return new(capabilities.IsAdvancedMarkersAvailable, capabilities.IsDataDrivenStylingAvailable);
     }
 
     public static IndoorLevel ToCrossPlatform(this Android.Gms.Maps.Model.IndoorLevel level)
     {
-        return new IndoorLevel
+        return new()
         {
             NativeIndoorLevel = level,
             Name = level.Name,

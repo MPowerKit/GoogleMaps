@@ -69,15 +69,17 @@ public static class BuilderExtensions
                     return true;
                 }));
 #endif
-            })
+            });
+
+#if ANDROID || IOS
+        builder
             .ConfigureMauiHandlers(h => h.AddHandler<GoogleMap, GoogleMapHandler>())
             .ConfigureImageSources(static services =>
             {
-#if ANDROID
                 services.AddService<IViewImageSource, ViewImageSourceService>();
                 services.AddService<ViewImageSource, ViewImageSourceService>();
-#endif
             });
+#endif
 
 #if ANDROID
         builder.Services.AddSingleton<IMapsLifecycle, MapsLifecycle>();

@@ -162,13 +162,16 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
         {
             native.StrokeWidth = (float)polyline.StrokeThickness;
         }
+        else if(e.PropertyName == Shape.IsVisibleProperty.PropertyName)
+        {
+            native.Map = polyline.IsVisible ? NativeView! : null;
+        }
 
-        if (e.PropertyName == Shape.IsVisibleProperty.PropertyName
-            || e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
+        if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
             || e.PropertyName == Shape.StrokeProperty.PropertyName
             || e.PropertyName == VPolyline.PointsProperty.PropertyName)
         {
-            polyline.ToggleVisibility(native);
+            native.Spans = polyline.ToSpans();
         }
     }
 
@@ -196,9 +199,7 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
     {
         foreach (var polyline in polylines)
         {
-            var native = polyline.ToNative();
-            NativeObjectAttachedProperty.SetNativeObject(polyline, native);
-            native.Map = NativeView;
+            NativeObjectAttachedProperty.SetNativeObject(polyline, polyline.ToNative(NativeView!));
             polyline.PropertyChanged += Polyline_PropertyChanged;
             Polylines.Add(polyline);
         }
@@ -223,30 +224,20 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
 
 public static class PolylineExtensions
 {
-    public static NPolyline ToNative(this VPolyline polyline)
+    public static NPolyline ToNative(this VPolyline polyline, MapView map)
     {
         var path = polyline.Points.ToPath();
         var native = NPolyline.FromPath(path);
         native.ZIndex = polyline.ZIndex;
         native.StrokeWidth = (float)polyline.StrokeThickness;
-
-        polyline.ToggleVisibility(native);
-
-        return native;
-    }
-
-    public static void ToggleVisibility(this VPolyline polyline, NPolyline native)
-    {
+        native.Tappable = polyline.IsEnabled;
+        native.Spans = polyline.ToSpans();
         if (polyline.IsVisible)
         {
-            native.Tappable = polyline.IsEnabled;
-            native.Spans = polyline.ToSpans();
+            native.Map = map;
         }
-        else
-        {
-            native.Tappable = false;
-            native.Spans = [StyleSpan.FromStyle(StrokeStyle.GetSolidColor(UIColor.Clear))];
-        }
+
+        return native;
     }
 
     public static StyleSpan[] ToSpans(this VPolyline polyline)

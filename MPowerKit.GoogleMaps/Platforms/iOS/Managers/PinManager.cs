@@ -1,23 +1,23 @@
 ﻿using System.Collections.Specialized;
 
-using Android.Content;
-using Android.Gms.Maps.Model;
+using Google.Maps;
 
-using GMap = Android.Gms.Maps.GoogleMap;
-using NPin = Android.Gms.Maps.Model.Marker;
+using UIKit;
+
+using NPin = Google.Maps.Marker;
 using VPin = MPowerKit.GoogleMaps.Pin;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
-    protected GMap? NativeView { get; set; }
+    protected MapView? NativeView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
     protected List<VPin> Pins { get; set; } = [];
 
-    public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
         NativeView = platformView;
@@ -33,28 +33,28 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
             pins.CollectionChanged += Pins_CollectionChanged;
         }
 
-        platformView.MarkerClick += NativeMap_PinClick;
-        platformView.MarkerDragStart += PlatformView_MarkerDragStart;
-        platformView.MarkerDrag += PlatformView_MarkerDrag;
-        platformView.MarkerDragEnd += PlatformView_MarkerDragEnd;
-        platformView.InfoWindowClick += PlatformView_InfoWindowClick;
-        platformView.InfoWindowLongClick += PlatformView_InfoWindowLongClick;
-        platformView.InfoWindowClose += PlatformView_InfoWindowClose;
+        platformView.TappedMarker = NativeMap_PinTapped;
+        platformView.DraggingMarkerStarted += PlatformView_DraggingMarkerStarted;
+        platformView.DraggingMarker += PlatformView_DraggingMarker;
+        platformView.DraggingMarkerEnded += PlatformView_DraggingMarkerEnded;
+        platformView.InfoTapped += PlatformView_InfoTapped;
+        platformView.InfoLongPressed += PlatformView_InfoLongPressed;
+        platformView.InfoClosed += PlatformView_InfoClosed;
 
-        platformView.SetInfoWindowAdapter(virtualView.InfoWindowTemplate is not null ? new InfoWindowAdapter(virtualView) : null);
+        platformView.MarkerInfoWindow = virtualView.InfoWindowTemplate is not null ? GetInfoWindow : null;
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        platformView.SetInfoWindowAdapter(null);
+        platformView.MarkerInfoWindow = null;
 
-        platformView.MarkerClick -= NativeMap_PinClick;
-        platformView.MarkerDragStart -= PlatformView_MarkerDragStart;
-        platformView.MarkerDrag -= PlatformView_MarkerDrag;
-        platformView.MarkerDragEnd -= PlatformView_MarkerDragEnd;
-        platformView.InfoWindowClick -= PlatformView_InfoWindowClick;
-        platformView.InfoWindowLongClick -= PlatformView_InfoWindowLongClick;
-        platformView.InfoWindowClose -= PlatformView_InfoWindowClose;
+        platformView.TappedMarker = null;
+        platformView.DraggingMarkerStarted -= PlatformView_DraggingMarkerStarted;
+        platformView.DraggingMarker -= PlatformView_DraggingMarker;
+        platformView.DraggingMarkerEnded -= PlatformView_DraggingMarkerEnded;
+        platformView.InfoTapped -= PlatformView_InfoTapped;
+        platformView.InfoLongPressed -= PlatformView_InfoLongPressed;
+        platformView.InfoClosed -= PlatformView_InfoClosed;
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
@@ -71,57 +71,59 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         Handler = null;
     }
 
-    protected virtual void NativeMap_PinClick(object? sender, GMap.MarkerClickEventArgs e)
+    protected virtual bool NativeMap_PinTapped(MapView map, NPin native)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == native);
 
         VirtualView!.SendPinClick(pin);
+
+        return true;
     }
 
-    protected virtual void PlatformView_MarkerDragStart(object? sender, GMap.MarkerDragStartEventArgs e)
+    private void PlatformView_DraggingMarkerStarted(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
         VirtualView!.SendPinDragStart(pin);
     }
 
-    protected virtual void PlatformView_MarkerDrag(object? sender, GMap.MarkerDragEventArgs e)
+    private void PlatformView_DraggingMarker(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
         VirtualView!.SendPinDrag(pin);
     }
 
-    protected virtual void PlatformView_MarkerDragEnd(object? sender, GMap.MarkerDragEndEventArgs e)
+    private void PlatformView_DraggingMarkerEnded(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
         VirtualView!.SendPinDragEnd(pin);
     }
 
-    protected virtual void PlatformView_InfoWindowClick(object? sender, GMap.InfoWindowClickEventArgs e)
+    private void PlatformView_InfoTapped(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowClick(pin);
     }
 
-    protected virtual void PlatformView_InfoWindowLongClick(object? sender, GMap.InfoWindowLongClickEventArgs e)
+    private void PlatformView_InfoLongPressed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowLongClick(pin);
     }
 
-    protected virtual void PlatformView_InfoWindowClose(object? sender, GMap.InfoWindowCloseEventArgs e)
+    private void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowClose(pin);
     }
@@ -152,7 +154,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         }
         else if (e.PropertyName == GoogleMap.InfoWindowTemplateProperty.PropertyName)
         {
-            NativeView!.SetInfoWindowAdapter(VirtualView!.InfoWindowTemplate is not null ? new InfoWindowAdapter(VirtualView!) : null);
+            NativeView!.MarkerInfoWindow = VirtualView!.InfoWindowTemplate is not null ? GetInfoWindow : null;
         }
     }
 
@@ -187,7 +189,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void ClearPins()
     {
-        RemovePinsFromNativeMap([.. Pins]);
+        RemovePinsFromNativeMap([..Pins]);
     }
 
     protected virtual void InitPins()
@@ -207,13 +209,17 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
         if (NativeObjectAttachedProperty.GetNativeObject(pin) is not NPin native) return;
 
+        if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+        {
+            native.Tappable = pin.IsEnabled;
+        }
         if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
         {
-            native.Visible = pin.IsVisible;
+            native.Map = pin.IsVisible ? NativeView! : null;
         }
         else if (e.PropertyName == VisualElement.OpacityProperty.PropertyName)
         {
-            native.Alpha = (float)pin.Opacity;
+            native.Opacity = (float)pin.Opacity;
         }
         else if (e.PropertyName == VisualElement.ZIndexProperty.PropertyName)
         {
@@ -221,13 +227,13 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         }
         else if (e.PropertyName == VisualElement.RotationProperty.PropertyName)
         {
-            native.Rotation = (float)pin.Rotation;
+            native.Rotation = pin.Rotation;
         }
         else if (e.PropertyName == VPin.PositionProperty.PropertyName)
         {
             var oldPosition = native.Position.ToCrossPlatformPoint();
 
-            if (pin.Position != oldPosition) native.Position = pin.Position.ToLatLng();
+            if (pin.Position != oldPosition) native.Position = pin.Position.ToCoord();
         }
         else if (e.PropertyName == VPin.SnippetProperty.PropertyName)
         {
@@ -247,11 +253,11 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         }
         else if (e.PropertyName == VPin.AnchorProperty.PropertyName)
         {
-            native.SetAnchor((float)pin.Anchor.X, (float)pin.Anchor.Y);
+            native.GroundAnchor = pin.Anchor;
         }
         else if (e.PropertyName == VPin.InfoWindowAnchorProperty.PropertyName)
         {
-            native.SetInfoWindowAnchor((float)pin.InfoWindowAnchor.X, (float)pin.InfoWindowAnchor.Y);
+            native.InfoWindowAnchor = pin.InfoWindowAnchor;
         }
         else if (e.PropertyName == VPin.IconProperty.PropertyName)
         {
@@ -281,11 +287,9 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void AddPinsToNativeMap(IEnumerable<VPin> pins)
     {
-        var context = Platform.AppContext;
-
         foreach (var pin in pins)
         {
-            var npin = NativeView!.AddMarker(pin.ToNative(context));
+            var npin = pin.ToNative(NativeView!);
 
             NativeObjectAttachedProperty.SetNativeObject(pin, npin);
             SetPinIcon(pin, npin);
@@ -295,15 +299,25 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         }
     }
 
-    protected virtual async Task SetPinIcon(Pin pin, NPin nPin)
+    protected virtual async Task SetPinIcon(VPin pin, NPin nPin)
     {
         try
         {
-            nPin.SetIcon(await pin.Icon.ToBitmapDescriptor(Handler!.MauiContext!));
+            if (pin.Icon is ViewImageSource viewSource)
+            {
+                nPin.Icon = null;
+                nPin.IconView = viewSource.View?.ToNative(Handler!.MauiContext!);
+            }
+            else
+            {
+                nPin.IconView = null;
+                nPin.Icon = (await pin.Icon.GetPlatformImageAsync(Handler!.MauiContext!))?.Value;
+            }
         }
         catch (Exception)
         {
-            nPin.SetIcon(null);
+            nPin.Icon = null;
+            nPin.IconView = null;
         }
     }
 
@@ -314,31 +328,21 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
             pin.PropertyChanged -= Pin_PropertyChanged;
 
             var native = NativeObjectAttachedProperty.GetNativeObject(pin) as NPin;
-            native?.Remove();
+
+            if (native is not null)
+            {
+                native.Map = null;
+            }
+
             Pins.Remove(pin);
         }
     }
-}
 
-public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
-{
-    protected GoogleMap Map { get; }
-
-    public InfoWindowAdapter(GoogleMap map)
+    protected virtual UIView? GetInfoWindow(MapView map, NPin marker)
     {
-        Map = map;
-    }
+        var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == marker);
 
-    public virtual Android.Views.View? GetInfoContents(NPin marker)
-    {
-        return null;
-    }
-
-    public virtual Android.Views.View? GetInfoWindow(NPin marker)
-    {
-        var pin = Map.Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == marker.Id);
-
-        var template = Map.InfoWindowTemplate;
+        var template = VirtualView!.InfoWindowTemplate;
 
         while (template is DataTemplateSelector selector)
         {
@@ -349,7 +353,7 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 
         view.BindingContext = pin.BindingContext;
 
-        var platformView = view.ToNative(Map.Handler!.MauiContext!);
+        var platformView = view.ToNative(Handler!.MauiContext!);
 
         return platformView;
     }
@@ -357,22 +361,25 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 
 public static class PinExtensions
 {
-    public static MarkerOptions ToNative(this VPin pin, Context context)
+    public static NPin ToNative(this VPin pin, MapView map)
     {
-        var options = new MarkerOptions();
+        var native = NPin.FromPosition(pin.Position.ToCoord());
+        native.Tappable = pin.IsEnabled;
+        native.Opacity = (float)pin.Opacity;
+        native.Rotation = pin.Rotation;
+        native.Snippet = pin.Snippet;
+        native.Title = pin.Title;
+        native.ZIndex = pin.ZIndex;
+        native.GroundAnchor = pin.Anchor;
+        native.Draggable = pin.Draggable;
+        native.Flat = pin.IsFlat;
+        native.InfoWindowAnchor = pin.InfoWindowAnchor;
 
-        options.SetPosition(pin.Position.ToLatLng());
-        options.SetAlpha((float)pin.Opacity);
-        options.SetRotation((float)pin.Rotation);
-        options.SetSnippet(pin.Snippet);
-        options.SetTitle(pin.Title);
-        options.Visible(pin.IsVisible);
-        options.InvokeZIndex(pin.ZIndex);
-        options.Anchor((float)pin.Anchor.X, (float)pin.Anchor.Y);
-        options.Draggable(pin.Draggable);
-        options.Flat(pin.IsFlat);
-        options.InfoWindowAnchor((float)pin.InfoWindowAnchor.X, (float)pin.InfoWindowAnchor.Y);
+        if (pin.IsVisible)
+        {
+            native.Map = map;
+        }
 
-        return options;
+        return native;
     }
 }

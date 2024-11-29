@@ -1,5 +1,4 @@
-﻿using CoreGraphics;
-using Google.Maps;
+﻿using Google.Maps;
 using Microsoft.Maui.Handlers;
 
 namespace MPowerKit.GoogleMaps;
@@ -22,11 +21,11 @@ public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         //{ "Camera", () => new CameraManager() },
         //{ nameof(GMap.UiSettings), () => new UiSettingsManager() },
         { nameof(GoogleMap.Polylines), () => new PolylineManager() },
-        //{ nameof(GoogleMap.Polygons), () => new PolygonManager() },
-        //{ nameof(GoogleMap.Circles), () => new CircleManger() },
-        //{ nameof(GoogleMap.TileOverlays), () => new TileOverlayManager() },
-        //{ nameof(GoogleMap.GroundOverlays), () => new GroundOverlayManager() },
-        //{ nameof(GoogleMap.Pins), () => new PinManager() },
+        { nameof(GoogleMap.Polygons), () => new PolygonManager() },
+        { nameof(GoogleMap.Circles), () => new CircleManager() },
+        { nameof(GoogleMap.TileOverlays), () => new TileOverlayManager() },
+        { nameof(GoogleMap.GroundOverlays), () => new GroundOverlayManager() },
+        { nameof(GoogleMap.Pins), () => new PinManager() },
     };
 
     public GoogleMapHandler() : base(GoogleMapHandlerMapper, GoogleMapHandlerCommandMapper)
@@ -47,7 +46,7 @@ public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     protected override MapView CreatePlatformView()
     {
-        return new MapView(new MapViewOptions());
+        return new MapView(new MapViewOptions() { Camera = new Google.Maps.CameraPosition(0f, 0f, 3.5f) });
     }
 
     protected override void ConnectHandler(MapView platformView)

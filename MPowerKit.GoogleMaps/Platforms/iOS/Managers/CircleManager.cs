@@ -1,26 +1,26 @@
 ﻿using System.Collections.Specialized;
 
-using Android.Content;
-using Android.Gms.Maps.Model;
+using Google.Maps;
 
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Platform;
 
-using GMap = Android.Gms.Maps.GoogleMap;
-using NCircle = Android.Gms.Maps.Model.Circle;
+using UIKit;
+
+using NCircle = Google.Maps.Circle;
 using VCircle = MPowerKit.GoogleMaps.Circle;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class CircleManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
-    protected GMap? NativeView { get; set; }
+    protected MapView? NativeView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
     protected List<VCircle> Circles { get; set; } = [];
 
-    public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
         NativeView = platformView;
@@ -36,12 +36,12 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
             circles.CollectionChanged += Circles_CollectionChanged;
         }
 
-        platformView.CircleClick += NativeMap_CircleClick;
+        platformView.OverlayTapped += NativeMap_OverlayTapped;
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        platformView.CircleClick -= NativeMap_CircleClick;
+        platformView.OverlayTapped -= NativeMap_OverlayTapped;
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
@@ -58,9 +58,11 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
         Handler = null;
     }
 
-    protected virtual void NativeMap_CircleClick(object? sender, GMap.CircleClickEventArgs e)
+    private void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
-        var circle = Circles.Single(c => (NativeObjectAttachedProperty.GetNativeObject(c) as NCircle)!.Id == e.Circle.Id);
+        var circle = Circles.SingleOrDefault(c => NativeObjectAttachedProperty.GetNativeObject(c) == e.Overlay);
+
+        if (circle is null) return;
 
         VirtualView!.SendCircleClick(circle);
     }
@@ -122,7 +124,7 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
     protected virtual void ClearCircles()
     {
-        RemoveCirclesFromNativeMap([.. Circles]);
+        RemoveCirclesFromNativeMap([..Circles]);
     }
 
     protected virtual void InitCircles()
@@ -144,7 +146,7 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
         if (e.PropertyName == Shape.IsEnabledProperty.PropertyName)
         {
-            native.Clickable = circle.IsEnabled;
+            native.Tappable = circle.IsEnabled;
         }
         else if (e.PropertyName == VCircle.RadiusProperty.PropertyName)
         {
@@ -152,17 +154,11 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
         }
         else if (e.PropertyName == VCircle.CenterProperty.PropertyName)
         {
-            native.Center = circle.Center.ToLatLng();
-        }
-        else if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName)
-        {
-            if (circle.StrokeDashPattern.Length != 0)
-                native.StrokePattern = circle.StrokeDashPattern.Select(v => Handler!.Context.ToPixels(v)).ToArray().ToPatternItems();
-            else native.StrokePattern = null;
+            native.Position = circle.Center.ToCoord();
         }
         else if (e.PropertyName == Shape.IsVisibleProperty.PropertyName)
         {
-            native.Visible = circle.IsVisible;
+            native.Map = circle.IsVisible ? NativeView! : null;
         }
         else if (e.PropertyName == Shape.ZIndexProperty.PropertyName)
         {
@@ -170,15 +166,15 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
         }
         else if (e.PropertyName == Shape.StrokeThicknessProperty.PropertyName)
         {
-            native.StrokeWidth = Handler!.Context.ToPixels(circle.StrokeThickness);
+            native.StrokeWidth = (float)circle.StrokeThickness;
         }
         else if (e.PropertyName == Shape.StrokeProperty.PropertyName)
         {
-            native.StrokeColor = (circle.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb();
+            native.StrokeColor = (circle.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
         }
         else if (e.PropertyName == Shape.FillProperty.PropertyName)
         {
-            native.FillColor = (circle.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb();
+            native.FillColor = (circle.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
         }
     }
 
@@ -204,11 +200,9 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
     protected virtual void AddCirclesToNativeMap(IEnumerable<VCircle> circles)
     {
-        var context = Platform.AppContext;
-
         foreach (var circle in circles)
         {
-            NativeObjectAttachedProperty.SetNativeObject(circle, NativeView!.AddCircle(circle.ToNative(context)));
+            NativeObjectAttachedProperty.SetNativeObject(circle, circle.ToNative(NativeView!));
             circle.PropertyChanged += Circle_PropertyChanged;
             Circles.Add(circle);
         }
@@ -221,7 +215,11 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
             circle.PropertyChanged -= Circle_PropertyChanged;
 
             var native = NativeObjectAttachedProperty.GetNativeObject(circle) as NCircle;
-            native?.Remove();
+
+            if (native is not null)
+            {
+                native.Map = null;
+            }
 
             Circles.Remove(circle);
         }
@@ -230,24 +228,20 @@ public class CircleManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
 public static class CircleExtensions
 {
-    public static CircleOptions ToNative(this VCircle circle, Context context)
+    public static NCircle ToNative(this VCircle circle, MapView map)
     {
-        var options = new CircleOptions();
+        var native = NCircle.FromPosition(circle.Center.ToCoord(), circle.Radius);
+        native.Tappable = circle.IsEnabled;
+        native.StrokeWidth = (float)circle.StrokeThickness;
+        native.StrokeColor = (circle.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        native.FillColor = (circle.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        native.ZIndex = circle.ZIndex;
 
-        options.InvokeCenter(circle.Center.ToLatLng());
-        options.InvokeRadius(circle.Radius);
+        if (circle.IsVisible)
+        {
+            native.Map = map;
+        }
 
-        options.Clickable(circle.IsEnabled);
-
-        options.InvokeFillColor((circle.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
-        options.InvokeStrokeColor((circle.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
-        options.InvokeStrokeWidth(context.ToPixels(circle.StrokeThickness));
-        options.InvokeZIndex(circle.ZIndex);
-        options.Visible(circle.IsVisible);
-
-        if (circle.StrokeDashPattern.Length != 0)
-            options.InvokeStrokePattern(circle.StrokeDashPattern.Select(v => context.ToPixels(v)).ToArray().ToPatternItems());
-
-        return options;
+        return native;
     }
 }

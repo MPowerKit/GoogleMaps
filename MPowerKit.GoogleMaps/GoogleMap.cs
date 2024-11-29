@@ -90,32 +90,32 @@ public class GoogleMap : View
             Reset(PolylinesSource, ref polylines);
             Polylines = polylines;
         }
-        else if (propertyName == PolygonsProperty.PropertyName
+        else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
             var polygons = Polygons;
-            Reset(PolylinesSource, ref polygons);
+            Reset(PolygonsSource, ref polygons);
             Polygons = polygons;
         }
         else if (propertyName == CirclesSourceProperty.PropertyName
             || propertyName == CircleItemTemplateProperty.PropertyName)
         {
             var circles = Circles;
-            Reset(PolylinesSource, ref circles);
+            Reset(CirclesSource, ref circles);
             Circles = circles;
         }
         else if (propertyName == TileOverlaysSourceProperty.PropertyName
             || propertyName == TileOverlayItemTemplateProperty.PropertyName)
         {
             var tileOverlays = TileOverlays;
-            Reset(PolylinesSource, ref tileOverlays);
+            Reset(TileOverlaysSource, ref tileOverlays);
             TileOverlays = tileOverlays;
         }
         else if (propertyName == GroundOverlaysSourceProperty.PropertyName
             || propertyName == GroundOverlayItemTemplateProperty.PropertyName)
         {
             var groundOverlays = GroundOverlays;
-            Reset(PolylinesSource, ref groundOverlays);
+            Reset(GroundOverlaysSource, ref groundOverlays);
             GroundOverlays = groundOverlays;
         }
         else if (propertyName == PinsSourceProperty.PropertyName
@@ -138,7 +138,7 @@ public class GoogleMap : View
             Init(PolylinesSource, PolylineItemTemplate, ref polylines);
             Polylines = polylines;
         }
-        else if (propertyName == PolygonsProperty.PropertyName
+        else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
             var polygons = Polygons;

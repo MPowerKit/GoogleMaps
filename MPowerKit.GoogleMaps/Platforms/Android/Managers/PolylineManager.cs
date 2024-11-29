@@ -12,7 +12,7 @@ using VPolyline = Microsoft.Maui.Controls.Shapes.Polyline;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PolylineManger : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class PolylineManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
     protected GMap? NativeView { get; set; }
