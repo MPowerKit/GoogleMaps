@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
-
+using System.Net;
+using Java.Net;
 using Microsoft.Maui.Platform;
 
 using GMap = Android.Gms.Maps.GoogleMap;
@@ -57,16 +58,19 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void InitMap()
     {
-        VirtualView!.SendMapCapabilitiesChanged(NativeView!.MapCapabilities.ToCrossPlatform());
-        VirtualView!.SendIndoorBuildingFocused(NativeView!.FocusedBuilding?.ToCrossPlatform());
-        NativeView.SetIndoorEnabled(VirtualView!.IndoorEnabled);
-        NativeView.BuildingsEnabled = VirtualView!.BuildingsEnabled;
-        NativeView.MapType = (int)VirtualView!.MapType;
-        NativeView.MyLocationEnabled = VirtualView!.MyLocationEnabled;
-        NativeView.MapColorScheme = (int)VirtualView!.MapColorScheme;
-        NativeView.TrafficEnabled = VirtualView!.TrafficEnabled;
+        NativeView!.SetIndoorEnabled(VirtualView!.IndoorEnabled);
+        NativeView.BuildingsEnabled = VirtualView.BuildingsEnabled;
+        NativeView.MapType = (int)VirtualView.MapType;
+        NativeView.MyLocationEnabled = VirtualView.MyLocationEnabled;
+        NativeView.MapColorScheme = (int)VirtualView.MapColorScheme;
+        NativeView.TrafficEnabled = VirtualView.TrafficEnabled;
         var context = Handler!.Context;
-        NativeView.SetPadding((int)context.ToPixels(VirtualView!.Padding.Left), (int)context.ToPixels(VirtualView!.Padding.Top), (int)context.ToPixels(VirtualView!.Padding.Right), (int)context.ToPixels(VirtualView!.Padding.Bottom));
+        NativeView.SetPadding(
+            (int)context.ToPixels(VirtualView.Padding.Left),
+            (int)context.ToPixels(VirtualView.Padding.Top),
+            (int)context.ToPixels(VirtualView.Padding.Right),
+            (int)context.ToPixels(VirtualView.Padding.Bottom)
+            );
 
         SetMapStyle();
     }
@@ -111,25 +115,42 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
             var context = Handler!.Context;
             NativeView!.SetPadding((int)context.ToPixels(VirtualView!.Padding.Left), (int)context.ToPixels(VirtualView!.Padding.Top), (int)context.ToPixels(VirtualView!.Padding.Right), (int)context.ToPixels(VirtualView!.Padding.Bottom));
         }
-        else if (e.PropertyName == GoogleMap.MapStyleJsonFileNameProperty.PropertyName)
+        else if (e.PropertyName == GoogleMap.MapStyleJsonProperty.PropertyName)
         {
             SetMapStyle();
         }
     }
 
-    protected virtual void SetMapStyle()
+    protected virtual async Task SetMapStyle()
     {
-        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJsonFileName)) return;
+        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson)) return;
 
-        var fileName = VirtualView!.MapStyleJsonFileName
-            .Replace('\\', Path.DirectorySeparatorChar)
-            .Replace('/', Path.DirectorySeparatorChar);
+        var json = VirtualView!.MapStyleJson;
 
-        using var stream = Android.App.Application.Context.Assets!.Open(fileName);
-        using var reader = new StreamReader(stream);
-        var json = reader.ReadToEnd();
+        try
+        {
+            if (Uri.TryCreate(json, UriKind.Absolute, out var uri))
+            {
+                using var client = new HttpClient() { Timeout = TimeSpan.FromSeconds(30) };
+                json = await client.GetStringAsync(uri);
+            }
+            else if (json.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
+            {
+                json = json
+                    .Replace('\\', Path.DirectorySeparatorChar)
+                    .Replace('/', Path.DirectorySeparatorChar);
+                using var stream = Android.App.Application.Context.Assets!.Open(json);
+                using var reader = new StreamReader(stream);
+                json = await reader.ReadToEndAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return;
+        }
 
-        NativeView!.SetMapStyle(new Android.Gms.Maps.Model.MapStyleOptions(json));
+        NativeView!.SetMapStyle(new(json));
     }
 
     protected virtual Point ScreenLocationToMapCoords(Point point)
@@ -183,6 +204,41 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void NativeView_IndoorLevelActivated(object? sender, GMap.IndoorLevelActivatedEventArgs e)
     {
-        VirtualView!.SendIndoorLevelActivated(NativeView!.FocusedBuilding?.ToCrossPlatform());
+        var activeLevel = NativeView!.FocusedBuilding?.Levels.ElementAtOrDefault(NativeView.FocusedBuilding.ActiveLevelIndex);
+
+        VirtualView!.SendIndoorLevelActivated(activeLevel?.ToCrossPlatform());
+    }
+}
+
+public static class MapExtensions
+{
+    public static PointOfInterest ToCrossPlatform(this Android.Gms.Maps.Model.PointOfInterest poi)
+    {
+        return new(poi.LatLng.ToCrossPlatformPoint(), poi.PlaceId, poi.Name);
+    }
+
+    public static IndoorLevel ToCrossPlatform(this Android.Gms.Maps.Model.IndoorLevel level)
+    {
+        return new()
+        {
+            NativeIndoorLevel = level,
+            Name = level.Name,
+            ShortName = level.ShortName
+        };
+    }
+
+    public static IndoorBuilding ToCrossPlatform(this Android.Gms.Maps.Model.IndoorBuilding building)
+    {
+        return new IndoorBuilding
+        {
+            DefaultLevelIndex = building.DefaultLevelIndex,
+            IsUnderground = building.IsUnderground,
+            Levels = building.Levels.Select(l => l.ToCrossPlatform()).ToList()
+        };
+    }
+
+    public static MapCapabilities ToCrossPlatform(this Android.Gms.Maps.Model.MapCapabilities capabilities)
+    {
+        return new(capabilities.IsAdvancedMarkersAvailable, capabilities.IsDataDrivenStylingAvailable);
     }
 }

@@ -30,7 +30,8 @@ public class GoogleMap : View
     public event Action<CameraMoveReason>? CameraMoveStart;
     public event Action? CameraMoveCanceled;
     public event Action? CameraMove;
-    public event Action<IndoorBuilding?>? IndoorLevelActivated;
+    public event Action<IndoorBuilding?>? IndoorBuildingFocused;
+    public event Action<IndoorLevel?>? IndoorLevelActivated;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Action<CameraUpdate>? MoveCameraActionInternal;
@@ -550,17 +551,22 @@ public class GoogleMap : View
     public virtual void SendIndoorBuildingFocused(IndoorBuilding? indoorBuilding)
     {
         FocusedBuilding = indoorBuilding;
+
+        IndoorBuildingFocused?.Invoke(indoorBuilding);
+
+        if (IndoorBuildingFocusedCommand?.CanExecute(indoorBuilding) is true)
+            IndoorBuildingFocusedCommand.Execute(indoorBuilding);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendIndoorLevelActivated(IndoorBuilding? indoorBuilding)
+    public virtual void SendIndoorLevelActivated(IndoorLevel? activeLevel)
     {
-        FocusedBuilding = indoorBuilding;
+        ActiveLevel = activeLevel;
 
-        IndoorLevelActivated?.Invoke(indoorBuilding);
+        IndoorLevelActivated?.Invoke(activeLevel);
 
-        if (IndoorLevelActivatedCommand?.CanExecute(indoorBuilding) is true)
-            IndoorLevelActivatedCommand.Execute(indoorBuilding);
+        if (IndoorLevelActivatedCommand?.CanExecute(activeLevel) is true)
+            IndoorLevelActivatedCommand.Execute(activeLevel);
     }
 
     #region MapCapabilities
@@ -589,6 +595,21 @@ public class GoogleMap : View
         BindableProperty.Create(
             nameof(FocusedBuilding),
             typeof(IndoorBuilding),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region ActiveLevel
+    public IndoorLevel ActiveLevel
+    {
+        get => (IndoorLevel)GetValue(ActiveLevelProperty);
+        protected set => SetValue(ActiveLevelProperty, value);
+    }
+
+    public static readonly BindableProperty ActiveLevelProperty =
+        BindableProperty.Create(
+            nameof(ActiveLevel),
+            typeof(IndoorLevel),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
@@ -890,16 +911,16 @@ public class GoogleMap : View
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
 
-    #region MapStyleJsonFileName
-    public string MapStyleJsonFileName
+    #region MapStyleJson
+    public string MapStyleJson
     {
-        get => (string)GetValue(MapStyleJsonFileNameProperty);
-        set => SetValue(MapStyleJsonFileNameProperty, value);
+        get => (string)GetValue(MapStyleJsonProperty);
+        set => SetValue(MapStyleJsonProperty, value);
     }
 
-    public static readonly BindableProperty MapStyleJsonFileNameProperty =
+    public static readonly BindableProperty MapStyleJsonProperty =
         BindableProperty.Create(
-            nameof(MapStyleJsonFileName),
+            nameof(MapStyleJson),
             typeof(string),
             typeof(GoogleMap)
             );
@@ -1554,6 +1575,20 @@ public class GoogleMap : View
     public static readonly BindableProperty CameraMoveCommandProperty =
         BindableProperty.Create(
             nameof(CameraMoveCommand),
+            typeof(ICommand),
+            typeof(GoogleMap));
+    #endregion
+
+    #region IndoorBuildingFocusedCommand
+    public ICommand IndoorBuildingFocusedCommand
+    {
+        get => (ICommand)GetValue(IndoorBuildingFocusedCommandProperty);
+        set => SetValue(IndoorBuildingFocusedCommandProperty, value);
+    }
+
+    public static readonly BindableProperty IndoorBuildingFocusedCommandProperty =
+        BindableProperty.Create(
+            nameof(IndoorBuildingFocusedCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion

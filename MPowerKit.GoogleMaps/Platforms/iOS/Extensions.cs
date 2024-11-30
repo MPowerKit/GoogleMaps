@@ -1,4 +1,5 @@
-﻿using CoreLocation;
+﻿using CoreGraphics;
+using CoreLocation;
 
 using Google.Maps;
 
@@ -18,6 +19,11 @@ public static class Extensions
     public static Point ToCrossPlatformPoint(this CLLocationCoordinate2D coord)
     {
         return new(coord.Latitude, coord.Longitude);
+    }
+
+    public static Point ToCrossPlatformPoint(this CGPoint point)
+    {
+        return new(point.X, point.Y);
     }
 
     public static MutablePath ToPath(this IEnumerable<Point> points)

@@ -17,6 +17,13 @@ public class Pin : VisualElement
 #if ANDROID
         native?.ShowInfoWindow();
 #endif
+
+#if IOS
+        if (native?.Map is not null)
+        {
+            native.Map.SelectedMarker = native;
+        }
+#endif
     }
 
     public virtual void HideInfoWindow()
@@ -24,6 +31,13 @@ public class Pin : VisualElement
         var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
 #if ANDROID
         native?.HideInfoWindow();
+#endif
+
+#if IOS
+        if (native?.Map is not null)
+        {
+            native.Map.SelectedMarker = null;
+        }
 #endif
     }
 

@@ -17,7 +17,7 @@ public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>>> ManagerMapper = new()
     {
-        //{ "Map", () => new MapManager() },
+        { "Map", () => new MapManager() },
         //{ "Camera", () => new CameraManager() },
         //{ nameof(GMap.UiSettings), () => new UiSettingsManager() },
         { nameof(GoogleMap.Polylines), () => new PolylineManager() },

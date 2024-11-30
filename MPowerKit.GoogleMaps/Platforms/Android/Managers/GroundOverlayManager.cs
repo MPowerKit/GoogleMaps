@@ -195,7 +195,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
 
         foreach (var groundOverlay in overlays)
         {
-            var ngo = NativeView!.AddGroundOverlay(groundOverlay.ToNative(context));
+            var ngo = NativeView!.AddGroundOverlay(groundOverlay.ToNative());
             NativeObjectAttachedProperty.SetNativeObject(groundOverlay, ngo);
             SetGroundOverlayImage(groundOverlay, ngo);
             groundOverlay.PropertyChanged += GroundOverlay_PropertyChanged;

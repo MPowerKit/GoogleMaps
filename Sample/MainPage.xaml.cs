@@ -41,12 +41,12 @@ public partial class MainPage
         };
         gmap.Polygons = polygons;
 
-        //var pins = new ObservableCollection<Pin>
-        //{
-        //    new() { Position = new(50,50), Icon = "map_pin.png", Title = "sdhsdhsdh", Snippet = "sdhsdgf", Draggable = true }
-        //};
-        //gmap.MapStyleJsonFileName = "map_style.json";
-        //gmap.Pins = pins;
+        var pins = new ObservableCollection<Pin>
+        {
+            new() { Position = new(50,50), Icon = "map_pin.png", Title = "sdhsdhsdh", Snippet = "sdhsdgf", Draggable = true }
+        };
+        gmap.MapStyleJson = "map_style.json";
+        gmap.Pins = pins;
 
         var circles = new ObservableCollection<Circle>
         {

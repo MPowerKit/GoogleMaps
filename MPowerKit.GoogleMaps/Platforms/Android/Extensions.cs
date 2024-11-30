@@ -86,11 +86,6 @@ public static class Extensions
         );
     }
 
-    public static PointOfInterest ToCrossPlatform(this Android.Gms.Maps.Model.PointOfInterest poi)
-    {
-        return new(poi.LatLng.ToCrossPlatformPoint(), poi.PlaceId, poi.Name);
-    }
-
     public static List<PatternItem> ToPatternItems(this float[] strokeDashPattern)
     {
         if (strokeDashPattern?.Length is null or 0) return [];
@@ -157,31 +152,5 @@ public static class Extensions
         var desc = BitmapDescriptorFactory.FromBitmap(((BitmapDrawable)drawable.Value).Bitmap);
 
         return desc;
-    }
-
-    public static MapCapabilities ToCrossPlatform(this Android.Gms.Maps.Model.MapCapabilities capabilities)
-    {
-        return new(capabilities.IsAdvancedMarkersAvailable, capabilities.IsDataDrivenStylingAvailable);
-    }
-
-    public static IndoorLevel ToCrossPlatform(this Android.Gms.Maps.Model.IndoorLevel level)
-    {
-        return new()
-        {
-            NativeIndoorLevel = level,
-            Name = level.Name,
-            ShortName = level.ShortName
-        };
-    }
-
-    public static IndoorBuilding ToCrossPlatform(this Android.Gms.Maps.Model.IndoorBuilding building)
-    {
-        return new IndoorBuilding
-        {
-            ActiveLevelIndex = building.ActiveLevelIndex,
-            DefaultLevelIndex = building.DefaultLevelIndex,
-            IsUnderground = building.IsUnderground,
-            Levels = building.Levels.Select(l => l.ToCrossPlatform()).ToList()
-        };
     }
 }
