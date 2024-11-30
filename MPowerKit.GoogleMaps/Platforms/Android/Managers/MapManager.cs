@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Net;
-using Java.Net;
+
 using Microsoft.Maui.Platform;
 
 using GMap = Android.Gms.Maps.GoogleMap;
@@ -22,14 +21,15 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         virtualView.PropertyChanged += VirtualView_PropertyChanged;
         virtualView.PropertyChanging += VirtualView_PropertyChanging;
 
-        VirtualView!.MapCoordsToScreenLocationFuncInternal = MapCoordsToScreenLocation;
-        VirtualView.ScreenLocationToMapCoordsFuncInternal = ScreenLocationToMapCoords;
+        virtualView.MapCoordsToScreenLocationFuncInternal = MapCoordsToScreenLocation;
+        virtualView.ScreenLocationToMapCoordsFuncInternal = ScreenLocationToMapCoords;
+        virtualView.TakeSnapshotFuncInternal = TakeSnapshot;
 
-        NativeView.MapClick += NativeMap_MapClick;
-        NativeView.MapLongClick += NativeMap_MapLongClick;
-        NativeView.MapCapabilitiesChanged += NativeView_MapCapabilitiesChanged;
-        NativeView.IndoorLevelActivated += NativeView_IndoorLevelActivated;
-        NativeView.IndoorBuildingFocused += NativeView_IndoorBuildingFocused;
+        platformView.MapClick += NativeMap_MapClick;
+        platformView.MapLongClick += NativeMap_MapLongClick;
+        platformView.MapCapabilitiesChanged += NativeView_MapCapabilitiesChanged;
+        platformView.IndoorLevelActivated += NativeView_IndoorLevelActivated;
+        platformView.IndoorBuildingFocused += NativeView_IndoorBuildingFocused;
 
         HandlePoiClick();
 
@@ -38,15 +38,16 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     public void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        VirtualView!.MapCoordsToScreenLocationFuncInternal = null;
-        VirtualView.ScreenLocationToMapCoordsFuncInternal = null;
+        virtualView.MapCoordsToScreenLocationFuncInternal = null;
+        virtualView.ScreenLocationToMapCoordsFuncInternal = null;
+        virtualView.TakeSnapshotFuncInternal = null;
 
-        NativeView!.MapClick -= NativeMap_MapClick;
-        NativeView.MapLongClick -= NativeMap_MapLongClick;
-        NativeView.PoiClick -= NativeMap_PoiClick;
-        NativeView.MapCapabilitiesChanged -= NativeView_MapCapabilitiesChanged;
-        NativeView.IndoorLevelActivated -= NativeView_IndoorLevelActivated;
-        NativeView.IndoorBuildingFocused -= NativeView_IndoorBuildingFocused;
+        platformView.MapClick -= NativeMap_MapClick;
+        platformView.MapLongClick -= NativeMap_MapLongClick;
+        platformView.PoiClick -= NativeMap_PoiClick;
+        platformView.MapCapabilitiesChanged -= NativeView_MapCapabilitiesChanged;
+        platformView.IndoorLevelActivated -= NativeView_IndoorLevelActivated;
+        platformView.IndoorBuildingFocused -= NativeView_IndoorBuildingFocused;
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
@@ -153,6 +154,13 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         NativeView!.SetMapStyle(new(json));
     }
 
+    protected virtual Task<Stream?> TakeSnapshot()
+    {
+        var tcs = new TaskCompletionSource<Stream?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        NativeView!.Snapshot(new TakeSnapshotCallback(tcs.SetResult));
+        return tcs.Task;
+    }
+
     protected virtual Point ScreenLocationToMapCoords(Point point)
     {
         return NativeView!.Projection.FromScreenLocation(point.ToNativePoint(Handler!.Context)).ToCrossPlatformPoint();
@@ -240,5 +248,29 @@ public static class MapExtensions
     public static MapCapabilities ToCrossPlatform(this Android.Gms.Maps.Model.MapCapabilities capabilities)
     {
         return new(capabilities.IsAdvancedMarkersAvailable, capabilities.IsDataDrivenStylingAvailable);
+    }
+}
+
+public class TakeSnapshotCallback : Java.Lang.Object, GMap.ISnapshotReadyCallback
+{
+    private readonly Action<Stream?> _onSnapshot;
+
+    public TakeSnapshotCallback(Action<Stream?> onSnapshot)
+    {
+        _onSnapshot = onSnapshot;
+    }
+
+    public void OnSnapshotReady(Android.Graphics.Bitmap? snapshot)
+    {
+        if (snapshot is null)
+        {
+            _onSnapshot?.Invoke(null);
+            return;
+        }
+
+        var stream = new MemoryStream();
+        snapshot.Compress(Android.Graphics.Bitmap.CompressFormat.Png!, 0, stream);
+        stream.Position = 0;
+        _onSnapshot?.Invoke(stream);
     }
 }

@@ -56,10 +56,14 @@ public static class Extensions
 
     public static UIImage ToImage(this UIView v)
     {
-        var renderer = new UIGraphicsImageRenderer(new(v.Bounds.Width, v.Bounds.Height));
+        var renderer = new UIGraphicsImageRenderer(v.Bounds.Size, new UIGraphicsImageRendererFormat()
+        {
+            Opaque = false,
+            Scale = 1f
+        });
         return renderer.CreateImage(ctx =>
         {
-            v.Layer.RenderInContext(ctx.CGContext);
+            v.DrawViewHierarchy(v.Bounds, true);
         });
     }
 }

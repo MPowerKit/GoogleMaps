@@ -25,8 +25,9 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         virtualView.PropertyChanged += VirtualView_PropertyChanged;
         virtualView.PropertyChanging += VirtualView_PropertyChanging;
 
-        VirtualView!.MapCoordsToScreenLocationFuncInternal = MapCoordsToScreenLocation;
-        VirtualView.ScreenLocationToMapCoordsFuncInternal = ScreenLocationToMapCoords;
+        virtualView.MapCoordsToScreenLocationFuncInternal = MapCoordsToScreenLocation;
+        virtualView.ScreenLocationToMapCoordsFuncInternal = ScreenLocationToMapCoords;
+        virtualView.TakeSnapshotFuncInternal = TakeSnapshot;
 
         platformView.CoordinateTapped += PlatformView_CoordinateTapped;
         platformView.CoordinateLongPressed += PlatformView_CoordinateLongPressed;
@@ -41,8 +42,9 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
 
     public void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        VirtualView!.MapCoordsToScreenLocationFuncInternal = null;
-        VirtualView.ScreenLocationToMapCoordsFuncInternal = null;
+        virtualView.MapCoordsToScreenLocationFuncInternal = null;
+        virtualView.ScreenLocationToMapCoordsFuncInternal = null;
+        virtualView.TakeSnapshotFuncInternal = null;
 
         platformView.CoordinateTapped -= PlatformView_CoordinateTapped;
         platformView.CoordinateLongPressed -= PlatformView_CoordinateLongPressed;
@@ -141,6 +143,15 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         }
 
         NativeView!.MapStyle = MapStyle.FromJson(json, null);
+    }
+
+    protected virtual Task<Stream?> TakeSnapshot()
+    {
+        var view = NativeView!.SnapshotView(true);
+
+        var image = view.ToImage();
+
+        return Task.FromResult(image?.AsPNG()?.AsStream());
     }
 
     protected virtual Point ScreenLocationToMapCoords(Point point)

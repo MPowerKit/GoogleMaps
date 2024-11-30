@@ -43,6 +43,8 @@ public class GoogleMap : View
     public Func<Point, Point>? ScreenLocationToMapCoordsFuncInternal;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Action? ResetMinMaxZoomActionInternal;
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Func<Task<Stream?>>? TakeSnapshotFuncInternal;
 
     public GoogleMap()
     {
@@ -51,6 +53,14 @@ public class GoogleMap : View
         MoveCameraAction = MoveCamera;
         AnimateCameraFunc = AnimateCamera;
         ResetMinMaxZoomAction = ResetMinMaxZoom;
+        TakeSnapshotFunc = TakeSnapshot;
+    }
+
+    public virtual async Task<Stream?> TakeSnapshot()
+    {
+        if (TakeSnapshotFuncInternal is null) return null;
+
+        return await TakeSnapshotFuncInternal.Invoke();
     }
 
     public virtual void ResetMinMaxZoom()
@@ -937,6 +947,21 @@ public class GoogleMap : View
         BindableProperty.Create(
             nameof(ResetMinMaxZoomAction),
             typeof(Action),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region TakeSnapshotFunc
+    public Func<Task<Stream?>> TakeSnapshotFunc
+    {
+        get => (Func<Task<Stream?>>)GetValue(TakeSnapshotFuncProperty);
+        protected set => SetValue(TakeSnapshotFuncProperty, value);
+    }
+
+    public static readonly BindableProperty TakeSnapshotFuncProperty =
+        BindableProperty.Create(
+            nameof(TakeSnapshotFunc),
+            typeof(Func<Task<Stream?>>),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
