@@ -2,6 +2,7 @@
 
 using Microsoft.Maui.Platform;
 
+using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
 using NCameraUpdate = Android.Gms.Maps.CameraUpdate;
 using NCameraUpdateFactory = Android.Gms.Maps.CameraUpdateFactory;
 
@@ -9,7 +10,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class CameraUpadateToNativeConverter
 {
-    public static Dictionary<Type, Func<CameraUpdate, Context, NCameraUpdate>> CameraUpdateMapper = new()
+    public static Dictionary<Type, Func<VCameraUpdate, Context, NCameraUpdate>> CameraUpdateMapper = new()
     {
         { typeof(ZoomInCameraUpdate), ZoomInCameraUpdate },
         { typeof(ZoomOutCameraUpdate), ZoomOutCameraUpdate },
@@ -24,7 +25,7 @@ public class CameraUpadateToNativeConverter
         { typeof(NewLatLngBoundsCameraUpdate), NewLatLngBoundsCameraUpdate }
     };
 
-    public virtual NCameraUpdate ToNative(CameraUpdate cameraUpdate, Context context)
+    public virtual NCameraUpdate ToNative(VCameraUpdate cameraUpdate, Context context)
     {
         if (!CameraUpdateMapper.ContainsKey(cameraUpdate.GetType()))
             throw new NotSupportedException($"CameraUpdate type {cameraUpdate.GetType()} is not registered in the mapper");
@@ -34,65 +35,65 @@ public class CameraUpadateToNativeConverter
         return func(cameraUpdate, context);
     }
 
-    public static NCameraUpdate ZoomInCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ZoomInCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         return NCameraUpdateFactory.ZoomIn();
     }
 
-    public static NCameraUpdate ZoomOutCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ZoomOutCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         return NCameraUpdateFactory.ZoomOut();
     }
 
-    public static NCameraUpdate ZoomToCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ZoomToCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var zoomTo = (ZoomToCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.ZoomTo(zoomTo.Zoom);
     }
 
-    public static NCameraUpdate ZoomByCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ZoomByCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var zoomBy = (ZoomByCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.ZoomBy(zoomBy.Amount);
     }
 
-    public static NCameraUpdate ZoomByAndFocusCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ZoomByAndFocusCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var zoomByAndFocus = (ZoomByAndFocusCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.ZoomBy(zoomByAndFocus.Amount, zoomByAndFocus.Focus.ToNativePoint(context));
     }
 
-    public static NCameraUpdate ScrollByCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate ScrollByCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var scrollBy = (ScrollByCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.ScrollBy(scrollBy.Dx, scrollBy.Dy);
     }
 
-    public static NCameraUpdate NewCameraPositionCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate NewCameraPositionCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var newCameraPosition = (NewCameraPositionCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.NewCameraPosition(newCameraPosition.CameraPosition.ToNative());
     }
 
-    public static NCameraUpdate NewLatLngZoomCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate NewLatLngZoomCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var newLatLngZoom = (NewLatLngZoomCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.NewLatLngZoom(newLatLngZoom.LatLng.ToLatLng(), newLatLngZoom.Zoom);
     }
 
-    public static NCameraUpdate NewLatLngCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate NewLatLngCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var newLatLng = (NewLatLngCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.NewLatLng(newLatLng.LatLng.ToLatLng());
     }
 
-    public static NCameraUpdate NewLatLngBoundsSizeCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate NewLatLngBoundsSizeCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var newLatLngBoundsSize = (NewLatLngBoundsSizeCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.NewLatLngBounds(newLatLngBoundsSize.Bounds.ToNative(), (int)context.ToPixels(newLatLngBoundsSize.Size.Width), (int)context.ToPixels(newLatLngBoundsSize.Size.Height), (int)context.ToPixels(newLatLngBoundsSize.Padding));
     }
 
-    public static NCameraUpdate NewLatLngBoundsCameraUpdate(CameraUpdate cameraUpdate, Context context)
+    public static NCameraUpdate NewLatLngBoundsCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var newLatLngBounds = (NewLatLngBoundsCameraUpdate)cameraUpdate;
         return NCameraUpdateFactory.NewLatLngBounds(newLatLngBounds.Bounds.ToNative(), (int)context.ToPixels(newLatLngBounds.Padding));

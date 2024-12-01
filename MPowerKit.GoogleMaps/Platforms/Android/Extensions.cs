@@ -6,10 +6,8 @@ using Android.Views;
 
 using Microsoft.Maui.Platform;
 
-using NCameraPosition = Android.Gms.Maps.Model.CameraPosition;
 using Point = Microsoft.Maui.Graphics.Point;
 using Rect = Microsoft.Maui.Graphics.Rect;
-using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
 using View = Microsoft.Maui.Controls.View;
 
 namespace MPowerKit.GoogleMaps;
@@ -34,43 +32,6 @@ public static class Extensions
     public static Point ToCrossPlatformPoint(this Android.Graphics.Point point, Context context)
     {
         return new(context.FromPixels(point.X), context.FromPixels(point.Y));
-    }
-
-    public static NCameraPosition ToNative(this VCameraPosition position)
-    {
-        return new(
-            position.Target.ToLatLng(),
-            position.Zoom,
-            position.Tilt,
-            position.Bearing
-        );
-    }
-
-    public static VCameraPosition ToCrossPlatform(this NCameraPosition position)
-    {
-        return new()
-        {
-            Target = position.Target.ToCrossPlatformPoint(),
-            Zoom = position.Zoom,
-            Tilt = position.Tilt,
-            Bearing = position.Bearing
-        };
-    }
-
-    public static Android.Gms.Maps.CameraUpdate ToNative(this CameraUpdate cameraUpdate, Context context)
-    {
-        return new CameraUpadateToNativeConverter().ToNative(cameraUpdate, context);
-    }
-
-    public static MapRegion ToCrossPlatform(this VisibleRegion visibleRegion)
-    {
-        return new(
-            visibleRegion.LatLngBounds.ToCrossPlatform(),
-            visibleRegion.FarLeft.ToCrossPlatformPoint(),
-            visibleRegion.FarRight.ToCrossPlatformPoint(),
-            visibleRegion.NearLeft.ToCrossPlatformPoint(),
-            visibleRegion.NearRight.ToCrossPlatformPoint()
-        );
     }
 
     public static LatLngBounds ToCrossPlatform(this Android.Gms.Maps.Model.LatLngBounds bounds)

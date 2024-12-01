@@ -2,9 +2,7 @@
 using CoreLocation;
 
 using Google.Maps;
-
 using Microsoft.Maui.Platform;
-
 using UIKit;
 
 namespace MPowerKit.GoogleMaps;
@@ -24,6 +22,19 @@ public static class Extensions
     public static Point ToCrossPlatformPoint(this CGPoint point)
     {
         return new(point.X, point.Y);
+    }
+
+    public static LatLngBounds ToCrossPlatform(this CoordinateBounds bounds)
+    {
+        return new(bounds.SouthWest.ToCrossPlatformPoint(), bounds.NorthEast.ToCrossPlatformPoint());
+    }
+
+    public static CoordinateBounds ToNative(this LatLngBounds bounds)
+    {
+        return new CoordinateBounds(
+            bounds.SouthWest.ToCoord(),
+            bounds.NorthEast.ToCoord()
+        );
     }
 
     public static MutablePath ToPath(this IEnumerable<Point> points)

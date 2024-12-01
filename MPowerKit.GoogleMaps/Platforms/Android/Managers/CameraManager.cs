@@ -1,6 +1,13 @@
 ﻿using System.ComponentModel;
 
+using Android.Content;
+
 using GMap = Android.Gms.Maps.GoogleMap;
+using NCameraPosition = Android.Gms.Maps.Model.CameraPosition;
+using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
+using NCameraUpdate = Android.Gms.Maps.CameraUpdate;
+using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
+using Android.Gms.Maps.Model;
 
 namespace MPowerKit.GoogleMaps;
 
@@ -25,20 +32,21 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         platformView.CameraMoveCanceled += NativeMap_CameraMoveCanceled;
         platformView.CameraMoveStarted += NativeMap_CameraMoveStarted;
 
-        VirtualView.MoveCameraActionInternal = MoveCamera;
-        VirtualView.AnimateCameraFuncInternal = AnimateCamera;
-        VirtualView.ResetMinMaxZoomActionInternal = ResetMinMaxZoom;
+        virtualView.MoveCameraActionInternal = MoveCamera;
+        virtualView.AnimateCameraFuncInternal = AnimateCamera;
+        virtualView.ResetMinMaxZoomActionInternal = ResetMinMaxZoom;
 
-        NativeView.SetMinZoomPreference(VirtualView!.MinZoom);
-        NativeView.SetMaxZoomPreference(VirtualView!.MaxZoom);
+        platformView.SetMinZoomPreference(virtualView.MinZoom);
+        platformView.SetMaxZoomPreference(virtualView.MaxZoom);
 
         OnVisibleRegionChanged();
     }
 
     public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        VirtualView!.MoveCameraActionInternal = null;
-        VirtualView.AnimateCameraFuncInternal = null;
+        virtualView.MoveCameraActionInternal = null;
+        virtualView.AnimateCameraFuncInternal = null;
+        virtualView.ResetMinMaxZoomActionInternal = null;
 
         platformView.CameraChange -= NativeMap_CameraChange;
         platformView.CameraIdle -= NativeMap_CameraIdle;
@@ -106,7 +114,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         NativeView!.ResetMinMaxZoomPreference();
     }
 
-    protected virtual Task AnimateCamera(CameraUpdate update, int durationMils = 300)
+    protected virtual Task AnimateCamera(VCameraUpdate update, int durationMils = 300)
     {
         TaskCompletionSource tcs = new();
 
@@ -115,7 +123,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         return tcs.Task;
     }
 
-    protected virtual void MoveCamera(CameraUpdate update)
+    protected virtual void MoveCamera(VCameraUpdate update)
     {
         NativeView!.MoveCamera(update.ToNative(Handler!.Context));
     }
@@ -138,5 +146,45 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         {
             _tcs.SetResult();
         }
+    }
+}
+
+public static class CameraExtensions
+{
+    public static VCameraPosition ToCrossPlatform(this NCameraPosition position)
+    {
+        return new()
+        {
+            Target = position.Target.ToCrossPlatformPoint(),
+            Zoom = position.Zoom,
+            Tilt = position.Tilt,
+            Bearing = position.Bearing
+        };
+    }
+
+    public static NCameraUpdate ToNative(this VCameraUpdate cameraUpdate, Context context)
+    {
+        return new CameraUpadateToNativeConverter().ToNative(cameraUpdate, context);
+    }
+
+    public static NCameraPosition ToNative(this VCameraPosition position)
+    {
+        return new(
+            position.Target.ToLatLng(),
+            position.Zoom,
+            position.Tilt,
+            position.Bearing
+        );
+    }
+
+    public static MapRegion ToCrossPlatform(this VisibleRegion visibleRegion)
+    {
+        return new(
+            visibleRegion.LatLngBounds.ToCrossPlatform(),
+            visibleRegion.FarLeft.ToCrossPlatformPoint(),
+            visibleRegion.FarRight.ToCrossPlatformPoint(),
+            visibleRegion.NearLeft.ToCrossPlatformPoint(),
+            visibleRegion.NearRight.ToCrossPlatformPoint()
+        );
     }
 }

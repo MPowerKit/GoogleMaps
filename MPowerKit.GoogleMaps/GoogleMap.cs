@@ -732,6 +732,22 @@ public class GoogleMap : View
             );
     #endregion
 
+    #region IndoorLevelPickerEnabled
+    public bool IndoorLevelPickerEnabled
+    {
+        get => (bool)GetValue(IndoorLevelPickerEnabledProperty);
+        set => SetValue(IndoorLevelPickerEnabledProperty, value);
+    }
+
+    public static readonly BindableProperty IndoorLevelPickerEnabledProperty =
+        BindableProperty.Create(
+            nameof(IndoorLevelPickerEnabled),
+            typeof(bool),
+            typeof(GoogleMap),
+            true
+            );
+    #endregion
+
     #region CompassEnabled
     public bool CompassEnabled
     {

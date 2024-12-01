@@ -42,6 +42,7 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHa
         NativeView.UiSettings.TiltGesturesEnabled = VirtualView.TiltGesturesEnabled;
         NativeView.UiSettings.RotateGesturesEnabled = VirtualView.RotateGesturesEnabled;
         NativeView.UiSettings.MyLocationButtonEnabled = VirtualView.MyLocationButtonEnabled;
+        NativeView.UiSettings.IndoorLevelPickerEnabled = VirtualView.IndoorLevelPickerEnabled;
     }
 
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
@@ -82,6 +83,10 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHa
         else if (e.PropertyName == GoogleMap.MyLocationButtonEnabledProperty.PropertyName)
         {
             NativeView!.UiSettings.MyLocationButtonEnabled = VirtualView!.MyLocationButtonEnabled;
+        }
+        else if (e.PropertyName == GoogleMap.IndoorLevelPickerEnabledProperty.PropertyName)
+        {
+            NativeView!.UiSettings.IndoorLevelPickerEnabled = VirtualView!.IndoorLevelPickerEnabled;
         }
     }
 }
