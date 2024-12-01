@@ -136,6 +136,10 @@ public class GoogleMap : View
             Reset(PinsSource, ref pins);
             Pins = pins;
         }
+        else if (propertyName == SelectedPinProperty.PropertyName)
+        {
+            SelectedPin?.HideInfoWindow();
+        }
     }
 
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -210,15 +214,7 @@ public class GoogleMap : View
             SelectedPinData = selectedPinData;
         }
 
-        foreach (var pin in Pins.Where(p => p != SelectedPin))
-        {
-            pin.HideInfoWindow();
-        }
-
-        if (SelectedPin?.ShowInfoWindowOnPinSelection is true)
-        {
-            SelectedPin.ShowInfoWindow();
-        }
+        SelectedPin?.ShowInfoWindow();
     }
 
     protected virtual void Reset<T>(IEnumerable source, ref IEnumerable<T>? mapObjects)
@@ -483,6 +479,8 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendMapClick(Point point)
     {
+        SelectedPin = null;
+
         MapClick?.Invoke(point);
 
         if (MapClickedCommand?.CanExecute(point) is true)

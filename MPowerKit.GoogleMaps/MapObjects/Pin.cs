@@ -11,8 +11,14 @@ namespace MPowerKit.GoogleMaps;
 
 public class Pin : VisualElement
 {
+    public bool InfoWindowShown { get; protected set; }
+
     public virtual void ShowInfoWindow()
     {
+        if (!ShowInfoWindowOnPinSelection) return;
+
+        InfoWindowShown = true;
+
         var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
 #if ANDROID
         native?.ShowInfoWindow();
@@ -28,13 +34,17 @@ public class Pin : VisualElement
 
     public virtual void HideInfoWindow()
     {
+        if (!InfoWindowShown) return;
+
+        InfoWindowShown = false;
+
         var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
 #if ANDROID
         native?.HideInfoWindow();
 #endif
 
 #if IOS
-        if (native?.Map is not null)
+        if (native?.Map?.SelectedMarker is not null)
         {
             native.Map.SelectedMarker = null;
         }

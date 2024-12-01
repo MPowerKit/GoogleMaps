@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+            xmlns:vm="clr-namespace:Sample.ViewModels"
+            x:Class="Sample.Views.PinsPage"
+            Title="Pins Page"
+            x:DataType="vm:PinsPageViewModel">
+    <ContentPage Title="Pins">
+        <Grid RowDefinitions="Auto,*">
+            <VerticalStackLayout>
+                <Grid ColumnDefinitions="*,*">
+                    <Entry Text="{Binding Title, Mode=TwoWay}"
+                           Placeholder="Title" />
+                    <Entry Grid.Column="1"
+                           Text="{Binding Snippet, Mode=TwoWay}"
+                           Placeholder="Snippet" />
+                </Grid>
+                <Grid ColumnDefinitions="*,*,*">
+                    <HorizontalStackLayout>
+                        <CheckBox IsChecked="{Binding Clickable, Mode=TwoWay}" />
+                        <Label Text="Is clickable"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="1">
+                        <CheckBox IsChecked="{Binding CanBeSelected, Mode=TwoWay}" />
+                        <Label Text="Can be selected"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Grid Grid.Column="2"
+                          ColumnDefinitions="Auto,*">
+                        <CheckBox IsChecked="{Binding ShowInfoWindowOnPinSelection, Mode=TwoWay}" />
+                        <Label Text="Show info window on pin selection"
+                               LineBreakMode="WordWrap"
+                               VerticalOptions="Center"
+                               Grid.Column="1" />
+                    </Grid>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*,*">
+                    <HorizontalStackLayout>
+                        <CheckBox IsChecked="{Binding Draggable, Mode=TwoWay}" />
+                        <Label Text="Draggable"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="1">
+                        <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" />
+                        <Label Text="Is visible"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="2">
+                        <CheckBox IsChecked="{Binding IsFlat, Mode=TwoWay}" />
+                        <Label Text="Is flat"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Grid>
+                <Grid ColumnDefinitions="*,*">
+                    <VerticalStackLayout>
+                        <Label Text="Latitude" />
+                        <Slider Value="{Binding PositionX, Mode=TwoWay}"
+                                Minimum="-90"
+                                Maximum="90" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Longitude" />
+                        <Slider Value="{Binding PositionY, Mode=TwoWay}"
+                                Minimum="-180"
+                                Maximum="180" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Grid ColumnDefinitions="*,*">
+                    <VerticalStackLayout>
+                        <Label Text="Anchor X" />
+                        <Slider Value="{Binding AnchorX, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="1" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Anchor Y" />
+                        <Slider Value="{Binding AnchorY, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="1" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Grid ColumnDefinitions="*,*">
+                    <VerticalStackLayout>
+                        <Label Text="Info Window Anchor X" />
+                        <Slider Value="{Binding InfoWindowAnchorX, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="1" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Info Window Anchor Y" />
+                        <Slider Value="{Binding InfoWindowAnchorY, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="1" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Grid ColumnDefinitions="*,*,*">
+                    <Button Text="Change icon"
+                            Command="{Binding ChangeIconCommand}" />
+
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Opacity" />
+                        <Slider Value="{Binding Opacity, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="1" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="2">
+                        <Label Text="Rotation" />
+                        <Slider Value="{Binding Rotation, Mode=TwoWay}"
+                                Minimum="0"
+                                Maximum="360" />
+                    </VerticalStackLayout>
+                </Grid>
+            </VerticalStackLayout>
+            <gm:GoogleMap Pins="{Binding Pins}"
+                          Grid.Row="1" />
+        </Grid>
+    </ContentPage>
+    <ContentPage Title="PinsSource">
+        <gm:GoogleMap />
+    </ContentPage>
+</TabbedPage>

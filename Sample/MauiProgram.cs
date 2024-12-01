@@ -1,4 +1,6 @@
-﻿using MPowerKit.GoogleMaps;
+﻿using Controls.UserDialogs.Maui;
+
+using MPowerKit.GoogleMaps;
 
 namespace Sample;
 
@@ -9,6 +11,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseUserDialogs()
 #if IOS
 #else
             .UseMPowerKitGoogleMaps()

@@ -43,17 +43,16 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+		<PackageReference Include="Controls.UserDialogs.Maui" Version="1.7.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android'">
-		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx">
-			<Version>1.9.2.1</Version>
+		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.9.2.1">
 		</PackageReference>
-		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx">
-			<Version>1.4.4</Version>
+		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.4">
 		</PackageReference>
-		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
-			<Version>2.8.5.1</Version>
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.8.5.1">
 		</PackageReference>
 		<!--<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core">
 			<Version>2.8.5.1</Version>
@@ -63,5 +62,4 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\MPowerKit.GoogleMaps\MPowerKit.GoogleMaps.csproj" />
 	</ItemGroup>
-
 </Project>

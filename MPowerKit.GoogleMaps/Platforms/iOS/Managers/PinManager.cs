@@ -123,6 +123,8 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     private void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
+        if (VirtualView!.SelectedPin is null) return;
+
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowClose(pin);
@@ -301,6 +303,13 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     protected virtual async Task SetPinIcon(VPin pin, NPin nPin)
     {
+        if (pin.Icon is null)
+        {
+            nPin.Icon = null;
+            nPin.IconView = null;
+            return;
+        }
+
         try
         {
             if (pin.Icon is ViewImageSource viewSource)
