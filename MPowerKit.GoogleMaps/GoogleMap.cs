@@ -32,6 +32,7 @@ public class GoogleMap : View
     public event Action? CameraMove;
     public event Action<IndoorBuilding?>? IndoorBuildingFocused;
     public event Action<IndoorLevel?>? IndoorLevelActivated;
+    public event Action<MapRegion>? VisibleRegionChanged;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Action<CameraUpdate>? MoveCameraActionInternal;
@@ -463,15 +464,15 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendInfoWindowClose(Pin pin)
     {
-        //Not sure if this needs to be here
-        //if (SelectedPin is null || SelectedPin != pin) return;
-
-        //SelectedPin = null;
-
         InfoWindowClose?.Invoke(pin);
 
         if (InfoWindowClosedCommand?.CanExecute(pin) is true)
             InfoWindowClosedCommand.Execute(pin);
+
+        // Not sure if this needs to be here
+        //if (SelectedPin is null || SelectedPin != pin) return;
+
+        //SelectedPin = null;
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -486,12 +487,12 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendMapClick(Point point)
     {
-        SelectedPin = null;
-
         MapClick?.Invoke(point);
 
         if (MapClickedCommand?.CanExecute(point) is true)
             MapClickedCommand.Execute(point);
+
+        SelectedPin = null;
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -507,6 +508,11 @@ public class GoogleMap : View
     public virtual void SendVisibleRegionChanged(MapRegion region)
     {
         VisibleRegion = region;
+
+        VisibleRegionChanged?.Invoke(region);
+
+        if (VisibleRegionChangedCommand?.CanExecute(region) is true)
+            VisibleRegionChangedCommand.Execute(region);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1649,6 +1655,20 @@ public class GoogleMap : View
     public static readonly BindableProperty IndoorLevelActivatedCommandProperty =
         BindableProperty.Create(
             nameof(IndoorLevelActivatedCommand),
+            typeof(ICommand),
+            typeof(GoogleMap));
+    #endregion
+
+    #region VisibleRegionChangedCommand
+    public ICommand VisibleRegionChangedCommand
+    {
+        get => (ICommand)GetValue(VisibleRegionChangedCommandProperty);
+        set => SetValue(VisibleRegionChangedCommandProperty, value);
+    }
+
+    public static readonly BindableProperty VisibleRegionChangedCommandProperty =
+        BindableProperty.Create(
+            nameof(VisibleRegionChangedCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion
