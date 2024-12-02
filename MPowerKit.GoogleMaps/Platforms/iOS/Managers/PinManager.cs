@@ -123,9 +123,9 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     private void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
-        if (VirtualView!.SelectedPin is null) return;
-
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+
+        if (!pin.InfoWindowShown) return;
 
         VirtualView!.SendInfoWindowClose(pin);
     }

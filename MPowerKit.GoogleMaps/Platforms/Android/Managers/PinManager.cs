@@ -73,7 +73,11 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void NativeMap_PinClick(object? sender, GMap.MarkerClickEventArgs e)
     {
+        e.Handled = true;
+
         var pin = Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+
+        if (!pin.IsEnabled) return;
 
         VirtualView!.SendPinClick(pin);
     }
@@ -187,7 +191,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void ClearPins()
     {
-        RemovePinsFromNativeMap([.. Pins]);
+        RemovePinsFromNativeMap([..Pins]);
     }
 
     protected virtual void InitPins()
@@ -285,7 +289,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
         foreach (var pin in pins)
         {
-            var npin = NativeView!.AddMarker(pin.ToNative(context));
+            var npin = NativeView!.AddMarker(pin.ToNative());
 
             NativeObjectAttachedProperty.SetNativeObject(pin, npin);
             SetPinIcon(pin, npin);
@@ -295,8 +299,14 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         }
     }
 
-    protected virtual async Task SetPinIcon(Pin pin, NPin nPin)
+    protected virtual async Task SetPinIcon(VPin pin, NPin nPin)
     {
+        if (pin.Icon is null)
+        {
+            nPin.SetIcon(null);
+            return;
+        }
+
         try
         {
             nPin.SetIcon(await pin.Icon.ToBitmapDescriptor(Handler!.MauiContext!));
@@ -357,9 +367,9 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 
 public static class PinExtensions
 {
-    public static MarkerOptions ToNative(this VPin pin, Context context)
+    public static MarkerOptions ToNative(this VPin pin)
     {
-        var options = new MarkerOptions();
+        var options = new AdvancedMarkerOptions();
 
         options.SetPosition(pin.Position.ToLatLng());
         options.SetAlpha((float)pin.Opacity);

@@ -46,6 +46,8 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Func<Task<Stream?>>? TakeSnapshotFuncInternal;
 
+    protected Pin PrevSelectedPin { get; set; }
+
     public GoogleMap()
     {
         MapCoordsToScreenLocationFunc = MapCoordsToScreenLocation;
@@ -138,7 +140,7 @@ public class GoogleMap : View
         }
         else if (propertyName == SelectedPinProperty.PropertyName)
         {
-            SelectedPin?.HideInfoWindow();
+            PrevSelectedPin = SelectedPin;
         }
     }
 
@@ -202,6 +204,8 @@ public class GoogleMap : View
         }
         else if (propertyName == SelectedPinProperty.PropertyName)
         {
+            PrevSelectedPin?.HideInfoWindow();
+
             PinSelectionChanged();
         }
     }
@@ -459,7 +463,10 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendInfoWindowClose(Pin pin)
     {
-        SelectedPin = null;
+        //Not sure if this needs to be here
+        //if (SelectedPin is null || SelectedPin != pin) return;
+
+        //SelectedPin = null;
 
         InfoWindowClose?.Invoke(pin);
 
@@ -885,7 +892,7 @@ public class GoogleMap : View
             nameof(MinZoom),
             typeof(float),
             typeof(GoogleMap),
-            3f
+            1f
             );
     #endregion
 

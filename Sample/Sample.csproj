@@ -13,7 +13,7 @@
 		<ApplicationTitle>Sample</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId></ApplicationId>
+		<ApplicationId>com.companyname.appname</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

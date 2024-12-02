@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             x:Class="Sample.Views.PinsSourcePage"
+             Title="PinsSource"
+             x:DataType="vm:PinsSourcePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:PinsSourcePageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <gm:GoogleMap PinsSource="{Binding Items}"
+                      Grid.Row="1" >
+            <gm:GoogleMap.InfoWindowTemplate>
+                <vm:PinTemplateSelector>
+                    <vm:PinTemplateSelector.CarTemplate>
+                        <DataTemplate x:DataType="vm:PinDataObject">
+                            <Border Stroke="Red"
+                                    StrokeThickness="4"
+                                    StrokeShape="RoundRectangle 20"
+                                    Background="Aqua"
+                                    Padding="15"
+                                    HorizontalOptions="Center">
+                                <VerticalStackLayout>
+                                    <Label FontAttributes="Bold"
+                                           FontSize="20"
+                                           TextColor="Black"
+                                           Text="This is Info Window for car"
+                                           HorizontalOptions="Center" />
+                                    <Grid ColumnDefinitions="Auto,*"
+                                          ColumnSpacing="15">
+                                        <Image Source="map_pin" />
+                                        <VerticalStackLayout Grid.Column="1">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="18"
+                                                   TextColor="Black" />
+                                            <Label Text="{Binding Adress}"
+                                                   FontSize="16"
+                                                   TextColor="Black" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </vm:PinTemplateSelector.CarTemplate>
+                    <!--<vm:PinTemplateSelector.LocationTemplate>
+                        <DataTemplate x:DataType="vm:PinDataObject">
+
+                        </DataTemplate>
+                    </vm:PinTemplateSelector.LocationTemplate>-->
+                </vm:PinTemplateSelector>
+            </gm:GoogleMap.InfoWindowTemplate>
+            <gm:GoogleMap.PinItemTemplate>
+                <vm:PinTemplateSelector>
+                    <vm:PinTemplateSelector.CarTemplate>
+                        <DataTemplate x:DataType="vm:PinDataObject">
+                            <gm:Pin Position="{Binding Location, Converter={StaticResource LocationToPointConverter}}"
+                                    Snippet="{Binding Adress}"
+                                    Title="{Binding Name}"
+                                    Rotation="{Binding Orientation}"
+                                    Icon="car_pin"
+                                    Anchor="0.5,0.5" />
+                        </DataTemplate>
+                    </vm:PinTemplateSelector.CarTemplate>
+                    <vm:PinTemplateSelector.LocationTemplate>
+                        <DataTemplate x:DataType="vm:PinDataObject">
+                            <gm:Pin Position="{Binding Location, Converter={StaticResource LocationToPointConverter}, Mode=TwoWay}"
+                                    Snippet="{Binding Adress}"
+                                    Title="{Binding Name}">
+                                <gm:Pin.Icon>
+                                    <gm:ViewImageSource>
+                                        <gm:ViewImageSource.View>
+                                            <Border Stroke="#C49B33"
+                                                    StrokeThickness="4"
+                                                    StrokeShape="RoundRectangle 40,0,0,40"
+                                                    Background="#2B0B98"
+                                                    Padding="16,8"
+                                                    HorizontalOptions="Center">
+                                                <Label Text="{Binding Orientation}"
+                                                       TextColor="White"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold" />
+                                            </Border>
+                                        </gm:ViewImageSource.View>
+                                    </gm:ViewImageSource>
+                                </gm:Pin.Icon>
+                            </gm:Pin>
+                        </DataTemplate>
+                    </vm:PinTemplateSelector.LocationTemplate>
+                    <vm:PinTemplateSelector.DraggableTemplate>
+                        <DataTemplate x:DataType="vm:PinDataObject">
+                            <gm:Pin Position="{Binding Location, Converter={StaticResource LocationToPointConverter}, Mode=TwoWay}"
+                                    Title="{Binding Name}"
+                                    Draggable="True"
+                                    Icon="{Binding Location, Converter={StaticResource LocationToViewImageSourceConverter}}">
+                            </gm:Pin>
+                        </DataTemplate>
+                    </vm:PinTemplateSelector.DraggableTemplate>
+                </vm:PinTemplateSelector>
+            </gm:GoogleMap.PinItemTemplate>
+        </gm:GoogleMap>
+    </Grid>
+</ContentPage>

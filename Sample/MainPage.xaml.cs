@@ -86,6 +86,6 @@ public partial class MainPage
 
     private void Button_Clicked(System.Object sender, System.EventArgs e)
     {
-        this.Navigation.PushAsync(new NavigationPage(new PinsPage()));
+        this.Navigation.PushAsync(new NavigationPage(new PinsTabbedPage()));
     }
 }

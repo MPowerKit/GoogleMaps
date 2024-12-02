@@ -107,10 +107,10 @@ public partial class PinsPageViewModel : ObservableObject
                 _pin.Icon = "map_pin.png";
                 break;
             case "From view":
-                _pin.Icon = new ViewImageSource() { View = new ContentView() { Content = new Label() { Text = "This is pin from view", TextColor = Colors.Red } } };
+                _pin.Icon = (ViewImageSource)new ContentView() { Content = new Label() { Text = "This is pin from view", TextColor = Colors.Red } };
                 break;
             case "From url":
-                _pin.Icon = "https://via.placeholder.com/150/FFFF00/000000?Text=google.com";
+                _pin.Icon = "https://picsum.photos/60/90";
                 break;
         }
     }
