@@ -11,8 +11,20 @@
     </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Label Text="{Binding Status}" />
+        </VerticalStackLayout>
         <gm:GoogleMap PinsSource="{Binding Items}"
-                      Grid.Row="1" >
+                      PinClickedCommand="{Binding PinClickedCommand}"
+                      PinDragStartedCommand="{Binding PinDragStartedCommand}"
+                      PinDraggingCommand="{Binding PinDragCommand}"
+                      PinDragEndedCommand="{Binding PinDragEndedCommand}"
+                      SelectedPin="{Binding SelectedPin}"
+                      SelectedPinData="{Binding SelectedPinData}"
+                      InfoWindowClickedCommand="{Binding InfoWindowClickedCommand}"
+                      InfoWindowLongClickedCommand="{Binding InfoWindowLongClickedCommand}"
+                      InfoWindowClosedCommand="{Binding InfoWindowClosedCommand}"
+                      Grid.Row="1">
             <gm:GoogleMap.InfoWindowTemplate>
                 <vm:PinTemplateSelector>
                     <vm:PinTemplateSelector.CarTemplate>
@@ -45,11 +57,6 @@
                             </Border>
                         </DataTemplate>
                     </vm:PinTemplateSelector.CarTemplate>
-                    <!--<vm:PinTemplateSelector.LocationTemplate>
-                        <DataTemplate x:DataType="vm:PinDataObject">
-
-                        </DataTemplate>
-                    </vm:PinTemplateSelector.LocationTemplate>-->
                 </vm:PinTemplateSelector>
             </gm:GoogleMap.InfoWindowTemplate>
             <gm:GoogleMap.PinItemTemplate>

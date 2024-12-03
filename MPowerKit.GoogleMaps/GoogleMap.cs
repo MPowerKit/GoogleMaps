@@ -17,7 +17,7 @@ public class GoogleMap : View
     public event Action<GroundOverlay>? GroundOverlayClick;
     public event Action<Pin>? PinClick;
     public event Action<Pin>? PinDragStart;
-    public event Action<Pin>? PinDrag;
+    public event Action<Pin>? PinDragging;
     public event Action<Pin>? PinDragEnd;
     public event Action<Pin>? InfoWindowClick;
     public event Action<Pin>? InfoWindowLongClick;
@@ -412,8 +412,10 @@ public class GoogleMap : View
 
         PinClick?.Invoke(pin);
 
-        if (PinClickedCommand?.CanExecute(pin) is true)
-            PinClickedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (PinClickedCommand?.CanExecute(parameter) is true)
+            PinClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -421,17 +423,21 @@ public class GoogleMap : View
     {
         PinDragStart?.Invoke(pin);
 
-        if (PinDragStartedCommand?.CanExecute(pin) is true)
-            PinDragStartedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (PinDragStartedCommand?.CanExecute(parameter) is true)
+            PinDragStartedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendPinDrag(Pin pin)
+    public virtual void SendPinDragging(Pin pin)
     {
-        PinDrag?.Invoke(pin);
+        PinDragging?.Invoke(pin);
 
-        if (PinDraggedCommand?.CanExecute(pin) is true)
-            PinDraggedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (PinDraggingCommand?.CanExecute(parameter) is true)
+            PinDraggingCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -439,8 +445,10 @@ public class GoogleMap : View
     {
         PinDragEnd?.Invoke(pin);
 
-        if (PinDraggedCommand?.CanExecute(pin) is true)
-            PinDraggedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (PinDragEndedCommand?.CanExecute(parameter) is true)
+            PinDragEndedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -448,8 +456,10 @@ public class GoogleMap : View
     {
         InfoWindowClick?.Invoke(pin);
 
-        if (InfoWindowClickedCommand?.CanExecute(pin) is true)
-            InfoWindowClickedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (InfoWindowClickedCommand?.CanExecute(parameter) is true)
+            InfoWindowClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -457,8 +467,10 @@ public class GoogleMap : View
     {
         InfoWindowLongClick?.Invoke(pin);
 
-        if (InfoWindowLongClickedCommand?.CanExecute(pin) is true)
-            InfoWindowLongClickedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (InfoWindowLongClickedCommand?.CanExecute(parameter) is true)
+            InfoWindowLongClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -466,8 +478,10 @@ public class GoogleMap : View
     {
         InfoWindowClose?.Invoke(pin);
 
-        if (InfoWindowClosedCommand?.CanExecute(pin) is true)
-            InfoWindowClosedCommand.Execute(pin);
+        var parameter = pin.BindingContext ?? pin;
+
+        if (InfoWindowClosedCommand?.CanExecute(parameter) is true)
+            InfoWindowClosedCommand.Execute(parameter);
 
         // Not sure if this needs to be here
         //if (SelectedPin is null || SelectedPin != pin) return;
@@ -1332,7 +1346,8 @@ public class GoogleMap : View
         BindableProperty.Create(
             nameof(SelectedPin),
             typeof(Pin),
-            typeof(GoogleMap)
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.TwoWay
             );
     #endregion
 
@@ -1347,7 +1362,8 @@ public class GoogleMap : View
         BindableProperty.Create(
             nameof(SelectedPinData),
             typeof(object),
-            typeof(GoogleMap)
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.TwoWay
             );
     #endregion
 
@@ -1450,15 +1466,15 @@ public class GoogleMap : View
     #endregion
 
     #region PinDraggedCommand
-    public ICommand PinDraggedCommand
+    public ICommand PinDraggingCommand
     {
-        get => (ICommand)GetValue(PinDraggedCommandProperty);
-        set => SetValue(PinDraggedCommandProperty, value);
+        get => (ICommand)GetValue(PinDraggingCommandProperty);
+        set => SetValue(PinDraggingCommandProperty, value);
     }
 
-    public static readonly BindableProperty PinDraggedCommandProperty =
+    public static readonly BindableProperty PinDraggingCommandProperty =
         BindableProperty.Create(
-            nameof(PinDraggedCommand),
+            nameof(PinDraggingCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion

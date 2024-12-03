@@ -97,7 +97,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
-        VirtualView!.SendPinDrag(pin);
+        VirtualView!.SendPinDragging(pin);
     }
 
     protected virtual void PlatformView_MarkerDragEnd(object? sender, GMap.MarkerDragEndEventArgs e)

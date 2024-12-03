@@ -8,6 +8,8 @@
                              Spacing="10">
             <Button Text="Pins"
                     Clicked="Button_Clicked" />
+            <Button Text="Circles"
+                    Clicked="Button_Clicked_1" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

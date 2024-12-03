@@ -88,4 +88,9 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new PinsTabbedPage()));
     }
+
+    private void Button_Clicked_1(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new CirclesTabbedPage()));
+    }
 }

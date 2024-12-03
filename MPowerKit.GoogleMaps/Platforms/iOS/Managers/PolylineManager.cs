@@ -232,6 +232,7 @@ public static class PolylineExtensions
         native.StrokeWidth = (float)polyline.StrokeThickness;
         native.Tappable = polyline.IsEnabled;
         native.Spans = polyline.ToSpans();
+
         if (polyline.IsVisible)
         {
             native.Map = map;

@@ -233,6 +233,7 @@ public static class PolygonExtensions
         native.Tappable = polygon.IsEnabled;
         native.StrokeColor = (polygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
         native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        
         if (polygon.IsVisible)
         {
             native.Map = map;

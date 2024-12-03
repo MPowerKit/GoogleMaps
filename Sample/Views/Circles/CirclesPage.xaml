@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             x:Class="Sample.Views.CirclesPage"
+             Title="Circles"
+             x:DataType="vm:CirclesPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:CirclesPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*,*">
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" />
+                    <Label Text="Is visible"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1">
+                    <CheckBox IsChecked="{Binding Clickable, Mode=TwoWay}" />
+                    <Label Text="Is clickable"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Stroke thickness" />
+                    <Slider Value="{Binding StrokeThickness, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="20" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout>
+                    <Label Text="Latitude" />
+                    <Slider Value="{Binding CenterX, Mode=TwoWay}"
+                            Minimum="-90"
+                            Maximum="90" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="Longitude" />
+                    <Slider Value="{Binding CenterY, Mode=TwoWay}"
+                            Minimum="-180"
+                            Maximum="180" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Radius" />
+                    <Slider Value="{Binding Radius, Mode=TwoWay}"
+                            Minimum="1"
+                            Maximum="6000000" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*">
+                <VerticalStackLayout>
+                    <Label Text="Fill Color" />
+                    <Slider Value="{Binding FillAlpha, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding FillRed, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding FillGreen, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding FillBlue, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="Stroke Color" />
+                    <Slider Value="{Binding StrokeAlpha, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeRed, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeGreen, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeBlue, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+        <gm:GoogleMap Circles="{Binding Circles}"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>
