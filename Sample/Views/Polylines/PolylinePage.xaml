@@ -18,7 +18,7 @@
                 Minimum="0"
                 Maximum="10" />
             
-            <Grid ColumnDefinitions="*,*">
+            <Grid ColumnDefinitions="*,*, *">
                 <HorizontalStackLayout>
                     <CheckBox IsChecked="{Binding LineEnabled, Mode=TwoWay}" />
                     <Label Text="Is enabled"
@@ -30,23 +30,81 @@
                     <Label Text="Is visible"
                         VerticalOptions="Center" />
                 </HorizontalStackLayout>
+                <HorizontalStackLayout Grid.Column="2">
+                    <CheckBox IsChecked="{Binding LineGradient, Mode=TwoWay}" />
+                    <Label Text="Use gradient"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Grid>
+
+
+            <VerticalStackLayout IsVisible="{Binding LineStroke}">
+                <Label Text="Stroke color" />
+                <Slider Value="{Binding FillAlpha, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                <Slider Value="{Binding FillRed, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                <Slider Value="{Binding FillGreen, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                <Slider Value="{Binding FillBlue, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+            </VerticalStackLayout>
+            
+            <Grid ColumnDefinitions="*,*" IsVisible="{Binding LineGradient}">
+                <VerticalStackLayout>
+                    <Label Text="Gradient color A" />
+                    <Slider Value="{Binding GradientAAlpha, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientARed, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientAGreen, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientABlue, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="Gradient color B" />
+                    <Slider Value="{Binding GradientBAlpha, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientBRed, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientBGreen, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                    <Slider Value="{Binding GradientBBlue, Mode=TwoWay}"
+                        Minimum="0"
+                        Maximum="1" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" Padding="5" RowSpacing="5" ColumnSpacing="5">
+                <Button Text="Change cap" Grid.Row="0" Grid.Column="0"
+                    IsVisible="{Binding CapButtonsVisible}"
+                    Command="{Binding ChangeCapCommand}" />
+                <Button Text="Change joint" Grid.Row="0" Grid.Column="1"
+                    IsVisible="{Binding CapButtonsVisible}"
+                    Command="{Binding ChangeJointCommand}" />
+                <Button Text="Dashed pattern" Grid.Row="1" Grid.Column="0"
+                    Command="{Binding ChangeDashedStateCommand}" />
+                <Button Text="Randomize line" Grid.Row="1" Grid.Column="1"
+                    Command="{Binding RandomizeLineCommand}" />
             </Grid>
             <VerticalStackLayout Spacing="5">
                 <HorizontalStackLayout Spacing="5">
-                    <Button Text="Change cap"
-                        IsVisible="{Binding CapButtonsVisible}"
-                        Command="{Binding ChangeCapCommand}" />
-                    <Button Text="Change joint"
-                        IsVisible="{Binding CapButtonsVisible}"
-                        Command="{Binding ChangeJointCommand}" />
-                    <Button Text="Change Z Index"
-                        Command="{Binding ChangeZIndexCommand}" />
                     
                 </HorizontalStackLayout>
-                    <Button Text="Gradient"
-                        Command="{Binding ChangeGradientCommand}" />
-                    <Button Text="Dashed pattern"
-                        Command="{Binding ChangeDashedStateCommand}" />
+                    
                 <HorizontalStackLayout>
                     
                 </HorizontalStackLayout>

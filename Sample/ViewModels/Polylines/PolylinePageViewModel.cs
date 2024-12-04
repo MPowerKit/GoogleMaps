@@ -3,28 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using Controls.UserDialogs.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Sample.ViewModels
 {
     public partial class PolylinePageViewModel : ObservableObject
     {
         private readonly Polyline _polyline = new Polyline();
-        private readonly Polyline _polyline2 = new Polyline();
-        private List<Point> _pointsForPolyline;
-        private List<Point> _pointsForPolyline2;
-        private Dictionary<int, Color> _randomColors = new Dictionary<int, Color>()
-        {
-            {1, Colors.Green },
-            {2, Colors.DimGray },
-            {3, Colors.Goldenrod },
-            {4, Colors.LightSlateGray },
-            {5, Colors.MintCream },
-            {6, Colors.MediumBlue },
-            {7, Colors.Yellow },
-            {8, Colors.Violet },
-            {9, Colors.Tomato },
-            {10, Colors.Sienna }
-        };
 
 
         [ObservableProperty]
@@ -32,29 +17,122 @@ namespace Sample.ViewModels
         [ObservableProperty]
         private double _lineWidth;
         [ObservableProperty]
+        private bool _lineGradient;
+        [ObservableProperty]
+        private bool _lineStroke;
+        [ObservableProperty]
         private bool _lineEnabled;
         [ObservableProperty]
         private bool _lineVisible;
         [ObservableProperty]
         private bool _capButtonsVisible;
+
+        #region stroke
+        [ObservableProperty]
+        private float _fillAlpha;
+        partial void OnFillAlphaChanged(float oldValue, float newValue)
+        {
+            var color = (_polyline.Stroke as SolidColorBrush).Color;
+            _polyline.Stroke = Color.FromRgba(color.Red, color.Green, color.Blue, newValue);
+        }
+
+        [ObservableProperty]
+        private float _fillRed;
+        partial void OnFillRedChanged(float oldValue, float newValue)
+        {
+            var color = (_polyline.Stroke as SolidColorBrush).Color;
+            _polyline.Stroke = Color.FromRgba(newValue, color.Green, color.Blue, color.Alpha);
+        }
+
+        [ObservableProperty]
+        private float _fillGreen;
+        partial void OnFillGreenChanged(float oldValue, float newValue)
+        {
+            var color = (_polyline.Stroke as SolidColorBrush).Color;
+            _polyline.Stroke = Color.FromRgba(color.Red, newValue, color.Blue, color.Alpha);
+        }
+
+        [ObservableProperty]
+        private float _fillBlue;
+        partial void OnFillBlueChanged(float oldValue, float newValue)
+        {
+            if (_polyline.Stroke == null)
+            {
+                _polyline.Stroke = new SolidColorBrush();
+            }
+            var color = (_polyline.Stroke as SolidColorBrush).Color;
+            _polyline.Stroke = Color.FromRgba(color.Red, color.Green, newValue, color.Alpha);
+        }
+        #endregion
+        #region Gradient
+        [ObservableProperty]
+        private float _gradientAAlpha;
+        partial void OnGradientAAlphaChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, color.Green, color.Blue, newValue);
+        }
+        [ObservableProperty]
+        private float _gradientARed;
+        partial void OnGradientARedChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(newValue, color.Green, color.Blue, color.Alpha);
+        }
+        [ObservableProperty]
+        private float _gradientAGreen;
+        partial void OnGradientAGreenChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, newValue, color.Blue, color.Alpha);
+        }
+        [ObservableProperty]
+        private float _gradientABlue;
+        partial void OnGradientABlueChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, color.Green, newValue, color.Alpha);
+        }
+
+        [ObservableProperty]
+        private float _gradientBAlpha;
+        partial void OnGradientBAlphaChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, color.Green, color.Blue, newValue);
+        }
+        [ObservableProperty]
+        private float _gradientBRed;
+        partial void OnGradientBRedChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(newValue, color.Green, color.Blue, color.Alpha);
+        }
+        [ObservableProperty]
+        private float _gradientBGreen;
+        partial void OnGradientBGreenChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, newValue, color.Blue, color.Alpha);
+        }
+        [ObservableProperty]
+        private float _gradientBBlue;
+        partial void OnGradientBBlueChanged(float oldValue, float newValue)
+        {
+            var stop = (_polyline.Stroke as LinearGradientBrush).GradientStops[0];
+            var color = stop.Color;
+            stop.Color = Color.FromRgba(color.Red, color.Green, newValue, color.Alpha);
+        }
+        #endregion
         public PolylinePageViewModel()
         {
-            _pointsForPolyline = new List<Point>()
-            {
-                new Point(2.538370, -19.699847),
-                new Point(11.241577, -31.460428),
-                new Point(21.004873, -20.016478),
-                new Point(16.205252, -2.330373),
-                new Point(5.651094, -5.406217),
-                new Point(-9.672668, -0.611519)
-            };
-            _pointsForPolyline2 = new List<Point>()
-            {
-                new Point(11.596278, -34.219641),
-                new Point(7.089574, -18.840419),
-                new Point(-6.763039, -25.173040),
-                new Point(-3.041441, -5.001384)
-            };
             SetupPolylines();
         }
         [RelayCommand]
@@ -123,24 +201,6 @@ namespace Sample.ViewModels
             }
         }
         [RelayCommand]
-        private void ChangeZIndex()
-        {
-            int tmpZIndex = _polyline.ZIndex;
-            _polyline.ZIndex = _polyline2.ZIndex;
-            _polyline2.ZIndex = tmpZIndex;
-        }
-        [RelayCommand]
-        private void ChangeGradient()
-        {
-            Random rnd = new Random();
-            int first = rnd.Next(1, 5);
-            int second = rnd.Next(6, 10);
-            var gradientStops = new GradientStopCollection();
-            gradientStops.Add(new GradientStop(_randomColors[first], 0));
-            gradientStops.Add(new GradientStop(_randomColors[second], 1));
-            _polyline2.Stroke = new LinearGradientBrush(gradientStops);
-        }
-        [RelayCommand]
         private void ChangeDashedState()
         {
             if (_polyline.StrokeDashArray.Count == 0)
@@ -153,34 +213,96 @@ namespace Sample.ViewModels
                 _polyline.StrokeDashArray = new DoubleCollection();
             }
         }
+        [RelayCommand]
+        private void RandomizeLine()
+        {
+            SetPolyline();
+        }
         private void SetupPolylines()
         {
+
+            LineGradient = false;
+            LineStroke = true;
 #if IOS
             CapButtonsVisible = false;
 #else
             CapButtonsVisible = true;
 #endif
-            _polyline.ZIndex = 0;
-            _polyline2.ZIndex = 1;
+            _polyline.Stroke = new SolidColorBrush(Colors.Black);
+            FillAlpha = (_polyline.Stroke as SolidColorBrush).Color.Alpha;
+            FillRed = (_polyline.Stroke as SolidColorBrush).Color.Red;
+            FillGreen = (_polyline.Stroke as SolidColorBrush).Color.Green;
+            FillBlue = (_polyline.Stroke as SolidColorBrush).Color.Blue;
+
             LineWidth = _polyline.StrokeThickness;
             _polyline.SetBinding(Polyline.StrokeThicknessProperty, new Binding(nameof(LineWidth), source: this, mode: BindingMode.TwoWay));
-            _polyline2.SetBinding(Polyline.StrokeThicknessProperty, new Binding(nameof(LineWidth), source: this, mode: BindingMode.TwoWay));
             LineEnabled = _polyline.IsEnabled;
             _polyline.SetBinding(Polyline.IsEnabledProperty, new Binding(nameof(LineEnabled), source: this, mode: BindingMode.TwoWay));
             LineVisible = _polyline.IsVisible;
             _polyline.SetBinding(Polyline.IsVisibleProperty, new Binding(nameof(LineVisible), source: this, mode: BindingMode.TwoWay));
+            LineWidth = 6;
+            SetPolyline();
+        }
 
-            foreach (var item in _pointsForPolyline)
+        private void SetPolyline()
+        {
+            _polyline.Points.Clear();
+            Polylines.Clear();
+            int pointCount = GetRandomPointsCount();
+
+            for (int i = 0; i < pointCount; i++)
             {
-                _polyline.Points.Add(item);
+                _polyline.Points.Add(GetRandomPoint());
             }
-            foreach (var item in _pointsForPolyline2)
-            {
-                _polyline2.Points.Add(item);
-            }
-            _polyline2.Stroke = new SolidColorBrush(Colors.Green);
             Polylines.Add(_polyline);
-            Polylines.Add(_polyline2);
+        }
+        private int GetRandomPointsCount()
+        {
+            Random rnd = new Random();
+            return rnd.Next(4,10);
+        }
+        private Point GetRandomPoint()
+        {
+            Random rnd = new Random();
+            double lat = rnd.Next(-90,90);
+            double lon = rnd.Next(-180,180);
+            return new Point(lat, lon);
+        }
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(LineGradient))
+            {
+                if (LineGradient)
+                {
+                    var gradientStops = new GradientStopCollection();
+                    gradientStops.Add(new GradientStop(Colors.Black, 0));
+                    gradientStops.Add(new GradientStop(Colors.Black, 1));
+
+                    _polyline.Stroke = new LinearGradientBrush(gradientStops);
+                    GradientAAlpha = (_polyline.Stroke as LinearGradientBrush).GradientStops[0].Color.Alpha;
+                    GradientARed = (_polyline.Stroke as LinearGradientBrush).GradientStops[0].Color.Red;
+                    GradientAGreen = (_polyline.Stroke as LinearGradientBrush).GradientStops[0].Color.Green;
+                    GradientABlue = (_polyline.Stroke as LinearGradientBrush).GradientStops[0].Color.Blue;
+
+                    GradientBAlpha = (_polyline.Stroke as LinearGradientBrush).GradientStops[1].Color.Alpha;
+                    GradientBRed = (_polyline.Stroke as LinearGradientBrush).GradientStops[1].Color.Red;
+                    GradientBGreen = (_polyline.Stroke as LinearGradientBrush).GradientStops[1].Color.Green;
+                    GradientBBlue = (_polyline.Stroke as LinearGradientBrush).GradientStops[1].Color.Blue;
+                }
+                else
+                {
+                    _polyline.Stroke = new SolidColorBrush(Colors.Black);
+                    FillAlpha = (_polyline.Stroke as SolidColorBrush).Color.Alpha;
+                    FillRed = (_polyline.Stroke as SolidColorBrush).Color.Red;
+                    FillGreen = (_polyline.Stroke as SolidColorBrush).Color.Green;
+                    FillBlue = (_polyline.Stroke as SolidColorBrush).Color.Blue;
+                }
+                
+                LineStroke = !LineGradient;
+            }
+
         }
     }
 }
