@@ -8,28 +8,11 @@ public class LocationToViewImageSourceConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is Sample.Models.Location location)
+        if (value is Sample.Models.Location location
+            && parameter is View view)
         {
-            var stack = new VerticalStackLayout();
-            stack.Children.Add(new Label()
-            {
-                Text = "Drag me",
-                TextColor = Colors.White,
-                FontAttributes = FontAttributes.Bold
-            });
-            stack.Children.Add(new Label()
-            {
-                Text = $"{location.Latitude:F2},{location.Longitude:F2}",
-                TextColor = Colors.White,
-                FontAttributes = FontAttributes.Bold
-            });
-
-            return (ViewImageSource)new ContentView()
-            {
-                Padding = 15,
-                BackgroundColor = Colors.Red,
-                Content = stack
-            };
+            view.BindingContext = $"{location.Latitude:F2},{location.Longitude:F2}";
+            return (ViewImageSource)view;
         }
 
         return null;

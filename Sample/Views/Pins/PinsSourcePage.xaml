@@ -100,8 +100,30 @@
                         <DataTemplate x:DataType="vm:PinDataObject">
                             <gm:Pin Position="{Binding Location, Converter={StaticResource LocationToPointConverter}, Mode=TwoWay}"
                                     Title="{Binding Name}"
-                                    Draggable="True"
-                                    Icon="{Binding Location, Converter={StaticResource LocationToViewImageSourceConverter}}">
+                                    Draggable="True">
+                                <gm:Pin.Icon>
+                                    <Binding Path="Location"
+                                             Converter="{StaticResource LocationToViewImageSourceConverter}">
+                                        <Binding.ConverterParameter>
+                                            <VerticalStackLayout x:DataType="x:String"
+                                                                 Padding="15"
+                                                                 BackgroundColor="Red">
+                                                <Label Text="I am pin"
+                                                       TextColor="White"
+                                                       FontAttributes="Bold"
+                                                       FontSize="20"/>
+                                                 <Label Text="Drag me"
+                                                       TextColor="White"
+                                                       FontAttributes="Bold"
+                                                       FontSize="20"/>
+                                                <Label Text="{Binding}"
+                                                       TextColor="White"
+                                                       FontAttributes="Bold"
+                                                       FontSize="18" />
+                                            </VerticalStackLayout>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </gm:Pin.Icon>
                             </gm:Pin>
                         </DataTemplate>
                     </vm:PinTemplateSelector.DraggableTemplate>
