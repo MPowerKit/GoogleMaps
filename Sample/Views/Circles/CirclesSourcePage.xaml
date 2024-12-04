@@ -12,12 +12,43 @@
 
     <Grid RowDefinitions="Auto,*">
         <gm:GoogleMap CirclesSource="{Binding Items}"
+                      CircleClickedCommand="{Binding CircleClickedCommand}"
                       Grid.Row="1">
-            <!--<gm:GoogleMap.CircleItemTemplate>
-                <vm:PinTemplateSelector>
-                    
-                </vm:PinTemplateSelector>
-            </gm:GoogleMap.CircleItemTemplate>-->
+            <gm:GoogleMap.CircleItemTemplate>
+                <vm:CircleTemplateSelector>
+                    <vm:CircleTemplateSelector.TransparentTemplate>
+                        <DataTemplate x:DataType="vm:CircleDataObject">
+                            <gm:Circle Center="{Binding Location, Converter={StaticResource LocationToPointConverter}}"
+                                       Radius="{Binding Radius}"
+                                       ZIndex="{Binding ZIndex}"
+                                       StrokeThickness="10"
+                                       Fill="#220000FF"
+                                       Stroke="#44FF0000" />
+                        </DataTemplate>
+                    </vm:CircleTemplateSelector.TransparentTemplate>
+                    <vm:CircleTemplateSelector.OpaqueTemplate>
+                        <DataTemplate x:DataType="vm:CircleDataObject">
+                            <gm:Circle Center="{Binding Location, Converter={StaticResource LocationToPointConverter}}"
+                                       Radius="{Binding Radius}"
+                                       ZIndex="{Binding ZIndex}"
+                                       StrokeThickness="10"
+                                       Fill="Green"
+                                       Stroke="Orange" />
+                        </DataTemplate>
+                    </vm:CircleTemplateSelector.OpaqueTemplate>
+                    <vm:CircleTemplateSelector.DisabledTemplate>
+                        <DataTemplate x:DataType="vm:CircleDataObject">
+                            <gm:Circle Center="{Binding Location, Converter={StaticResource LocationToPointConverter}}"
+                                       Radius="{Binding Radius}"
+                                       ZIndex="{Binding ZIndex}"
+                                       StrokeThickness="5"
+                                       IsEnabled="False"
+                                       Fill="Gray"
+                                       Stroke="Purple" />
+                        </DataTemplate>
+                    </vm:CircleTemplateSelector.DisabledTemplate>
+                </vm:CircleTemplateSelector>
+            </gm:GoogleMap.CircleItemTemplate>
         </gm:GoogleMap>
     </Grid>
 </ContentPage>
