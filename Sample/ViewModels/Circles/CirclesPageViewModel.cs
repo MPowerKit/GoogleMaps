@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+using Controls.UserDialogs.Maui;
 
 using MPowerKit.GoogleMaps;
 
@@ -115,13 +118,13 @@ public partial class CirclesPageViewModel : ObservableObject
     private void SetupCircles()
     {
         Clickable = _circle.IsEnabled;
-        _circle.SetBinding(Circle.IsEnabledProperty, new Binding(nameof(Clickable), source: this, mode: BindingMode.TwoWay));
+        _circle.SetBinding(Circle.IsEnabledProperty, new Binding(nameof(Clickable), source: this));
         IsVisible = _circle.IsVisible;
-        _circle.SetBinding(Circle.IsVisibleProperty, new Binding(nameof(IsVisible), source: this, mode: BindingMode.TwoWay));
+        _circle.SetBinding(Circle.IsVisibleProperty, new Binding(nameof(IsVisible), source: this));
         Radius = _circle.Radius;
-        _circle.SetBinding(Circle.RadiusProperty, new Binding(nameof(Radius), source: this, mode: BindingMode.TwoWay));
+        _circle.SetBinding(Circle.RadiusProperty, new Binding(nameof(Radius), source: this));
         StrokeThickness = _circle.StrokeThickness;
-        _circle.SetBinding(Circle.StrokeThicknessProperty, new Binding(nameof(StrokeThickness), source: this, mode: BindingMode.TwoWay));
+        _circle.SetBinding(Circle.StrokeThicknessProperty, new Binding(nameof(StrokeThickness), source: this));
         CenterX = _circle.Center.X;
         CenterY = _circle.Center.Y;
 
@@ -138,5 +141,11 @@ public partial class CirclesPageViewModel : ObservableObject
         ObservableCollection<Circle> circles = [];
         circles.Add(_circle);
         Circles = circles;
+    }
+
+    [RelayCommand]
+    private async Task CircleClicked(Circle circle)
+    {
+        await UserDialogs.Instance.AlertAsync("Circle was clicked");
     }
 }

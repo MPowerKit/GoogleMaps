@@ -93,4 +93,9 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new CirclesTabbedPage()));
     }
+
+    void Button_Clicked_2(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new PolygonsTabbedPage()));
+    }
 }

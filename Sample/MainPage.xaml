@@ -10,6 +10,8 @@
                     Clicked="Button_Clicked" />
             <Button Text="Circles"
                     Clicked="Button_Clicked_1" />
+            <Button Text="Polygons"
+                    Clicked="Button_Clicked_2" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
