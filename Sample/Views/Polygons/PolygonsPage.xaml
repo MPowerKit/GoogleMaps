@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
              xmlns:vm="clr-namespace:Sample.ViewModels"
-             x:Class="Sample.Views.CirclesPage"
-             Title="Circles"
-             x:DataType="vm:CirclesPageViewModel">
+             x:Class="Sample.Views.PolygonsPage"
+             Title="PolygonsPage"
+             x:DataType="vm:PolygonsPageViewModel">
     <ContentPage.BindingContext>
-        <vm:CirclesPageViewModel />
+        <vm:PolygonsPageViewModel />
     </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto,*">
@@ -33,7 +33,10 @@
                 </VerticalStackLayout>
             </Grid>
 
-            <Grid ColumnDefinitions="*,*,*">
+            <Button Command="{Binding RandomizePointsCommand}"
+                    Text="Randomize points" />
+
+            <!--<Grid ColumnDefinitions="*,*,*">
                 <VerticalStackLayout>
                     <Label Text="Latitude" />
                     <Slider Value="{Binding CenterX, Mode=TwoWay}"
@@ -54,7 +57,7 @@
                             Minimum="1"
                             Maximum="6000000" />
                 </VerticalStackLayout>
-            </Grid>
+            </Grid>-->
 
             <Grid ColumnDefinitions="*,*">
                 <VerticalStackLayout>
@@ -90,8 +93,8 @@
                 </VerticalStackLayout>
             </Grid>
         </VerticalStackLayout>
-        <gm:GoogleMap Circles="{Binding Circles}"
-                      CircleClickedCommand="{Binding CircleClickedCommand}"
+        <gm:GoogleMap Polygons="{Binding Polygons}"
+                      PolygonClickedCommand="{Binding PolygonClickedCommand}"
                       Grid.Row="1" />
     </Grid>
 </ContentPage>

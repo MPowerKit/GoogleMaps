@@ -371,17 +371,21 @@ public class GoogleMap : View
     {
         PolygonClick?.Invoke(polygon);
 
-        if (PolygonClickedCommand?.CanExecute(polygon) is true)
-            PolygonClickedCommand.Execute(polygon);
+        var parameter = polygon.BindingContext ?? polygon;
+
+        if (PolygonClickedCommand?.CanExecute(parameter) is true)
+            PolygonClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendCircleClick(Circle circe)
+    public virtual void SendCircleClick(Circle circle)
     {
-        CircleClick?.Invoke(circe);
+        CircleClick?.Invoke(circle);
 
-        if (CircleClickedCommand?.CanExecute(circe) is true)
-            CircleClickedCommand.Execute(circe);
+        var parameter = circle.BindingContext ?? circle;
+
+        if (CircleClickedCommand?.CanExecute(parameter) is true)
+            CircleClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -389,8 +393,10 @@ public class GoogleMap : View
     {
         PolylineClick?.Invoke(polyline);
 
-        if (PolylineClickedCommand?.CanExecute(polyline) is true)
-            PolylineClickedCommand.Execute(polyline);
+        var parameter = polyline.BindingContext ?? polyline;
+
+        if (PolylineClickedCommand?.CanExecute(parameter) is true)
+            PolylineClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -398,8 +404,10 @@ public class GoogleMap : View
     {
         GroundOverlayClick?.Invoke(groundOverlay);
 
-        if (GroundOverlayClickedCommand?.CanExecute(groundOverlay) is true)
-            GroundOverlayClickedCommand.Execute(groundOverlay);
+        var parameter = groundOverlay.BindingContext ?? groundOverlay;
+
+        if (GroundOverlayClickedCommand?.CanExecute(parameter) is true)
+            GroundOverlayClickedCommand.Execute(parameter);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

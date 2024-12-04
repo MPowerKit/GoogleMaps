@@ -118,25 +118,25 @@ public partial class PinsPageViewModel : ObservableObject
     private void SetupPins()
     {
         Snippet = _pin.Snippet;
-        _pin.SetBinding(Pin.SnippetProperty, new Binding(nameof(Snippet), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.SnippetProperty, new Binding(nameof(Snippet), source: this));
         Title = _pin.Title;
-        _pin.SetBinding(Pin.TitleProperty, new Binding(nameof(Title), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.TitleProperty, new Binding(nameof(Title), source: this));
         Draggable = _pin.Draggable;
-        _pin.SetBinding(Pin.DraggableProperty, new Binding(nameof(Draggable), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.DraggableProperty, new Binding(nameof(Draggable), source: this));
         CanBeSelected = _pin.CanBeSelected;
-        _pin.SetBinding(Pin.CanBeSelectedProperty, new Binding(nameof(CanBeSelected), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.CanBeSelectedProperty, new Binding(nameof(CanBeSelected), source: this));
         ShowInfoWindowOnPinSelection = _pin.ShowInfoWindowOnPinSelection;
-        _pin.SetBinding(Pin.ShowInfoWindowOnPinSelectionProperty, new Binding(nameof(ShowInfoWindowOnPinSelection), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.ShowInfoWindowOnPinSelectionProperty, new Binding(nameof(ShowInfoWindowOnPinSelection), source: this));
         IsFlat = _pin.IsFlat;
-        _pin.SetBinding(Pin.IsFlatProperty, new Binding(nameof(IsFlat), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.IsFlatProperty, new Binding(nameof(IsFlat), source: this));
         Rotation = _pin.Rotation;
-        _pin.SetBinding(Pin.RotationProperty, new Binding(nameof(Rotation), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.RotationProperty, new Binding(nameof(Rotation), source: this));
         Clickable = _pin.IsEnabled;
-        _pin.SetBinding(Pin.IsEnabledProperty, new Binding(nameof(Clickable), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.IsEnabledProperty, new Binding(nameof(Clickable), source: this));
         IsVisible = _pin.IsVisible;
-        _pin.SetBinding(Pin.IsVisibleProperty, new Binding(nameof(IsVisible), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.IsVisibleProperty, new Binding(nameof(IsVisible), source: this));
         Opacity = _pin.Opacity;
-        _pin.SetBinding(Pin.OpacityProperty, new Binding(nameof(Opacity), source: this, mode: BindingMode.TwoWay));
+        _pin.SetBinding(Pin.OpacityProperty, new Binding(nameof(Opacity), source: this));
         PositionX = _pin.Position.X;
         PositionY = _pin.Position.Y;
         AnchorX = _pin.Anchor.X;
