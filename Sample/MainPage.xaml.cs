@@ -1,4 +1,5 @@
 ﻿using Sample.Views;
+using Sample.Views.Polylines;
 
 namespace Sample;
 
@@ -97,5 +98,10 @@ public partial class MainPage
     void Button_Clicked_2(System.Object sender, System.EventArgs e)
     {
         this.Navigation.PushAsync(new NavigationPage(new PolygonsTabbedPage()));
+    }
+
+    private void Button_Clicked_3(object sender, EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new PolylineTabbedPage()));
     }
 }

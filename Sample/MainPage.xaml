@@ -12,6 +12,8 @@
                     Clicked="Button_Clicked_1" />
             <Button Text="Polygons"
                     Clicked="Button_Clicked_2" />
+            <Button Text="Polylines"
+                    Clicked="Button_Clicked_3" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
