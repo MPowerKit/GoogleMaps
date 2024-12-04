@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.PolylinePage"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             Title="Polylines Page"
+             x:DataType="vm:PolylinePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:PolylinePageViewModel />
+    </ContentPage.BindingContext>
+    <Grid
+        RowDefinitions="Auto,*">
+        <VerticalStackLayout
+            Grid.Row="0">
+            <Label Text="Line Width" />
+            <Slider Value="{Binding LineWidth, Mode=TwoWay}" 
+                Minimum="0"
+                Maximum="10" />
+            
+            <Grid ColumnDefinitions="*,*">
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding LineEnabled, Mode=TwoWay}" />
+                    <Label Text="Is enabled"
+               VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1">
+                    <CheckBox IsChecked="{Binding LineVisible, Mode=TwoWay}" />
+                    <Label Text="Is visible"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Grid>
+            <VerticalStackLayout Spacing="5">
+                <HorizontalStackLayout Spacing="5">
+                    <Button Text="Change cap"
+                        IsVisible="{Binding CapButtonsVisible}"
+                        Command="{Binding ChangeCapCommand}" />
+                    <Button Text="Change joint"
+                        IsVisible="{Binding CapButtonsVisible}"
+                        Command="{Binding ChangeJointCommand}" />
+                    <Button Text="Change Z Index"
+                        Command="{Binding ChangeZIndexCommand}" />
+                    
+                </HorizontalStackLayout>
+                    <Button Text="Gradient"
+                        Command="{Binding ChangeGradientCommand}" />
+                    <Button Text="Dashed pattern"
+                        Command="{Binding ChangeDashedStateCommand}" />
+                <HorizontalStackLayout>
+                    
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            
+        </VerticalStackLayout>
+
+        <gm:GoogleMap 
+            Polylines="{Binding Polylines}"
+            PolylineClickedCommand="{Binding PolylineClickCommand}"
+            Grid.Row="1"
+            />
+    </Grid>
+</ContentPage>

@@ -1,4 +1,5 @@
 ﻿using Sample.Views;
+using Sample.Views.Polylines;
 
 namespace Sample;
 
@@ -92,5 +93,10 @@ public partial class MainPage
     private void Button_Clicked_1(System.Object sender, System.EventArgs e)
     {
         this.Navigation.PushAsync(new NavigationPage(new CirclesTabbedPage()));
+    }
+
+    private void Button_Clicked_2(object sender, EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new PolylineTabbedPage()));
     }
 }
