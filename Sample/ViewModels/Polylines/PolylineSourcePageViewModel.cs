@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,6 +41,8 @@ namespace Sample.ViewModels
         [ObservableProperty]
         private double _width;
         [ObservableProperty]
+        private int _zIndex;
+        [ObservableProperty]
         private Point[] _points;
 
         [ObservableProperty]
@@ -68,6 +71,19 @@ namespace Sample.ViewModels
         };
         [ObservableProperty]
         private ObservableCollection<PolylineDataObject> _items = [];
+        [RelayCommand]
+        private void ChangeZIndex()
+        {
+            PolylineDataObject first = _items[0];
+            int one = first.ZIndex;
+            PolylineDataObject second = _items[1];
+            int two = second.ZIndex;
+            PolylineDataObject third = _items[2];
+            int three = third.ZIndex;
+            first.ZIndex = three;
+            second.ZIndex = one;
+            third.ZIndex = two;
+        }
         public PolylineSourcePageViewModel()
         {
             SetupItems();
@@ -85,22 +101,25 @@ namespace Sample.ViewModels
 
             items.Add(new PolylineDataObject()
             {
+                ZIndex = 0,
                 Width = 5,
                 Type = PolylineTemplateType.Standart,
-                Points = [new Point(5.877659, -13.010200), new Point(2.503409, -16.481879), new Point(-3.996456, -12.922309),]
+                Stroke = new SolidColorBrush(Colors.Green),
+                Points = [new Point(6.573118, -14.371261), new Point(0.379401, -22.353207), new Point(6.793332, -29.669991),]
             });
             items.Add(new PolylineDataObject()
             {
+                ZIndex = 1,
                 Width = 5,
                 Type = PolylineTemplateType.Dashed,
-                Points = [new Point(4.126610, -5.935005), new Point(-0.176458, -8.308051), new Point(-8.885740, -10.988715),],
+                Points = [new Point(-1.615869, -29.448270), new Point(5.397074, -23.609624), new Point(-1.246450, -16.588468),],
                 DashedData = new DoubleCollection([10,8])
             });
             items.Add(new PolylineDataObject()
             {
                 Width = 5,
                 Type = PolylineTemplateType.Gradient,
-                Points = [new Point(3.556607, 3.425346), new Point(-0.132513, -1.496528), new Point(-3.294758, 4.831596),],
+                Points = [new Point(9.062395, -23.240090), new Point(-2.502170, -14.223447), new Point(-8.019669, -25.752925),],
                 Stroke = new LinearGradientBrush(gradientStops)
             });
 

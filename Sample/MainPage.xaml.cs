@@ -100,7 +100,7 @@ public partial class MainPage
         this.Navigation.PushAsync(new NavigationPage(new PolygonsTabbedPage()));
     }
 
-    private void Button_Clicked_2(object sender, EventArgs e)
+    private void Button_Clicked_3(object sender, EventArgs e)
     {
         this.Navigation.PushAsync(new NavigationPage(new PolylineTabbedPage()));
     }

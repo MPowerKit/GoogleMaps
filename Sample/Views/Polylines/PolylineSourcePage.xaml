@@ -9,6 +9,8 @@
         <vm:PolylineSourcePageViewModel />
     </ContentPage.BindingContext>
     <Grid RowDefinitions="Auto,*">
+        <Button Text="Change Z index" Margin="5"
+            Command="{Binding ChangeZIndexCommand}" />
         <gm:GoogleMap
             PolylinesSource="{Binding Items}"
             Grid.Row="1" >
@@ -17,6 +19,7 @@
                     <vm:PolylineTemplateSelector.PolylineDashedTemplate>
                         <DataTemplate x:DataType="vm:PolylineDataObject">
                             <Polyline
+                                ZIndex="{Binding ZIndex}"
                                 StrokeThickness="{Binding Width}"
                                 StrokeDashArray ="{Binding DashedData}"
                                 Points="{Binding Points}"/>
@@ -25,6 +28,8 @@
                     <vm:PolylineTemplateSelector.PolylineStandartTemplate>
                         <DataTemplate x:DataType="vm:PolylineDataObject">
                             <Polyline
+                                Stroke="{Binding Stroke}"
+                                ZIndex="{Binding ZIndex}"
                                 StrokeThickness="{Binding Width}"
                                 Points="{Binding Points}"/>
                         </DataTemplate>
@@ -32,6 +37,7 @@
                     <vm:PolylineTemplateSelector.PolylineGradientTemplate>
                         <DataTemplate x:DataType="vm:PolylineDataObject">
                             <Polyline
+                                ZIndex="{Binding ZIndex}"
                                 StrokeThickness="{Binding Width}"
                                 Stroke ="{Binding Stroke}"
                                 Points="{Binding Points}"/>
