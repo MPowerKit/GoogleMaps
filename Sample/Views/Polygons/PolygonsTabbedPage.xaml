@@ -7,4 +7,5 @@
             x:Class="Sample.Views.PolygonsTabbedPage"
             Title="Polygons Page">
     <local:PolygonsPage />
+    <local:PolygonsSourcePage />
 </TabbedPage>

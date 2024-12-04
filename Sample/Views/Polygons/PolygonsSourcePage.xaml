@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             x:Class="Sample.Views.PolygonsSourcePage"
+             Title="PolygonsSource"
+             x:DataType="vm:PolygonsSourcePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:PolygonsSourcePageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <gm:GoogleMap PolygonsSource="{Binding Items}"
+                      PolygonClickedCommand="{Binding PolygonClickedCommand}"
+                      Grid.Row="1">
+            <gm:GoogleMap.PolygonItemTemplate>
+                <vm:PolygonTemplateSelector>
+                    <vm:PolygonTemplateSelector.TransparentTemplate>
+                        <DataTemplate x:DataType="vm:PolygonDataObject">
+                            <Polygon Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                     ZIndex="{Binding ZIndex}"
+                                     StrokeThickness="10"
+                                     Fill="#220000FF"
+                                     Stroke="#44FF0000" />
+                        </DataTemplate>
+                    </vm:PolygonTemplateSelector.TransparentTemplate>
+                    <vm:PolygonTemplateSelector.OpaqueTemplate>
+                        <DataTemplate x:DataType="vm:PolygonDataObject">
+                            <Polygon Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                     ZIndex="{Binding ZIndex}"
+                                     StrokeThickness="10"
+                                     Fill="Green"
+                                     Stroke="Orange" />
+                        </DataTemplate>
+                    </vm:PolygonTemplateSelector.OpaqueTemplate>
+                    <vm:PolygonTemplateSelector.DisabledTemplate>
+                        <DataTemplate x:DataType="vm:PolygonDataObject">
+                            <Polygon Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                     ZIndex="{Binding ZIndex}"
+                                     StrokeThickness="5"
+                                     IsEnabled="False"
+                                     Fill="Gray"
+                                     Stroke="Purple" />
+                        </DataTemplate>
+                    </vm:PolygonTemplateSelector.DisabledTemplate>
+                </vm:PolygonTemplateSelector>
+            </gm:GoogleMap.PolygonItemTemplate>
+        </gm:GoogleMap>
+    </Grid>
+</ContentPage>
