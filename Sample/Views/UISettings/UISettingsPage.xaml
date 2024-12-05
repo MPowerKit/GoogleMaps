@@ -22,7 +22,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="1">
-                <CheckBox IsChecked="{Binding MapToolbarEnabled, Mode=TwoWay}" />
+                <CheckBox IsChecked="{Binding MapToolbarEnabled, Mode=TwoWay}"
+                          IsEnabled="{OnPlatform iOS=false, Default=true}"/>
                 <Label Text="Map tool bar enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -39,7 +40,8 @@
 
             <VerticalStackLayout Grid.Column="0"
                                    Grid.Row="1">
-                <CheckBox IsChecked="{Binding ZoomControlsEnabled, Mode=TwoWay}" />
+                <CheckBox IsChecked="{Binding ZoomControlsEnabled, Mode=TwoWay}"
+                          IsEnabled="{OnPlatform iOS=false, Default=true}"/>
                 <Label Text="Zoom control enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
