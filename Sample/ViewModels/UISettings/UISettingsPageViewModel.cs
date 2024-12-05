@@ -11,26 +11,7 @@ namespace Sample.ViewModels
     {
         public UISettingsPageViewModel()
         {
-            
-        }
 
-        [ObservableProperty]
-        private double _compassEnabled;
-        [ObservableProperty]
-        private double _mapToolbarEnabled;
-        [ObservableProperty]
-        private double _zoomControlsEnabled;
-        [ObservableProperty]
-        private double _zoomGesturesEnabled;
-        [ObservableProperty]
-        private double _scrollGesturesEnabled;
-        [ObservableProperty]
-        private double _tiltGesturesEnabled;
-        [ObservableProperty]
-        private double _rotateGesturesEnabled;
-        [ObservableProperty]
-        private double _myLocationButtonEnabled;
-        [ObservableProperty]
-        private double _indoorLevelPickerEnabled;
+        }
     }
 }

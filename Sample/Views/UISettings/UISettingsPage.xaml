@@ -14,7 +14,7 @@
         <Grid ColumnDefinitions="*,*,*"
               RowDefinitions="Auto,Auto, Auto">
             <VerticalStackLayout Grid.Column="0">
-                <CheckBox IsChecked="{Binding CompassEnabled, Mode=TwoWay}"/>
+                <CheckBox x:Name="compass"/>
                 <Label Text="Compas enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -22,7 +22,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="1">
-                <CheckBox IsChecked="{Binding MapToolbarEnabled, Mode=TwoWay}"
+                <CheckBox x:Name="mapToolBar"
                           IsEnabled="{OnPlatform iOS=false, Default=true}"/>
                 <Label Text="Map tool bar enable"
                        VerticalOptions="Center"
@@ -31,7 +31,7 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2">
-                <CheckBox IsChecked="{Binding ScrollGesturesEnabled, Mode=TwoWay}" />
+                <CheckBox x:Name="scrollGesture"/>
                 <Label Text="Scroll gesture enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -39,8 +39,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="0"
-                                   Grid.Row="1">
-                <CheckBox IsChecked="{Binding ZoomControlsEnabled, Mode=TwoWay}"
+                                 Grid.Row="1">
+                <CheckBox x:Name="zoomControl"
                           IsEnabled="{OnPlatform iOS=false, Default=true}"/>
                 <Label Text="Zoom control enable"
                        VerticalOptions="Center"
@@ -49,8 +49,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="1"
-                                   Grid.Row="1">
-                <CheckBox IsChecked="{Binding ZoomGesturesEnabled, Mode=TwoWay}" />
+                                 Grid.Row="1">
+                <CheckBox x:Name="zoomGesture"/>
                 <Label Text="Zoom gesture enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -58,8 +58,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2"
-                                   Grid.Row="1">
-                <CheckBox IsChecked="{Binding TiltGesturesEnabled, Mode=TwoWay}" />
+                                 Grid.Row="1">
+                <CheckBox x:Name="tiltGesture" />
                 <Label Text="Tilt gesture enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -67,8 +67,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="0"
-                                   Grid.Row="2">
-                <CheckBox IsChecked="{Binding RotateGesturesEnabled, Mode=TwoWay}" />
+                                 Grid.Row="2">
+                <CheckBox x:Name="rotate" />
                 <Label Text="Rotate enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -76,8 +76,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="1"
-                                   Grid.Row="2">
-                <CheckBox IsChecked="{Binding MyLocationButtonEnabled, Mode=TwoWay}" />
+                                 Grid.Row="2">
+                <CheckBox x:Name="myLocation" />
                 <Label Text="My location enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
@@ -85,14 +85,23 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Grid.Column="2"
-                                   Grid.Row="2">
-                <CheckBox IsChecked="{Binding IndoorLevelPickerEnabled, Mode=TwoWay}" />
+                                 Grid.Row="2">
+                <CheckBox x:Name="inDoorLevel" />
                 <Label Text="In door level enable"
                        VerticalOptions="Center"
                        HorizontalOptions="Center"
                        FontSize="Caption"/>
             </VerticalStackLayout>
         </Grid>
-        <gm:GoogleMap Grid.Row="1" />
+        <gm:GoogleMap Grid.Row="1"
+                      CompassEnabled="{Binding Source={x:Reference compass}, Path=IsChecked}"
+                      MapToolbarEnabled="{Binding Source={x:Reference mapToolBar}, Path=IsChecked}"
+                      ZoomControlsEnabled="{Binding Source={x:Reference zoomControl}, Path=IsChecked}"
+                      ZoomGesturesEnabled="{Binding Source={x:Reference zoomGesture}, Path=IsChecked}"
+                      ScrollGesturesEnabled="{Binding Source={x:Reference scrollGesture}, Path=IsChecked}"
+                      TiltGesturesEnabled="{Binding Source={x:Reference tiltGesture}, Path=IsChecked}"
+                      RotateGesturesEnabled="{Binding Source={x:Reference rotate}, Path=IsChecked}"
+                      MyLocationButtonEnabled="{Binding Source={x:Reference myLocation}, Path=IsChecked}"
+                      IndoorLevelPickerEnabled="{Binding Source={x:Reference inDoorLevel}, Path=IsChecked}"/>
     </Grid>
 </ContentPage>
