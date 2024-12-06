@@ -103,6 +103,6 @@
                       RotateGesturesEnabled="{Binding Source={x:Reference rotate}, Path=IsChecked}"
                       MyLocationButtonEnabled="{Binding Source={x:Reference myLocation}, Path=IsChecked}"
                       IndoorLevelPickerEnabled="{Binding Source={x:Reference inDoorLevel}, Path=IsChecked}"
-                      IndoorEnabled="{Binding Source={x:Reference inDoorLevel}, Path=IsChecked}"/>
+                      IndoorEnabled="True"/>
     </Grid>
 </ContentPage>
