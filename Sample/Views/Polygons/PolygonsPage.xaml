@@ -28,36 +28,38 @@
                 <VerticalStackLayout Grid.Column="2">
                     <Label Text="Stroke thickness" />
                     <Slider Value="{Binding StrokeThickness, Mode=TwoWay}"
-                            Minimum="0"
+                            Minimum="1"
                             Maximum="20" />
                 </VerticalStackLayout>
             </Grid>
 
-            <Button Command="{Binding RandomizePointsCommand}"
-                    Text="Randomize points" />
-
-            <!--<Grid ColumnDefinitions="*,*,*">
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5"
+                  IsVisible="{OnPlatform iOS=False, Default=True}">
                 <VerticalStackLayout>
-                    <Label Text="Latitude" />
-                    <Slider Value="{Binding CenterX, Mode=TwoWay}"
-                            Minimum="-90"
-                            Maximum="90" />
+                    <Label Text="Stroke dash pattern"/>
+                    <Entry x:Name="dashPattern"
+                           Placeholder="8 4 1 4"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Grid.Column="1">
-                    <Label Text="Longitude" />
-                    <Slider Value="{Binding CenterY, Mode=TwoWay}"
-                            Minimum="-180"
-                            Maximum="180" />
-                </VerticalStackLayout>
+                <Button Command="{Binding ApplyDashPatternCommand}"
+                        Text="Apply pattern"
+                        CommandParameter="{Binding Text, Source={x:Reference dashPattern}}"
+                        Grid.Column="1"
+                        VerticalOptions="Center" />
+            </Grid>
 
-                <VerticalStackLayout Grid.Column="2">
-                    <Label Text="Radius" />
-                    <Slider Value="{Binding Radius, Mode=TwoWay}"
-                            Minimum="1"
-                            Maximum="6000000" />
-                </VerticalStackLayout>
-            </Grid>-->
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding RandomizePointsCommand}"
+                        Text="Randomize points"
+                        VerticalOptions="Center" />
+                <Button Command="{Binding ChangeJointTypeCommand}"
+                        Text="Change joint type"
+                        VerticalOptions="Center"
+                        Grid.Column="1"
+                        IsVisible="{OnPlatform iOS=False, Default=True}" />
+            </Grid>
 
             <Grid ColumnDefinitions="*,*">
                 <VerticalStackLayout>
@@ -93,6 +95,7 @@
                 </VerticalStackLayout>
             </Grid>
         </VerticalStackLayout>
+
         <gm:GoogleMap Polygons="{Binding Polygons}"
                       PolygonClickedCommand="{Binding PolygonClickedCommand}"
                       Grid.Row="1" />

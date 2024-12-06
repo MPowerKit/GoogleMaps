@@ -39,11 +39,13 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
         }
 
         platformView.OverlayTapped += NativeMap_OverlayTapped;
+        platformView.CameraPositionChanged += PlatformView_CameraPositionChanged;
     }
 
     public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         platformView.OverlayTapped -= NativeMap_OverlayTapped;
+        platformView.CameraPositionChanged -= PlatformView_CameraPositionChanged;
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
@@ -169,9 +171,22 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
 
         if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
             || e.PropertyName == Shape.StrokeProperty.PropertyName
-            || e.PropertyName == VPolyline.PointsProperty.PropertyName)
+            || e.PropertyName == VPolyline.PointsProperty.PropertyName
+            || e.PropertyName == PolylineAttached.iOSPixelDependentDashedPatternProperty.PropertyName)
         {
-            native.Spans = polyline.ToSpans();
+            native.Spans = polyline.ToSpans(NativeView!, PolylineAttached.GetiOSPixelDependentDashedPattern(polyline));
+        }
+    }
+
+    protected virtual void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
+    {
+        foreach (var polyline in Polylines.Where(p => p.StrokeDashPattern.Length != 0))
+        {
+            if (!PolylineAttached.GetiOSPixelDependentDashedPattern(polyline)) continue;
+
+            if (NativeObjectAttachedProperty.GetNativeObject(polyline) is not NPolyline native) continue;
+
+            native.Spans = polyline.ToSpans(NativeView!, true);
         }
     }
 
@@ -199,7 +214,7 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
     {
         foreach (var polyline in polylines)
         {
-            NativeObjectAttachedProperty.SetNativeObject(polyline, polyline.ToNative(NativeView!));
+            NativeObjectAttachedProperty.SetNativeObject(polyline, polyline.ToNative(NativeView!, PolylineAttached.GetiOSPixelDependentDashedPattern(polyline)));
             polyline.PropertyChanged += Polyline_PropertyChanged;
             Polylines.Add(polyline);
         }
@@ -224,14 +239,15 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
 
 public static class PolylineExtensions
 {
-    public static NPolyline ToNative(this VPolyline polyline, MapView map)
+    public static NPolyline ToNative(this VPolyline polyline, MapView map, bool pixelDependentDashedPattern)
     {
         var path = polyline.Points.ToPath();
         var native = NPolyline.FromPath(path);
         native.ZIndex = polyline.ZIndex;
         native.StrokeWidth = (float)polyline.StrokeThickness;
         native.Tappable = polyline.IsEnabled;
-        native.Spans = polyline.ToSpans();
+        native.Spans = polyline.ToSpans(map, pixelDependentDashedPattern);
+        native.Geodesic = true;
 
         if (polyline.IsVisible)
         {
@@ -241,7 +257,7 @@ public static class PolylineExtensions
         return native;
     }
 
-    public static StyleSpan[] ToSpans(this VPolyline polyline)
+    public static StyleSpan[] ToSpans(this VPolyline polyline, MapView map, bool pixelDependentDashedPattern)
     {
         var path = polyline.Points.ToPath();
 
@@ -259,8 +275,8 @@ public static class PolylineExtensions
                     ? colorStyle
                     : StrokeStyle.GetSolidColor(UIColor.Clear));
             }
-
-            spans = GeometryUtils.StyleSpans(path, styles.ToArray(), pattern.Select(v => new NSNumber(v)).ToArray(), LengthKind.Rhumb);
+            var metersPerPixel = pixelDependentDashedPattern ? Distance.MetersPerDevicePixel((polyline.Points[0].X + polyline.Points[^1].X) / 2.0, map.Camera.Zoom) : 1d;
+            spans = GeometryUtils.StyleSpans(path, styles.ToArray(), pattern.Select(v => new NSNumber(v * metersPerPixel)).ToArray(), LengthKind.Rhumb);
         }
         else
         {

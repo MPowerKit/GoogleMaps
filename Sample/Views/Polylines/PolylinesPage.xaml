@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.PolylinesPage"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             Title="Polylines"
+             x:DataType="vm:PolylinesPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:PolylinesPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*,*">
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" />
+                    <Label Text="Is visible"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1">
+                    <CheckBox IsChecked="{Binding Clickable, Mode=TwoWay}" />
+                    <Label Text="Is clickable"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="2">
+                    <CheckBox IsChecked="{Binding UseGradient, Mode=TwoWay}" />
+                    <Label Text="Use gradient"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout>
+                    <Label Text="Stroke dash pattern"/>
+                    <Entry x:Name="dashPattern"
+                           Text="{Binding DashedPattern, Mode=TwoWay}"
+                           Placeholder="8 4 1 4"/>
+                </VerticalStackLayout>
+
+                <Button Command="{Binding ApplyDashPatternCommand}"
+                        Text="Apply pattern"
+                        CommandParameter="{Binding Text, Source={x:Reference dashPattern}}"
+                        Grid.Column="1"
+                        VerticalOptions="Center" />
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Stroke thickness" />
+                    <Slider Value="{Binding StrokeThickness, Mode=TwoWay}"
+                            Minimum="1"
+                            Maximum="20" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding RandomizePointsCommand}"
+                        Text="Randomize points"
+                        VerticalOptions="Center" />
+                <Button Command="{Binding ChangeJointTypeCommand}"
+                        Text="Change joint type"
+                        VerticalOptions="Center"
+                        Grid.Column="1"
+                        IsVisible="{OnPlatform iOS=False, Default=True}" />
+                <Grid Grid.Column="1"
+                      ColumnDefinitions="Auto,*"
+                      IsVisible="{OnPlatform iOS=True, Default=False}">
+                    <CheckBox IsChecked="{Binding PixelDependentDashedPattern, Mode=TwoWay}" />
+                    <Label Text="Pixel-dependent dashed pattern"
+                           LineBreakMode="WordWrap"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
+                <Button Command="{Binding ChangeCapTypeCommand}"
+                        Text="Change cap type"
+                        VerticalOptions="Center"
+                        Grid.Column="2"
+                        IsVisible="{OnPlatform iOS=False, Default=True}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*">
+                <VerticalStackLayout>
+                    <Label Text="Stroke solid color" >
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding UseGradient}"
+                                         Value="True">
+                                <Setter Property="Text"
+                                        Value="Stroke gradient start color" /> 
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <Slider Value="{Binding StrokeStartAlpha, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeStartRed, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeStartGreen, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeStartBlue, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1"
+                                     IsVisible="{Binding UseGradient}">
+                    <Label Text="Stroke gradient end color" />
+                    <Slider Value="{Binding StrokeEndAlpha, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeEndRed, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeEndGreen, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                    <Slider Value="{Binding StrokeEndBlue, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+            </Grid>
+        </VerticalStackLayout>
+
+        <gm:GoogleMap Polylines="{Binding Polylines}"
+                      PolylineClickedCommand="{Binding PolylineClickedCommand}"
+                      CameraPosition="{Binding CameraPosition, Mode=OneWayToSource}"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>

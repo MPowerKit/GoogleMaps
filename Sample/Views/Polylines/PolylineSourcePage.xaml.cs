@@ -1,6 +1,6 @@
 namespace Sample.Views;
 
-public partial class PolylineSourcePage : ContentPage
+public partial class PolylineSourcePage
 {
 	public PolylineSourcePage()
 	{

@@ -44,4 +44,11 @@ public static class Distance
     {
         return radians * RadiansToDegreesConst;
     }
+
+    public static double MetersPerDevicePixel(double latitude, double zoom, int tileSize = 256)
+    {
+        var metersPerPixel = EarthCircumferenceMeters * Math.Cos(latitude * DegreesToRadiansConst) / Math.Pow(2.0, zoom) / tileSize;
+
+        return metersPerPixel;
+    }
 }

@@ -32,6 +32,8 @@ public partial class PolygonsPageViewModel : ObservableObject
     private PointCollection _points;
     [ObservableProperty]
     private double _strokeThickness;
+    [ObservableProperty]
+    private PenLineJoin _jointType;
 
     [ObservableProperty]
     private float _fillAlpha;
@@ -110,6 +112,8 @@ public partial class PolygonsPageViewModel : ObservableObject
         _polygon.SetBinding(Polygon.PointsProperty, new Binding(nameof(Points), source: this));
         StrokeThickness = _polygon.StrokeThickness;
         _polygon.SetBinding(Polygon.StrokeThicknessProperty, new Binding(nameof(StrokeThickness), source: this));
+        JointType = _polygon.StrokeLineJoin;
+        _polygon.SetBinding(Polygon.StrokeLineJoinProperty, new Binding(nameof(JointType), source: this));
 
         FillAlpha = (_polygon.Fill as SolidColorBrush).Color.Alpha;
         FillRed = (_polygon.Fill as SolidColorBrush).Color.Red;
@@ -130,6 +134,24 @@ public partial class PolygonsPageViewModel : ObservableObject
     private Random _rndLongitude = new();
 
     [RelayCommand]
+    private async Task ApplyDashPattern(string pattern)
+    {
+        try
+        {
+            var splitted = pattern
+                .Trim()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Select(float.Parse);
+
+            _polygon.StrokeDashArray = [..splitted];
+        }
+        catch (Exception ex)
+        {
+            await UserDialogs.Instance.AlertAsync("Cannot parse dash pattern. You can use only numbers and whitespaces");
+        }
+    }
+
+    [RelayCommand]
     private void RandomizePoints()
     {
         var lat1 = _rndLatitude.Next(-90, 90);
@@ -139,6 +161,33 @@ public partial class PolygonsPageViewModel : ObservableObject
         var lon2 = _rndLatitude.Next(-180, 180);
         var lon3 = _rndLatitude.Next(-180, 180);
         _polygon.Points = [new Point(lat1, lat2), new Point(lat2, lon2), new Point(lat3, lon3)];
+    }
+
+    [RelayCommand]
+    private async Task ChangeJointType()
+    {
+        var res = await UserDialogs.Instance.ActionSheetAsync(null,
+            "Choose line joint type",
+            "Cancel",
+            buttons:
+            [
+                "Default",
+                "Bevel",
+                "Round"
+            ]);
+
+        switch (res)
+        {
+            case "Default":
+                _polygon.StrokeLineJoin = PenLineJoin.Miter;
+                break;
+            case "Bevel":
+                _polygon.StrokeLineJoin = PenLineJoin.Bevel;
+                break;
+            case "Round":
+                _polygon.StrokeLineJoin = PenLineJoin.Round;
+                break;
+        }
     }
 
     [RelayCommand]

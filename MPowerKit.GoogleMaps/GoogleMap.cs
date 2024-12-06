@@ -551,6 +551,8 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendCameraChange(CameraPosition cameraPosition)
     {
+        CameraPosition = cameraPosition;
+
         CameraChange?.Invoke(cameraPosition);
 
         if (CameraChangedCommand?.CanExecute(cameraPosition) is true)
@@ -1086,6 +1088,21 @@ public class GoogleMap : View
         BindableProperty.Create(
             nameof(VisibleRegion),
             typeof(MapRegion),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region CameraPosition
+    public CameraPosition CameraPosition
+    {
+        get => (CameraPosition)GetValue(CameraPositionProperty);
+        protected set => SetValue(CameraPositionProperty, value);
+    }
+
+    public static readonly BindableProperty CameraPositionProperty =
+        BindableProperty.Create(
+            nameof(CameraPosition),
+            typeof(CameraPosition),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
