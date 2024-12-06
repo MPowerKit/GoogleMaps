@@ -62,10 +62,4 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\MPowerKit.GoogleMaps\MPowerKit.GoogleMaps.csproj" />
 	</ItemGroup>
-	
-	<ItemGroup>
-	  <MauiXaml Update="Views\UISettings\UISettingsPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	</ItemGroup>
 </Project>
