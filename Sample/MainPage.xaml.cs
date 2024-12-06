@@ -104,4 +104,9 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new PolylineTabbedPage()));
     }
+
+    private void Button_Clicked_4(object sender, EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new UISettingsPage()));
+    }
 }
