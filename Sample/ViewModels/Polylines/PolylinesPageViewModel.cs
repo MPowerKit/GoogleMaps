@@ -16,7 +16,7 @@ public partial class PolylinesPageViewModel : ObservableObject
     {
         Points = [new Point(0, 0), new Point(10, 10), new Point(-10, 10)],
         Stroke = Colors.Orange,
-        StrokeThickness = 5,
+        StrokeThickness = 20,
     };
 
     public PolylinesPageViewModel()
@@ -40,6 +40,13 @@ public partial class PolylinesPageViewModel : ObservableObject
     private string _dashedPattern;
     [ObservableProperty]
     private CameraPosition _cameraPosition;
+
+    [ObservableProperty]
+    private bool _useTexture;
+    partial void OnUseTextureChanged(bool oldValue, bool newValue)
+    {
+        PolylineAttached.SetTextureStamp(_polyline, newValue ? "map_pin.png" : null);
+    }
 
     [ObservableProperty]
     private bool _pixelDependentDashedPattern;

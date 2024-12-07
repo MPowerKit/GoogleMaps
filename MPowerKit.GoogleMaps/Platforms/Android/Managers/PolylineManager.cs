@@ -122,7 +122,7 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHand
 
     protected virtual void ClearPolylines()
     {
-        RemovePolylinesFromNativeMap([.. Polylines]);
+        RemovePolylinesFromNativeMap([..Polylines]);
     }
 
     protected virtual void InitPolylines()
@@ -179,9 +179,10 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHand
         {
             native.Width = Handler!.Context.ToPixels(polyline.StrokeThickness);
         }
-        else if (e.PropertyName == Shape.StrokeProperty.PropertyName)
+        else if (e.PropertyName == Shape.StrokeProperty.PropertyName
+            || e.PropertyName == PolylineAttached.TextureStampProperty.PropertyName)
         {
-            native.Spans = [polyline.Stroke.ToSpan()];
+            native.Spans = [polyline.Stroke.ToSpan(polyline, Handler!.Context)];
         }
     }
 
@@ -244,7 +245,7 @@ public static class PolylineExtensions
 
         options.Clickable(polyline.IsEnabled);
 
-        options.AddSpan(polyline.Stroke.ToSpan());
+        options.AddSpan(polyline.Stroke.ToSpan(polyline, context));
         options.InvokeWidth(context.ToPixels(polyline.StrokeThickness));
         options.InvokeZIndex(polyline.ZIndex);
         var cap = polyline.StrokeLineCap.ToCap();
@@ -260,23 +261,31 @@ public static class PolylineExtensions
         return options;
     }
 
-    public static StyleSpan ToSpan(this Brush? brush)
+    public static StyleSpan ToSpan(this Brush? brush, VPolyline polyline, Context context)
     {
-        return brush switch
+        var texture = PolylineAttached.GetTextureStamp(polyline);
+
+        var builder = brush switch
         {
-            SolidColorBrush solidBrush => new(solidBrush.Color.ToInt()),
+            SolidColorBrush solidBrush => StrokeStyle.ColorBuilder(solidBrush.Color.ToInt()),
             LinearGradientBrush gradientBrush => gradientBrush.GradientStops.Count switch
             {
-                0 => new(Android.Graphics.Color.Black.ToArgb()),
-                1 => new(gradientBrush.GradientStops[0].Color.ToInt()),
-                _ => new(
-                    StrokeStyle.GradientBuilder(
+                0 => StrokeStyle.ColorBuilder(Android.Graphics.Color.Black.ToArgb()),
+                1 => StrokeStyle.ColorBuilder(gradientBrush.GradientStops[0].Color.ToInt()),
+                _ => StrokeStyle.GradientBuilder(
                         gradientBrush.GradientStops[0].Color.ToInt(),
                         gradientBrush.GradientStops[1].Color.ToInt())
-                    .Build())
             },
-            _ => new(Android.Graphics.Color.Black.ToArgb())
+            _ => StrokeStyle.ColorBuilder(Android.Graphics.Color.Black.ToArgb())
         };
+
+        if (!string.IsNullOrWhiteSpace(texture))
+        {
+            var bitmap = texture.GetBitmap(context);
+            builder.Stamp(TextureStyle.NewBuilder(BitmapDescriptorFactory.FromBitmap(bitmap)).Build());
+        }
+
+        return new StyleSpan(builder.Build());
     }
 
     public static Cap ToCap(this PenLineCap cap)

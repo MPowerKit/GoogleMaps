@@ -247,22 +247,7 @@ public class FileTileProvider : Java.Lang.Object, ITileProvider
 
         try
         {
-            Bitmap? bitmap = null;
-
-            if (!Path.IsPathRooted(file) || !File.Exists(file))
-            {
-                var id = _context.Context!.GetDrawableId(file);
-                if (id <= 0) throw new Exception();
-
-                var drawable = _context.Context!.GetDrawable(id);
-                bitmap = (drawable as BitmapDrawable)!.Bitmap!;
-            }
-            else if (File.Exists(file))
-            {
-                bitmap = BitmapFactory.DecodeFile(file);
-            }
-
-            if (bitmap is null) throw new Exception();
+            var bitmap = file.GetBitmap(_context.Context!);
 
             return new Tile(_tileSize, _tileSize, bitmap.ToArray());
         }

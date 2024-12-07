@@ -1,12 +1,11 @@
 ﻿using System.Collections.Specialized;
-
 using Foundation;
 
 using Google.Maps;
 
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Platform;
-
+using ObjCRuntime;
 using UIKit;
 
 using NPolyline = Google.Maps.Polyline;
@@ -152,10 +151,6 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
         {
             native.Tappable = polyline.IsEnabled;
         }
-        else if (e.PropertyName == VPolyline.PointsProperty.PropertyName)
-        {
-            native.Path = polyline.Points.ToPath();
-        }
         else if (e.PropertyName == Shape.ZIndexProperty.PropertyName)
         {
             native.ZIndex = polyline.ZIndex;
@@ -164,16 +159,20 @@ public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapH
         {
             native.StrokeWidth = (float)polyline.StrokeThickness;
         }
-        else if(e.PropertyName == Shape.IsVisibleProperty.PropertyName)
+        else if (e.PropertyName == Shape.IsVisibleProperty.PropertyName)
         {
             native.Map = polyline.IsVisible ? NativeView! : null;
         }
-
-        if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
+        else if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
             || e.PropertyName == Shape.StrokeProperty.PropertyName
             || e.PropertyName == VPolyline.PointsProperty.PropertyName
-            || e.PropertyName == PolylineAttached.iOSPixelDependentDashedPatternProperty.PropertyName)
+            || e.PropertyName == PolylineAttached.iOSPixelDependentDashedPatternProperty.PropertyName
+            || e.PropertyName == PolylineAttached.TextureStampProperty.PropertyName)
         {
+            if (e.PropertyName == VPolyline.PointsProperty.PropertyName)
+            {
+                native.Path = polyline.Points.ToPath();
+            }
             native.Spans = polyline.ToSpans(NativeView!, PolylineAttached.GetiOSPixelDependentDashedPattern(polyline));
         }
     }
@@ -260,11 +259,12 @@ public static class PolylineExtensions
     public static StyleSpan[] ToSpans(this VPolyline polyline, MapView map, bool pixelDependentDashedPattern)
     {
         var path = polyline.Points.ToPath();
-
+        var texture = PolylineAttached.GetTextureStamp(polyline);
         StyleSpan[] spans;
         if (polyline.StrokeDashPattern.Length != 0)
         {
-            var colorStyle = polyline.Stroke.ToStrokeStyle();
+            var colorStyle = polyline.Stroke.ToStrokeStyle(texture);
+            var clearStyle = StrokeStyle.GetSolidColor(UIColor.Clear);
             var pattern = polyline.StrokeDashPattern;
             List<StrokeStyle> styles = [];
             for (int i = 0; i < pattern.Length; i++)
@@ -273,22 +273,22 @@ public static class PolylineExtensions
 
                 styles.Add(i % 2 == 0
                     ? colorStyle
-                    : StrokeStyle.GetSolidColor(UIColor.Clear));
+                    : clearStyle);
             }
             var metersPerPixel = pixelDependentDashedPattern ? Distance.MetersPerDevicePixel((polyline.Points[0].X + polyline.Points[^1].X) / 2.0, map.Camera.Zoom) : 1d;
             spans = GeometryUtils.StyleSpans(path, styles.ToArray(), pattern.Select(v => new NSNumber(v * metersPerPixel)).ToArray(), LengthKind.Rhumb);
         }
         else
         {
-            spans = [polyline.Stroke.ToSpan()];
+            spans = [polyline.Stroke.ToSpan(texture)];
         }
 
         return spans;
     }
 
-    public static StrokeStyle ToStrokeStyle(this Brush? brush)
+    public static StrokeStyle ToStrokeStyle(this Brush? brush, string? texture)
     {
-        return brush switch
+        var style = brush switch
         {
             SolidColorBrush solidBrush => StrokeStyle.GetSolidColor(solidBrush.Color.ToPlatform()),
             LinearGradientBrush gradientBrush => gradientBrush.GradientStops.Count switch
@@ -300,10 +300,23 @@ public static class PolylineExtensions
             },
             _ => StrokeStyle.GetSolidColor(UIColor.Black)
         };
+
+        if (!string.IsNullOrWhiteSpace(texture))
+        {
+            var textureStyle = new TextureStyle(new UIImage(texture));
+            //style.StampStyle = textureStyle;
+            //ToDo: This is workaround. remove when property is added
+            void_objc_msgSend_IntPtr(style.Handle, ObjCRuntime.Selector.GetHandle("setStampStyle:"), textureStyle.Handle);
+        }
+
+        return style;
     }
 
-    public static StyleSpan ToSpan(this Brush? brush)
+    [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+    static extern void void_objc_msgSend_IntPtr(System.IntPtr receiver, System.IntPtr selector, System.IntPtr arg0);
+
+    public static StyleSpan ToSpan(this Brush? brush, string? texture)
     {
-        return StyleSpan.FromStyle(brush.ToStrokeStyle());
+        return StyleSpan.FromStyle(brush.ToStrokeStyle(texture));
     }
 }

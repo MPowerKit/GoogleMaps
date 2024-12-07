@@ -14,4 +14,17 @@ public static class PolylineAttached
 
     public static void SetiOSPixelDependentDashedPattern(BindableObject view, bool value) => view.SetValue(iOSPixelDependentDashedPatternProperty, value);
     #endregion
+
+    #region TextureStamp
+    public static readonly BindableProperty TextureStampProperty =
+        BindableProperty.CreateAttached(
+            "TextureStamp",
+            typeof(string),
+            typeof(PolylineAttached),
+            null);
+
+    public static string GetTextureStamp(BindableObject view) => (string)view.GetValue(TextureStampProperty);
+
+    public static void SetTextureStamp(BindableObject view, string value) => view.SetValue(TextureStampProperty, value);
+    #endregion
 }

@@ -114,4 +114,26 @@ public static class Extensions
 
         return desc;
     }
+
+    public static Bitmap GetBitmap(this string file, Context context)
+    {
+        Bitmap? bitmap = null;
+
+        if (!System.IO.Path.IsPathRooted(file) || !File.Exists(file))
+        {
+            var id = context.GetDrawableId(file);
+            if (id <= 0) throw new Exception();
+
+            var drawable = context.GetDrawable(id);
+            bitmap = (drawable as BitmapDrawable)!.Bitmap!;
+        }
+        else if (File.Exists(file))
+        {
+            bitmap = BitmapFactory.DecodeFile(file);
+        }
+
+        if (bitmap is null) throw new Exception();
+
+        return bitmap;
+    }
 }

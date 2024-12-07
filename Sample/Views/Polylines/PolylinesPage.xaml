@@ -12,24 +12,37 @@
 
     <Grid RowDefinitions="Auto,*">
         <VerticalStackLayout>
-            <Grid ColumnDefinitions="*,*,*">
-                <HorizontalStackLayout>
+            <Grid ColumnDefinitions="*,*,*,*">
+                <Grid ColumnDefinitions="Auto,*">
                     <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" />
                     <Label Text="Is visible"
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
 
-                <HorizontalStackLayout Grid.Column="1">
+                <Grid Grid.Column="1"
+                      ColumnDefinitions="Auto,*">
                     <CheckBox IsChecked="{Binding Clickable, Mode=TwoWay}" />
                     <Label Text="Is clickable"
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
 
-                <HorizontalStackLayout Grid.Column="2">
+                <Grid Grid.Column="2"
+                      ColumnDefinitions="Auto,*">
                     <CheckBox IsChecked="{Binding UseGradient, Mode=TwoWay}" />
                     <Label Text="Use gradient"
-                           VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
+
+                <Grid Grid.Column="3"
+                      ColumnDefinitions="Auto,*">
+                    <CheckBox IsChecked="{Binding UseTexture, Mode=TwoWay}" />
+                    <Label Text="Use texture"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
             </Grid>
 
             <Grid ColumnDefinitions="*,*,*">
@@ -58,6 +71,7 @@
                   ColumnSpacing="5">
                 <Button Command="{Binding RandomizePointsCommand}"
                         Text="Randomize points"
+                        LineBreakMode="WordWrap"
                         VerticalOptions="Center" />
                 <Button Command="{Binding ChangeJointTypeCommand}"
                         Text="Change joint type"
@@ -88,7 +102,7 @@
                                          Binding="{Binding UseGradient}"
                                          Value="True">
                                 <Setter Property="Text"
-                                        Value="Stroke gradient start color" /> 
+                                        Value="Stroke gradient start color" />
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
