@@ -1,6 +1,6 @@
 namespace Sample.Views;
 
-public partial class UISettingsPage : ContentPage
+public partial class UISettingsPage
 {
 	public UISettingsPage()
 	{

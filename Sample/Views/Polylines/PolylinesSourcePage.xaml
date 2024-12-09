@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.PolylinesSourcePage"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             Title="PolylineSourcePage"
+             x:DataType="vm:PolylinesSourcePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:PolylinesSourcePageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <gm:GoogleMap PolylinesSource="{Binding Items}"
+                      PolylineClickedCommand="{Binding PolylineClickedCommand}"
+                      Grid.Row="1" >
+            <gm:GoogleMap.PolylineItemTemplate>
+                <vm:PolylineTemplateSelector>
+                    <vm:PolylineTemplateSelector.DefaultTemplate>
+                        <DataTemplate x:DataType="vm:PolylineDataObject">
+                            <Polyline Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                      ZIndex="{Binding ZIndex}"
+                                      StrokeThickness="4"
+                                      Stroke="Red" />
+                        </DataTemplate>
+                    </vm:PolylineTemplateSelector.DefaultTemplate>
+                    <vm:PolylineTemplateSelector.GradientTemplate>
+                        <DataTemplate x:DataType="vm:PolylineDataObject">
+                            <Polyline Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                      ZIndex="{Binding ZIndex}"
+                                      StrokeThickness="15">
+                                <Polyline.Stroke>
+                                    <LinearGradientBrush>
+                                        <GradientStop Color="Orange" />
+                                        <GradientStop Color="Green" />
+                                    </LinearGradientBrush>
+                                </Polyline.Stroke>
+                            </Polyline>
+                        </DataTemplate>
+                    </vm:PolylineTemplateSelector.GradientTemplate>
+                    <vm:PolylineTemplateSelector.DashedTemplate>
+                        <DataTemplate x:DataType="vm:PolylineDataObject">
+                            <Polyline Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                      ZIndex="{Binding ZIndex}"
+                                      StrokeThickness="8"
+                                      Stroke="Purple"
+                                      StrokeDashArray="20 10"
+                                      gm:PolylineAttached.iOSPixelDependentDashedPattern="True" />
+                        </DataTemplate>
+                    </vm:PolylineTemplateSelector.DashedTemplate>
+                    <vm:PolylineTemplateSelector.TexturedTemplate>
+                        <DataTemplate x:DataType="vm:PolylineDataObject">
+                            <Polyline Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                      ZIndex="{Binding ZIndex}"
+                                      StrokeThickness="15"
+                                      Stroke="Aqua"
+                                      gm:PolylineAttached.TextureStamp="map_pin" />
+                        </DataTemplate>
+                    </vm:PolylineTemplateSelector.TexturedTemplate>
+                    <vm:PolylineTemplateSelector.DisabledTemplate>
+                        <DataTemplate x:DataType="vm:PolylineDataObject">
+                            <Polyline Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                      ZIndex="{Binding ZIndex}"
+                                      StrokeThickness="4"
+                                      IsEnabled="False"
+                                      Stroke="Blue"  />
+                        </DataTemplate>
+                    </vm:PolylineTemplateSelector.DisabledTemplate>
+                </vm:PolylineTemplateSelector>
+            </gm:GoogleMap.PolylineItemTemplate>
+        </gm:GoogleMap>
+    </Grid>
+</ContentPage>
