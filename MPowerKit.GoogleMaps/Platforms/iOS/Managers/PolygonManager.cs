@@ -58,7 +58,7 @@ public class PolygonManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHa
         Handler = null;
     }
 
-    private void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    protected virtual void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var polygon = Polygons.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
 

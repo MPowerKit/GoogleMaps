@@ -10,13 +10,13 @@ using Path = System.IO.Path;
 
 namespace MPowerKit.GoogleMaps;
 
-public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>, IIndoorDisplayDelegate
+public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
     protected MapView? NativeView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
-    public void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
         NativeView = platformView;
@@ -32,7 +32,7 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         platformView.CoordinateTapped += PlatformView_CoordinateTapped;
         platformView.CoordinateLongPressed += PlatformView_CoordinateLongPressed;
         platformView.PoiWithPlaceIdTapped += PlatformView_PoiWithPlaceIdTapped;
-        platformView.IndoorDisplay.Delegate = this;
+        platformView.IndoorDisplay.Delegate = new IndoorDisplayDel(this);
         platformView.MapCapabilitiesChanged += PlatformView_MapCapabilitiesChanged;
 
         HandlePoiClick();
@@ -40,7 +40,7 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         InitMap();
     }
 
-    public void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         virtualView.MapCoordsToScreenLocationFuncInternal = null;
         virtualView.ScreenLocationToMapCoordsFuncInternal = null;
@@ -164,17 +164,17 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         return NativeView!.Projection.PointForCoordinate(point.ToCoord()).ToCrossPlatformPoint();
     }
 
-    private void PlatformView_CoordinateTapped(object? sender, GMSCoordEventArgs e)
+    protected virtual void PlatformView_CoordinateTapped(object? sender, GMSCoordEventArgs e)
     {
         VirtualView!.SendMapClick(e.Coordinate.ToCrossPlatformPoint());
     }
 
-    private void PlatformView_CoordinateLongPressed(object? sender, GMSCoordEventArgs e)
+    protected virtual void PlatformView_CoordinateLongPressed(object? sender, GMSCoordEventArgs e)
     {
         VirtualView!.SendMapLongClick(e.Coordinate.ToCrossPlatformPoint());
     }
 
-    private void PlatformView_PoiWithPlaceIdTapped(object? sender, GMSPoiWithPlaceIdEventEventArgs e)
+    protected virtual void PlatformView_PoiWithPlaceIdTapped(object? sender, GMSPoiWithPlaceIdEventEventArgs e)
     {
         if (e is null) return;
 
@@ -193,19 +193,39 @@ public class MapManager : NSObject, IMapFeatureManager<GoogleMap, MapView, Googl
         }
     }
 
-    private void PlatformView_MapCapabilitiesChanged(object? sender, GMSMapCapabilitiesEventArgs e)
+    protected virtual void PlatformView_MapCapabilitiesChanged(object? sender, GMSMapCapabilitiesEventArgs e)
     {
         VirtualView!.SendMapCapabilitiesChanged(e.MapCapabilities.ToCrossPlatform());
     }
 
-    public void DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
+    public virtual void DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
     {
         VirtualView!.SendIndoorBuildingFocused(building?.ToCrossPlatform(NativeView!));
     }
 
-    public void DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
+    public virtual void DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
     {
         VirtualView!.SendIndoorLevelActivated(level?.ToCrossPlatform(NativeView!));
+    }
+
+    public class IndoorDisplayDel : IndoorDisplayDelegate
+    {
+        private readonly MapManager _mapManager;
+
+        public IndoorDisplayDel(MapManager mapManager)
+        {
+            _mapManager = mapManager;
+        }
+
+        public override void DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
+        {
+            _mapManager.DidChangeActiveBuilding(building);
+        }
+
+        public override void DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
+        {
+            _mapManager.DidChangeActiveLevel(level);
+        }
     }
 }
 

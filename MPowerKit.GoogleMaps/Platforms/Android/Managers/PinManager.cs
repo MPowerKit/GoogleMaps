@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 
-using Android.Content;
 using Android.Gms.Maps.Model;
 
 using GMap = Android.Gms.Maps.GoogleMap;

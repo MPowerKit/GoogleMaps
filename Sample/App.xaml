@@ -13,6 +13,7 @@
             <converters:LocationToPointConverter x:Key="LocationToPointConverter" />
             <converters:LocationToViewImageSourceConverter x:Key="LocationToViewImageSourceConverter" />
             <converters:LocationListToPointCollectionConverter x:Key="LocationListToPointCollectionConverter" />
+            <converters:ObjectToBooleanConverter x:Key="ObjectToBooleanConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

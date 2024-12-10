@@ -12,7 +12,7 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
     protected GMap? NativeView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
-    public void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
         NativeView = platformView;
@@ -36,7 +36,7 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         InitMap();
     }
 
-    public void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         virtualView.MapCoordsToScreenLocationFuncInternal = null;
         virtualView.ScreenLocationToMapCoordsFuncInternal = null;

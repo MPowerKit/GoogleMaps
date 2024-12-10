@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.MapFeaturesPage"
              xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
              xmlns:vm="clr-namespace:Sample.ViewModels"
-             x:Class="Sample.Views.UISettingsPage"
-             Title="UISettings Page"
-             x:DataType="vm:UISettingsPageViewModel">
+             Title="Map Features Page"
+             x:DataType="vm:MapFeaturesPageViewModel">
     <ContentPage.BindingContext>
-        <vm:UISettingsPageViewModel />
+        <vm:MapFeaturesPageViewModel />
     </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto,*">
         <VerticalStackLayout>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="compass" />
-                    <Label Text="Show compass button"
+                    <CheckBox x:Name="indoor" />
+                    <Label Text="Enable indoor"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
@@ -23,8 +23,8 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1">
-                    <CheckBox x:Name="scrollGesture" />
-                    <Label Text="Scroll gesture"
+                    <CheckBox x:Name="buildings" />
+                    <Label Text="Enable buildings"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
@@ -32,8 +32,8 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="2">
-                    <CheckBox x:Name="zoomGesture" />
-                    <Label Text="Zoom gesture"
+                    <CheckBox x:Name="poi" />
+                    <Label Text="Handle PoI clicks"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
@@ -96,24 +96,14 @@
                            Grid.Column="1" />
                 </Grid>
             </Grid>
-            <Button Text="Activate indoor level"
-                    IsVisible="{Binding FocusedBuilding, Converter={StaticResource ObjectToBooleanConverter}}"
-                    Command="{Binding ActivateIndoorLevelCommand}"
-                    VerticalOptions="Center" />
         </VerticalStackLayout>
 
         <gm:GoogleMap Grid.Row="1"
-                      CompassEnabled="{Binding IsChecked, Source={x:Reference compass}, Mode=TwoWay}"
-                      ScrollGesturesEnabled="{Binding IsChecked, Source={x:Reference scrollGesture}, Mode=TwoWay}"
-                      ZoomGesturesEnabled="{Binding IsChecked, Source={x:Reference zoomGesture}, Mode=TwoWay}"
-                      TiltGesturesEnabled="{Binding IsChecked, Source={x:Reference tiltGesture}, Mode=TwoWay}"
-                      RotateGesturesEnabled="{Binding IsChecked, Source={x:Reference rotateGesture}, Mode=TwoWay}"
-                      MyLocationButtonEnabled="{Binding IsChecked, Source={x:Reference myLocation}, Mode=TwoWay}"
-                      IndoorLevelPickerEnabled="{Binding IsChecked, Source={x:Reference indoorLevels}, Mode=TwoWay}"
-                      MapToolbarEnabled="{Binding IsChecked, Source={x:Reference mapToolbar}, Mode=TwoWay}"
-                      ZoomControlsEnabled="{Binding IsChecked, Source={x:Reference zoomControls}, Mode=TwoWay}"
-                      IndoorEnabled="True"
-                      BuildingsEnabled="True"
+                      IndoorEnabled="{Binding IsChecked, Source={x:Reference indoor}, Mode=TwoWay}"
+                      BuildingsEnabled="{Binding IsChecked, Source={x:Reference buildings}, Mode=TwoWay}"
+                      HandlePoiClick="{Binding IsChecked, Source={x:Reference poi}, Mode=TwoWay}"
+                      FocusedBuilding="{Binding FocusedBuilding, Mode=OneWayToSource}"
+                      ActiveLevel="{Binding ActiveLevel, Mode=OneWayToSource}"
                       MyLocationEnabled="{Binding LocationPermissionsGranted}" />
     </Grid>
 </ContentPage>

@@ -10,7 +10,7 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHa
     protected GMap? NativeView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
-    public void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
         NativeView = platformView;
@@ -22,7 +22,7 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHa
         InitUiSettings();
     }
 
-    public void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;

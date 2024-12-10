@@ -69,18 +69,18 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         }
     }
 
-    private void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
+    protected virtual void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
     {
         VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
         VirtualView!.SendCameraMove();
     }
 
-    private void PlatformView_CameraPositionIdle(object? sender, GMSCameraEventArgs e)
+    protected virtual void PlatformView_CameraPositionIdle(object? sender, GMSCameraEventArgs e)
     {
         OnVisibleRegionChanged();
     }
 
-    private void PlatformView_WillMove(object? sender, GMSWillMoveEventArgs e)
+    protected virtual void PlatformView_WillMove(object? sender, GMSWillMoveEventArgs e)
     {
         VirtualView!.SendCameraMoveStart(e.Gesture ? CameraMoveReason.Gesture : CameraMoveReason.ApiAnimation);
     }

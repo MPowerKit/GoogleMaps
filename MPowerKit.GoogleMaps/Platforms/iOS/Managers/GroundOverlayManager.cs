@@ -53,7 +53,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, Googl
         Handler = null;
     }
 
-    private void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    protected virtual void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var groundOverlay = GroundOverlays.SingleOrDefault(go => NativeObjectAttachedProperty.GetNativeObject(go) == e.Overlay);
 

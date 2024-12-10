@@ -58,7 +58,7 @@ public class CircleManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         Handler = null;
     }
 
-    private void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    protected virtual void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var circle = Circles.SingleOrDefault(c => NativeObjectAttachedProperty.GetNativeObject(c) == e.Overlay);
 

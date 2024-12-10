@@ -80,7 +80,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         return true;
     }
 
-    private void PlatformView_DraggingMarkerStarted(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_DraggingMarkerStarted(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
@@ -89,7 +89,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         VirtualView!.SendPinDragStart(pin);
     }
 
-    private void PlatformView_DraggingMarker(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_DraggingMarker(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
@@ -98,7 +98,7 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         VirtualView!.SendPinDragging(pin);
     }
 
-    private void PlatformView_DraggingMarkerEnded(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_DraggingMarkerEnded(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
@@ -107,21 +107,21 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         VirtualView!.SendPinDragEnd(pin);
     }
 
-    private void PlatformView_InfoTapped(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_InfoTapped(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowClick(pin);
     }
 
-    private void PlatformView_InfoLongPressed(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_InfoLongPressed(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 
         VirtualView!.SendInfoWindowLongClick(pin);
     }
 
-    private void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
+    protected virtual void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
         var pin = Pins.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
 

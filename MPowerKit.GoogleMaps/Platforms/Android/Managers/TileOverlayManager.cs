@@ -1,16 +1,11 @@
 ﻿using System.Collections.Specialized;
 
 using Android.Gms.Maps.Model;
-using Android.Graphics;
-using Android.Graphics.Drawables;
 
 using Java.Net;
 
-using Microsoft.Maui.Platform;
-
 using GMap = Android.Gms.Maps.GoogleMap;
 using NTileOverlay = Android.Gms.Maps.Model.TileOverlay;
-using Path = System.IO.Path;
 using Point = Microsoft.Maui.Graphics.Point;
 using VTileOverlay = MPowerKit.GoogleMaps.TileOverlay;
 
@@ -115,7 +110,7 @@ public class TileOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapH
 
     protected virtual void ClearTileOverlays()
     {
-        RemoveTileOverlaysFromNativeMap([.. TileOverlays]);
+        RemoveTileOverlaysFromNativeMap([..TileOverlays]);
     }
 
     protected virtual void InitTileOverlays()
