@@ -5,8 +5,11 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-feature android:name="android.hardware.location" android:required="false" />
+  	<uses-feature android:name="android.hardware.location.gps" android:required="false" />
+  	<uses-feature android:name="android.hardware.location.network" android:required="false" />
 	<uses-sdk />
-<queries>
-    <package android:name="com.google.android.apps.maps" />
-  </queries>
+	<queries>
+    		<package android:name="com.google.android.apps.maps" />
+  	</queries>
 </manifest>

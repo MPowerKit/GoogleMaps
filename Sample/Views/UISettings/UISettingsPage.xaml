@@ -2,8 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
              x:Class="Sample.Views.UISettingsPage"
-             Title="UISettings Page">
+             Title="UISettings Page"
+             x:DataType="vm:UISettingsPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:UISettingsPageViewModel />
+    </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto,*">
         <VerticalStackLayout>
@@ -53,7 +58,8 @@
                 </Grid>
 
                 <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="2">
+                      Grid.Column="2"
+                      IsEnabled="{Binding LocationPermissionsGranted}">
                     <CheckBox x:Name="myLocation" />
                     <Label Text="Show 'My location' button"
                            VerticalOptions="Center"
@@ -91,7 +97,7 @@
                 </Grid>
             </Grid>
         </VerticalStackLayout>
-        
+
         <gm:GoogleMap Grid.Row="1"
                       CompassEnabled="{Binding IsChecked, Source={x:Reference compass}, Mode=TwoWay}"
                       ScrollGesturesEnabled="{Binding IsChecked, Source={x:Reference scrollGesture}, Mode=TwoWay}"
@@ -103,6 +109,7 @@
                       MapToolbarEnabled="{Binding IsChecked, Source={x:Reference mapToolbar}, Mode=TwoWay}"
                       ZoomControlsEnabled="{Binding IsChecked, Source={x:Reference zoomControls}, Mode=TwoWay}"
                       IndoorEnabled="True"
-                      MyLocationEnabled="True" />
+                      BuildingsEnabled="True"
+                      MyLocationEnabled="{Binding LocationPermissionsGranted}" />
     </Grid>
 </ContentPage>
