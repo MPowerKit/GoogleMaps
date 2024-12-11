@@ -41,8 +41,8 @@
             </Grid>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="tiltGesture" />
-                    <Label Text="Tilt gesture"
+                    <CheckBox x:Name="traffic" />
+                    <Label Text="Enable traffic"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
@@ -50,51 +50,56 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1">
-                    <CheckBox x:Name="rotateGesture" />
-                    <Label Text="Rotate gesture"
+                    <CheckBox IsChecked="{Binding EnableMyLocation, Mode=TwoWay}" />
+                    <Label Text="Enable 'My location'"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
                 </Grid>
 
                 <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="2"
-                      IsEnabled="{Binding LocationPermissionsGranted}">
-                    <CheckBox x:Name="myLocation" />
-                    <Label Text="Show 'My location' button"
+                      Grid.Column="2">
+                    <CheckBox x:Name="mapStyle" />
+                    <Label Text="Use custom map style"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
                 </Grid>
             </Grid>
-            <Grid ColumnDefinitions="*,*,*">
-                <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="indoorLevels" />
-                    <Label Text="Show indoor levels"
-                           VerticalOptions="Center"
-                           LineBreakMode="WordWrap"
-                           Grid.Column="1" />
-                </Grid>
+            <Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding ChangeMapTypeCommand}"
+                        Text="Change map type"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center" />
 
-                <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="1"
-                      IsVisible="{OnPlatform iOS=False, Default=True}">
-                    <CheckBox x:Name="mapToolbar" />
-                    <Label Text="Show map toolbar"
-                           VerticalOptions="Center"
-                           LineBreakMode="WordWrap"
-                           Grid.Column="1" />
-                </Grid>
+                <Button Command="{Binding TakeSnapshotCommand}"
+                        Text="Take snapshot"
+                        VerticalOptions="Center"
+                        Grid.Column="1" />
 
-                <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="2"
-                      IsVisible="{OnPlatform iOS=False, Default=True}">
-                    <CheckBox x:Name="zoomControls" />
-                    <Label Text="Show zoom controls"
-                           VerticalOptions="Center"
-                           LineBreakMode="WordWrap"
-                           Grid.Column="1" />
-                </Grid>
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Change padding" />
+                    <Slider x:Name="padding"
+                            Minimum="0"
+                            Maximum="100" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding ActivateIndoorLevelCommand}"
+                        Text="Activate indoor level"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center"
+                        IsVisible="{Binding FocusedBuilding, Converter={StaticResource ObjectToBooleanConverter}}" />
+
+                <Button Command="{Binding ChangeMapColorSchemeCommand}"
+                        Text="Change map color scheme"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center"
+                        IsVisible="{OnPlatform iOS=False, Default=True}"
+                        Grid.Column="2" />
             </Grid>
         </VerticalStackLayout>
 
@@ -102,8 +107,43 @@
                       IndoorEnabled="{Binding IsChecked, Source={x:Reference indoor}, Mode=TwoWay}"
                       BuildingsEnabled="{Binding IsChecked, Source={x:Reference buildings}, Mode=TwoWay}"
                       HandlePoiClick="{Binding IsChecked, Source={x:Reference poi}, Mode=TwoWay}"
+                      TrafficEnabled="{Binding IsChecked, Source={x:Reference traffic}, Mode=TwoWay}"
                       FocusedBuilding="{Binding FocusedBuilding, Mode=OneWayToSource}"
+                      MapType="{Binding MapType}"
+                      MapColorScheme="{Binding MapColorScheme}"
                       ActiveLevel="{Binding ActiveLevel, Mode=OneWayToSource}"
-                      MyLocationEnabled="{Binding LocationPermissionsGranted}" />
+                      MyLocationEnabled="{Binding MyLocationEnabled}"
+                      PoiClickedCommand="{Binding PoiClickedCommand}"
+                      MapClickedCommand="{Binding MapClickedCommand}"
+                      MapLongClickedCommand="{Binding MapLongClickCommand}"
+                      TakeSnapshotFunc="{Binding TakeSnapshotFunc, Mode=OneWayToSource}"
+                      Padding="{Binding Value, Source={x:Reference padding}}"
+                      MapCoordsToScreenLocationFunc="{Binding MapCoordsToScreenLocationFunc, Mode=OneWayToSource}">
+            <gm:GoogleMap.Triggers>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference mapStyle}}"
+                             Value="False">
+                    <Setter Property="MapStyleJson"
+                            Value="{x:Null}" />
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference mapStyle}}"
+                             Value="True">
+                    <Setter Property="MapStyleJson"
+                            Value="map_style.json" />
+                </DataTrigger>
+            </gm:GoogleMap.Triggers>
+        </gm:GoogleMap>
+
+        <Border HeightRequest="100"
+                VerticalOptions="End"
+                HorizontalOptions="Start"
+                Margin="20"
+                StrokeThickness="4"
+                Stroke="Red"
+                Grid.Row="1"
+                IsVisible="{Binding Snapshot, Converter={StaticResource ObjectToBooleanConverter}}">
+            <Image Source="{Binding Snapshot}" />
+        </Border>
     </Grid>
 </ContentPage>

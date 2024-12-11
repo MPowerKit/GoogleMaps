@@ -38,4 +38,9 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new UISettingsPage()));
     }
+
+    private void Button_Clicked_5(object sender, EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new MapFeaturesPage()));
+    }
 }

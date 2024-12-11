@@ -96,10 +96,6 @@
                            Grid.Column="1" />
                 </Grid>
             </Grid>
-            <Button Text="Activate indoor level"
-                    IsVisible="{Binding FocusedBuilding, Converter={StaticResource ObjectToBooleanConverter}}"
-                    Command="{Binding ActivateIndoorLevelCommand}"
-                    VerticalOptions="Center" />
         </VerticalStackLayout>
 
         <gm:GoogleMap Grid.Row="1"

@@ -59,7 +59,11 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual void InitMap()
     {
-        NativeView!.SetIndoorEnabled(VirtualView!.IndoorEnabled);
+        VirtualView!.SendMapCapabilitiesChanged(NativeView!.MapCapabilities.ToCrossPlatform(), false);
+        VirtualView!.SendIndoorBuildingFocused(NativeView.FocusedBuilding?.ToCrossPlatform(), false);
+        VirtualView!.SendIndoorLevelActivated(NativeView.FocusedBuilding?.Levels.ElementAtOrDefault(NativeView.FocusedBuilding?.ActiveLevelIndex ?? 0)?.ToCrossPlatform(), false);
+
+        NativeView.SetIndoorEnabled(VirtualView!.IndoorEnabled);
         NativeView.BuildingsEnabled = VirtualView.BuildingsEnabled;
         NativeView.MapType = (int)VirtualView.MapType;
         NativeView.MyLocationEnabled = VirtualView.MyLocationEnabled;
@@ -124,7 +128,11 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected virtual async Task SetMapStyle()
     {
-        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson)) return;
+        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson))
+        {
+            NativeView!.SetMapStyle(null);
+            return;
+        }
 
         var json = VirtualView!.MapStyleJson;
 

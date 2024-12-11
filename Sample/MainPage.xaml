@@ -16,6 +16,8 @@
                     Clicked="Button_Clicked_3" />
             <Button Text="UI Settings"
                     Clicked="Button_Clicked_4" />
+            <Button Text="Map features"
+                    Clicked="Button_Clicked_5" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

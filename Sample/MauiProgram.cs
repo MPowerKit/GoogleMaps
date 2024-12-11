@@ -12,10 +12,11 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseUserDialogs()
+            .UseMPowerKitGoogleMaps(
 #if IOS
-#else
-            .UseMPowerKitGoogleMaps()
+                "Your iOS API key here"
 #endif
+            )
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

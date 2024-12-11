@@ -1,3 +1,3 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-public record PointOfInterest(Point LatLng, string PlaceId, string Name);
+public record PointOfInterest(Point Position, string PlaceId, string Name);

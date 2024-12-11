@@ -33,6 +33,7 @@ public class GoogleMap : View
     public event Action<IndoorBuilding?>? IndoorBuildingFocused;
     public event Action<IndoorLevel?>? IndoorLevelActivated;
     public event Action<MapRegion>? VisibleRegionChanged;
+    public event Action<MapCapabilities>? MapCapabilitiesChanged;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Action<CameraUpdate>? MoveCameraActionInternal;
@@ -549,9 +550,11 @@ public class GoogleMap : View
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendCameraChange(CameraPosition cameraPosition)
+    public virtual void SendCameraChange(CameraPosition cameraPosition, bool raiseEvent = false)
     {
         CameraPosition = cameraPosition;
+
+        if (!raiseEvent) return;
 
         CameraChange?.Invoke(cameraPosition);
 
@@ -587,15 +590,24 @@ public class GoogleMap : View
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendMapCapabilitiesChanged(MapCapabilities mapCapabilities)
+    public virtual void SendMapCapabilitiesChanged(MapCapabilities mapCapabilities, bool raiseEvent = true)
     {
         MapCapabilities = mapCapabilities;
+
+        if (!raiseEvent) return;
+
+        MapCapabilitiesChanged?.Invoke(mapCapabilities);
+
+        if (MapCapabilitiesChangedCommand?.CanExecute(mapCapabilities) is true)
+            MapCapabilitiesChangedCommand.Execute(mapCapabilities);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendIndoorBuildingFocused(IndoorBuilding? indoorBuilding)
+    public virtual void SendIndoorBuildingFocused(IndoorBuilding? indoorBuilding, bool raiseEvent = true)
     {
         FocusedBuilding = indoorBuilding;
+
+        if (!raiseEvent) return;
 
         IndoorBuildingFocused?.Invoke(indoorBuilding);
 
@@ -604,9 +616,11 @@ public class GoogleMap : View
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendIndoorLevelActivated(IndoorLevel? activeLevel)
+    public virtual void SendIndoorLevelActivated(IndoorLevel? activeLevel, bool raiseEvent = true)
     {
         ActiveLevel = activeLevel;
+
+        if (!raiseEvent) return;
 
         IndoorLevelActivated?.Invoke(activeLevel);
 
@@ -1710,6 +1724,20 @@ public class GoogleMap : View
     public static readonly BindableProperty VisibleRegionChangedCommandProperty =
         BindableProperty.Create(
             nameof(VisibleRegionChangedCommand),
+            typeof(ICommand),
+            typeof(GoogleMap));
+    #endregion
+
+    #region MapCapabilitiesChangedCommand
+    public ICommand MapCapabilitiesChangedCommand
+    {
+        get => (ICommand)GetValue(MapCapabilitiesChangedCommandProperty);
+        set => SetValue(MapCapabilitiesChangedCommandProperty, value);
+    }
+
+    public static readonly BindableProperty MapCapabilitiesChangedCommandProperty =
+        BindableProperty.Create(
+            nameof(MapCapabilitiesChangedCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion

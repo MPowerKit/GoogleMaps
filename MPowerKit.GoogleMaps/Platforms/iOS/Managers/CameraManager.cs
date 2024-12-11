@@ -33,7 +33,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
 
         platformView.SetMinMaxZoom(virtualView.MinZoom, virtualView.MaxZoom);
 
-        virtualView.SendCameraChange(platformView.Camera.ToCrossPlatform());
+        virtualView.SendCameraChange(platformView.Camera.ToCrossPlatform(), false);
 
         OnVisibleRegionChanged();
     }

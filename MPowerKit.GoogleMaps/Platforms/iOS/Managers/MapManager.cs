@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 
-using Foundation;
-
 using Google.Maps;
 
 using UIKit;
@@ -31,7 +29,6 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
         platformView.CoordinateTapped += PlatformView_CoordinateTapped;
         platformView.CoordinateLongPressed += PlatformView_CoordinateLongPressed;
-        platformView.PoiWithPlaceIdTapped += PlatformView_PoiWithPlaceIdTapped;
         platformView.IndoorDisplay.Delegate = new IndoorDisplayDel(this);
         platformView.MapCapabilitiesChanged += PlatformView_MapCapabilitiesChanged;
 
@@ -62,6 +59,10 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     protected virtual void InitMap()
     {
+        VirtualView!.SendMapCapabilitiesChanged(NativeView!.MapCapabilities.ToCrossPlatform(), false);
+        VirtualView!.SendIndoorBuildingFocused(NativeView.IndoorDisplay?.ActiveBuilding?.ToCrossPlatform(NativeView), false);
+        VirtualView!.SendIndoorLevelActivated(NativeView.IndoorDisplay?.ActiveLevel?.ToCrossPlatform(NativeView), false);
+
         NativeView!.IndoorEnabled = VirtualView!.IndoorEnabled;
         NativeView.BuildingsEnabled = VirtualView.BuildingsEnabled;
         NativeView.MapType = VirtualView.MapType.ToNative();
@@ -115,7 +116,11 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     protected virtual async Task SetMapStyle()
     {
-        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson)) return;
+        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson))
+        {
+            NativeView!.MapStyle = null;
+            return;
+        }
 
         var json = VirtualView!.MapStyleJson;
 
