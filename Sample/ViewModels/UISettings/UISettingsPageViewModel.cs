@@ -16,6 +16,8 @@ public partial class UISettingsPageViewModel : ObservableObject
     [RelayCommand]
     private async void Setup()
     {
+        await Task.Yield();
+
         var res = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
         if (res is PermissionStatus.Granted)
         {

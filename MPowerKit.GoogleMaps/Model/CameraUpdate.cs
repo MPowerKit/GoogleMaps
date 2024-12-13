@@ -70,14 +70,14 @@ public static class CameraUpdateFactory
         return new ZoomToCameraUpdate() { Zoom = zoom };
     }
 
-    public static CameraUpdate ZoomBy(float amount)
+    public static CameraUpdate ZoomBy(float zoomDelta)
     {
-        return new ZoomByCameraUpdate() { Amount = amount };
+        return new ZoomByCameraUpdate() { Amount = zoomDelta };
     }
 
-    public static CameraUpdate ZoomBy(float amount, Point focusPointOnScreen)
+    public static CameraUpdate ZoomBy(float zoomDelta, Point focusPointOnScreen)
     {
-        return new ZoomByAndFocusCameraUpdate() { Amount = amount, Focus = focusPointOnScreen };
+        return new ZoomByAndFocusCameraUpdate() { Amount = zoomDelta, Focus = focusPointOnScreen };
     }
 
     public static CameraUpdate ScrollBy(float dxPixels, float dyPixels)

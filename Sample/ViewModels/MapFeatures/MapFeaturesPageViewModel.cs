@@ -74,7 +74,7 @@ public partial class MapFeaturesPageViewModel : ObservableObject
     {
         if (FocusedBuilding is null) return;
 
-        var res = await UserDialogs.Instance.ActionSheetAsync("Choose level to activate", null, "Cancel",
+        var res = await UserDialogs.Instance.ActionSheetAsync(null, "Choose level to activate", "Cancel",
             buttons: FocusedBuilding.Levels.Select(l => l.Name).ToArray());
 
         var level = FocusedBuilding.Levels.FirstOrDefault(l => l.Name == res);
@@ -86,7 +86,7 @@ public partial class MapFeaturesPageViewModel : ObservableObject
     [RelayCommand]
     private async Task ChangeMapType()
     {
-        var res = await UserDialogs.Instance.ActionSheetAsync("Choose map type", null, "Cancel",
+        var res = await UserDialogs.Instance.ActionSheetAsync(null, "Choose map type", "Cancel",
             buttons: Enum.GetValues<MapType>().Select(t => t.ToString()).ToArray());
 
         if (res == "Cancel" || MapType.ToString() == res) return;

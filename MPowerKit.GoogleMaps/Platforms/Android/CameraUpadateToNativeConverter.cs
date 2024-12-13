@@ -66,7 +66,7 @@ public class CameraUpadateToNativeConverter
     public static NCameraUpdate ScrollByCameraUpdate(VCameraUpdate cameraUpdate, Context context)
     {
         var scrollBy = (ScrollByCameraUpdate)cameraUpdate;
-        return NCameraUpdateFactory.ScrollBy(scrollBy.Dx, scrollBy.Dy);
+        return NCameraUpdateFactory.ScrollBy(context.ToPixels(scrollBy.Dx), context.ToPixels(scrollBy.Dy));
     }
 
     public static NCameraUpdate NewCameraPositionCameraUpdate(VCameraUpdate cameraUpdate, Context context)

@@ -5,7 +5,7 @@ using Google.Maps;
 
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Platform;
-using ObjCRuntime;
+
 using UIKit;
 
 using NPolyline = Google.Maps.Polyline;

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 
-using Android.Content;
 using Android.Gms.Maps.Model;
 
 using GMap = Android.Gms.Maps.GoogleMap;
@@ -119,7 +118,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
 
     protected virtual void ClearGroundOverlays()
     {
-        RemoveGroundOverlaysFromNativeMap([.. GroundOverlays]);
+        RemoveGroundOverlaysFromNativeMap([..GroundOverlays]);
     }
 
     protected virtual void InitGroundOverlays()

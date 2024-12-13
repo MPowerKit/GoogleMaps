@@ -43,4 +43,14 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new MapFeaturesPage()));
     }
+
+    private void Button_Clicked_6(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new CameraPage(false)));
+    }
+
+    private void Button_Clicked_7(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new CameraPage(true)));
+    }
 }

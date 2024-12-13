@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-using Google.Maps;
+using CoreAnimation;
 
-using UIKit;
+using Google.Maps;
 
 using NCameraPosition = Google.Maps.CameraPosition;
 using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
@@ -31,11 +31,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         virtualView.MoveCameraActionInternal = MoveCamera;
         virtualView.AnimateCameraFuncInternal = AnimateCamera;
 
-        platformView.SetMinMaxZoom(virtualView.MinZoom, virtualView.MaxZoom);
-
-        virtualView.SendCameraChange(platformView.Camera.ToCrossPlatform(), false);
-
-        OnVisibleRegionChanged();
+        InitCamera();
     }
 
     public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
@@ -55,6 +51,26 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         Handler = null;
     }
 
+    protected virtual void InitCamera()
+    {
+        NativeView!.SetMinMaxZoom(VirtualView!.MinZoom, VirtualView.MaxZoom);
+
+        if (VirtualView.RestrictPanningToArea is not null)
+        {
+            NativeView.CameraTargetBounds = VirtualView.RestrictPanningToArea?.ToNative();
+            return;
+        }
+
+        if (VirtualView.InitialCameraPosition is not null)
+        {
+            NativeView.MoveCamera(VirtualView.InitialCameraPosition.ToNative());
+            return;
+        }
+
+        VirtualView.SendCameraChange(NativeView.Camera.ToCrossPlatform(), false);
+        VirtualView.SendCameraIdle(NativeView!.Projection.VisibleRegion.ToCrossPlatform(), false);
+    }
+
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
     {
 
@@ -67,6 +83,10 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         {
             NativeView!.SetMinMaxZoom(VirtualView!.MinZoom, VirtualView!.MaxZoom);
         }
+        else if (e.PropertyName == GoogleMap.RestrictPanningToAreaProperty.PropertyName)
+        {
+            NativeView!.CameraTargetBounds = VirtualView!.RestrictPanningToArea?.ToNative();
+        }
     }
 
     protected virtual void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
@@ -77,7 +97,8 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
 
     protected virtual void PlatformView_CameraPositionIdle(object? sender, GMSCameraEventArgs e)
     {
-        OnVisibleRegionChanged();
+        VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
+        VirtualView!.SendCameraIdle(NativeView!.Projection.VisibleRegion.ToCrossPlatform());
     }
 
     protected virtual void PlatformView_WillMove(object? sender, GMSWillMoveEventArgs e)
@@ -95,28 +116,25 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         VirtualView!.SendCameraMove();
     }
 
-    protected virtual void OnVisibleRegionChanged()
-    {
-        VirtualView!.SendVisibleRegionChanged(NativeView!.Projection.VisibleRegion.ToCrossPlatform());
-    }
-
     protected virtual Task AnimateCamera(CameraUpdate update, int durationMils = 300)
     {
         TaskCompletionSource tcs = new();
 
-        UIView.AnimateNotify(durationMils, 0, UIViewAnimationOptions.CurveEaseOut,
-            () => NativeView!.Animate(update.ToNative()),
-            (finished) =>
-            {
-                if (finished)
-                {
-                    tcs.SetResult();
-                }
-                else
-                {
-                    tcs.SetCanceled();
-                }
-            });
+        try
+        {
+            var native = update.ToNative();
+
+            CATransaction.Begin();
+            CATransaction.AnimationTimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseOut);
+            CATransaction.AnimationDuration = durationMils / 1000f;
+            CATransaction.CompletionBlock = tcs.SetResult;
+            NativeView!.Animate(native);
+            CATransaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            tcs.SetException(ex);
+        }
 
         return tcs.Task;
     }
@@ -154,7 +172,7 @@ public static class CameraExtensions
         );
     }
 
-    public static MapRegion ToCrossPlatform(this VisibleRegion visibleRegion)
+    public static VisibleRegion ToCrossPlatform(this Google.Maps.VisibleRegion visibleRegion)
     {
         return new(
             new(visibleRegion.NearLeft.ToCrossPlatformPoint(), visibleRegion.FarRight.ToCrossPlatformPoint()),

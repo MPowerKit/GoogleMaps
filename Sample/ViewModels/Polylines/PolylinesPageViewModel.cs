@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Controls.UserDialogs.Maui;
 
 using Microsoft.Maui.Controls.Shapes;
+
 using MPowerKit.GoogleMaps;
 
 namespace Sample.ViewModels;

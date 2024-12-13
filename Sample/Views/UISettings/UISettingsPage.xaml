@@ -14,7 +14,7 @@
         <VerticalStackLayout>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="compass" />
+                    <CheckBox IsChecked="{Binding CompassEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Show compass button"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -23,7 +23,7 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1">
-                    <CheckBox x:Name="scrollGesture" />
+                    <CheckBox IsChecked="{Binding ScrollGesturesEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Scroll gesture"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -32,7 +32,7 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="2">
-                    <CheckBox x:Name="zoomGesture" />
+                    <CheckBox IsChecked="{Binding ZoomGesturesEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Zoom gesture"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -41,7 +41,7 @@
             </Grid>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="tiltGesture" />
+                    <CheckBox IsChecked="{Binding TiltGesturesEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Tilt gesture"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -50,7 +50,7 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1">
-                    <CheckBox x:Name="rotateGesture" />
+                    <CheckBox IsChecked="{Binding RotateGesturesEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Rotate gesture"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -58,9 +58,9 @@
                 </Grid>
 
                 <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="2"
-                      IsEnabled="{Binding LocationPermissionsGranted}">
-                    <CheckBox x:Name="myLocation" />
+                      Grid.Column="2">
+                    <CheckBox IsChecked="{Binding MyLocationButtonEnabled, Source={x:Reference map}, Mode=TwoWay}"
+                              IsVisible="{Binding LocationPermissionsGranted}" />
                     <Label Text="Show 'My location' button"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -69,8 +69,8 @@
             </Grid>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="indoorLevels" />
-                    <Label Text="Show indoor levels"
+                    <CheckBox IsChecked="{Binding IndoorLevelPickerEnabled, Source={x:Reference map}, Mode=TwoWay}" />
+                    <Label Text="Show indoor levels picker"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
                            Grid.Column="1" />
@@ -79,7 +79,7 @@
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1"
                       IsVisible="{OnPlatform iOS=False, Default=True}">
-                    <CheckBox x:Name="mapToolbar" />
+                    <CheckBox IsChecked="{Binding MapToolbarEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Show map toolbar"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -89,7 +89,7 @@
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="2"
                       IsVisible="{OnPlatform iOS=False, Default=True}">
-                    <CheckBox x:Name="zoomControls" />
+                    <CheckBox IsChecked="{Binding ZoomControlsEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Show zoom controls"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -99,15 +99,7 @@
         </VerticalStackLayout>
 
         <gm:GoogleMap Grid.Row="1"
-                      CompassEnabled="{Binding IsChecked, Source={x:Reference compass}, Mode=TwoWay}"
-                      ScrollGesturesEnabled="{Binding IsChecked, Source={x:Reference scrollGesture}, Mode=TwoWay}"
-                      ZoomGesturesEnabled="{Binding IsChecked, Source={x:Reference zoomGesture}, Mode=TwoWay}"
-                      TiltGesturesEnabled="{Binding IsChecked, Source={x:Reference tiltGesture}, Mode=TwoWay}"
-                      RotateGesturesEnabled="{Binding IsChecked, Source={x:Reference rotateGesture}, Mode=TwoWay}"
-                      MyLocationButtonEnabled="{Binding IsChecked, Source={x:Reference myLocation}, Mode=TwoWay}"
-                      IndoorLevelPickerEnabled="{Binding IsChecked, Source={x:Reference indoorLevels}, Mode=TwoWay}"
-                      MapToolbarEnabled="{Binding IsChecked, Source={x:Reference mapToolbar}, Mode=TwoWay}"
-                      ZoomControlsEnabled="{Binding IsChecked, Source={x:Reference zoomControls}, Mode=TwoWay}"
+                      x:Name="map"
                       IndoorEnabled="True"
                       BuildingsEnabled="True"
                       MyLocationEnabled="{Binding LocationPermissionsGranted}" />

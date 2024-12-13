@@ -4,10 +4,9 @@ using Android.Content;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 using NCameraPosition = Android.Gms.Maps.Model.CameraPosition;
-using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
 using NCameraUpdate = Android.Gms.Maps.CameraUpdate;
+using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
 using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
-using Android.Gms.Maps.Model;
 
 namespace MPowerKit.GoogleMaps;
 
@@ -36,12 +35,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         virtualView.AnimateCameraFuncInternal = AnimateCamera;
         virtualView.ResetMinMaxZoomActionInternal = ResetMinMaxZoom;
 
-        platformView.SetMinZoomPreference(virtualView.MinZoom);
-        platformView.SetMaxZoomPreference(virtualView.MaxZoom);
-
-        virtualView.SendCameraChange(platformView.CameraPosition.ToCrossPlatform(), false);
-
-        OnVisibleRegionChanged();
+        InitCamera();
     }
 
     public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
@@ -64,6 +58,27 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         Handler = null;
     }
 
+    protected virtual void InitCamera()
+    {
+        NativeView!.SetMinZoomPreference(VirtualView!.MinZoom);
+        NativeView.SetMaxZoomPreference(VirtualView.MaxZoom);
+
+        if (VirtualView.RestrictPanningToArea is not null)
+        {
+            NativeView.SetLatLngBoundsForCameraTarget(VirtualView.RestrictPanningToArea?.ToNative());
+            return;
+        }
+
+        if (VirtualView.InitialCameraPosition is not null)
+        {
+            NativeView.MoveCamera(VirtualView.InitialCameraPosition.ToNative(Handler!.Context));
+            return;
+        }
+
+        VirtualView.SendCameraChange(NativeView.CameraPosition.ToCrossPlatform(), false);
+        VirtualView.SendCameraIdle(NativeView.Projection.VisibleRegion.ToCrossPlatform(), false);
+    }
+
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
     {
 
@@ -78,6 +93,10 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
         else if (e.PropertyName == GoogleMap.MaxZoomProperty.PropertyName)
         {
             NativeView!.SetMaxZoomPreference(VirtualView!.MaxZoom);
+        }
+        else if (e.PropertyName == GoogleMap.RestrictPanningToAreaProperty.PropertyName)
+        {
+            NativeView!.SetLatLngBoundsForCameraTarget(VirtualView!.RestrictPanningToArea?.ToNative());
         }
     }
 
@@ -98,12 +117,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
 
     protected virtual void NativeMap_CameraIdle(object? sender, EventArgs e)
     {
-        OnVisibleRegionChanged();
-    }
-
-    protected virtual void OnVisibleRegionChanged()
-    {
-        VirtualView!.SendVisibleRegionChanged(NativeView!.Projection.VisibleRegion.ToCrossPlatform());
+        VirtualView!.SendCameraIdle(NativeView!.Projection.VisibleRegion.ToCrossPlatform());
     }
 
     protected virtual void NativeMap_CameraChange(object? sender, GMap.CameraChangeEventArgs e)
@@ -114,6 +128,8 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
     protected virtual void ResetMinMaxZoom()
     {
         NativeView!.ResetMinMaxZoomPreference();
+        VirtualView!.MinZoom = NativeView.MinZoomLevel;
+        VirtualView!.MaxZoom = NativeView.MaxZoomLevel;
     }
 
     protected virtual Task AnimateCamera(VCameraUpdate update, int durationMils = 300)
@@ -179,7 +195,7 @@ public static class CameraExtensions
         );
     }
 
-    public static MapRegion ToCrossPlatform(this VisibleRegion visibleRegion)
+    public static VisibleRegion ToCrossPlatform(this Android.Gms.Maps.Model.VisibleRegion visibleRegion)
     {
         return new(
             visibleRegion.LatLngBounds.ToCrossPlatform(),

@@ -26,13 +26,13 @@ public class GoogleMap : View
     public event Action<Point>? MapClick;
     public event Action<Point>? MapLongClick;
     public event Action? NativeMapReady;
-    public event Action<CameraPosition>? CameraChange;
+    public event Action<CameraPosition>? CameraPositionChanged;
     public event Action<CameraMoveReason>? CameraMoveStart;
     public event Action? CameraMoveCanceled;
     public event Action? CameraMove;
     public event Action<IndoorBuilding?>? IndoorBuildingFocused;
     public event Action<IndoorLevel?>? IndoorLevelActivated;
-    public event Action<MapRegion>? VisibleRegionChanged;
+    public event Action<VisibleRegion>? CameraIdle;
     public event Action<MapCapabilities>? MapCapabilitiesChanged;
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -528,14 +528,16 @@ public class GoogleMap : View
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendVisibleRegionChanged(MapRegion region)
+    public virtual void SendCameraIdle(VisibleRegion region, bool raiseEvent = true)
     {
         VisibleRegion = region;
 
-        VisibleRegionChanged?.Invoke(region);
+        if (!raiseEvent) return;
 
-        if (VisibleRegionChangedCommand?.CanExecute(region) is true)
-            VisibleRegionChangedCommand.Execute(region);
+        CameraIdle?.Invoke(region);
+
+        if (CameraIdleCommand?.CanExecute(region) is true)
+            CameraIdleCommand.Execute(region);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -556,10 +558,10 @@ public class GoogleMap : View
 
         if (!raiseEvent) return;
 
-        CameraChange?.Invoke(cameraPosition);
+        CameraPositionChanged?.Invoke(cameraPosition);
 
-        if (CameraChangedCommand?.CanExecute(cameraPosition) is true)
-            CameraChangedCommand.Execute(cameraPosition);
+        if (CameraPositionChangedCommand?.CanExecute(cameraPosition) is true)
+            CameraPositionChangedCommand.Execute(cameraPosition);
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -628,17 +630,45 @@ public class GoogleMap : View
             IndoorLevelActivatedCommand.Execute(activeLevel);
     }
 
-    #region MapCapabilities
-    public MapCapabilities MapCapabilities
+    #region InitialCameraPosition
+    public CameraUpdate InitialCameraPosition
     {
-        get => (MapCapabilities)GetValue(MapCapabilitiesProperty);
+        get => (CameraUpdate)GetValue(InitialCameraPositionProperty);
+        set => SetValue(InitialCameraPositionProperty, value);
+    }
+
+    public static readonly BindableProperty InitialCameraPositionProperty =
+        BindableProperty.Create(
+            nameof(InitialCameraPosition),
+            typeof(CameraUpdate),
+            typeof(GoogleMap));
+    #endregion
+
+    #region RestrictPanningToArea
+    public LatLngBounds? RestrictPanningToArea
+    {
+        get => (LatLngBounds?)GetValue(RestrictPanningToAreaProperty);
+        set => SetValue(RestrictPanningToAreaProperty, value);
+    }
+
+    public static readonly BindableProperty RestrictPanningToAreaProperty =
+        BindableProperty.Create(
+            nameof(RestrictPanningToArea),
+            typeof(LatLngBounds?),
+            typeof(GoogleMap));
+    #endregion
+
+    #region MapCapabilities
+    public MapCapabilities? MapCapabilities
+    {
+        get => (MapCapabilities?)GetValue(MapCapabilitiesProperty);
         protected set => SetValue(MapCapabilitiesProperty, value);
     }
 
     public static readonly BindableProperty MapCapabilitiesProperty =
         BindableProperty.Create(
             nameof(MapCapabilities),
-            typeof(MapCapabilities),
+            typeof(MapCapabilities?),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
@@ -936,7 +966,7 @@ public class GoogleMap : View
             nameof(MinZoom),
             typeof(float),
             typeof(GoogleMap),
-            1f
+            2f
             );
     #endregion
 
@@ -1092,16 +1122,16 @@ public class GoogleMap : View
     #endregion
 
     #region VisibleRegion
-    public MapRegion VisibleRegion
+    public VisibleRegion VisibleRegion
     {
-        get => (MapRegion)GetValue(VisibleRegionProperty);
+        get => (VisibleRegion)GetValue(VisibleRegionProperty);
         protected set => SetValue(VisibleRegionProperty, value);
     }
 
     public static readonly BindableProperty VisibleRegionProperty =
         BindableProperty.Create(
             nameof(VisibleRegion),
-            typeof(MapRegion),
+            typeof(VisibleRegion),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
@@ -1630,16 +1660,16 @@ public class GoogleMap : View
             typeof(GoogleMap));
     #endregion
 
-    #region CameraChangedCommand
-    public ICommand CameraChangedCommand
+    #region CameraPositionChangedCommand
+    public ICommand CameraPositionChangedCommand
     {
-        get => (ICommand)GetValue(CameraChangedCommandProperty);
-        set => SetValue(CameraChangedCommandProperty, value);
+        get => (ICommand)GetValue(CameraPositionChangedCommandProperty);
+        set => SetValue(CameraPositionChangedCommandProperty, value);
     }
 
-    public static readonly BindableProperty CameraChangedCommandProperty =
+    public static readonly BindableProperty CameraPositionChangedCommandProperty =
         BindableProperty.Create(
-            nameof(CameraChangedCommand),
+            nameof(CameraPositionChangedCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion
@@ -1715,15 +1745,15 @@ public class GoogleMap : View
     #endregion
 
     #region VisibleRegionChangedCommand
-    public ICommand VisibleRegionChangedCommand
+    public ICommand CameraIdleCommand
     {
-        get => (ICommand)GetValue(VisibleRegionChangedCommandProperty);
-        set => SetValue(VisibleRegionChangedCommandProperty, value);
+        get => (ICommand)GetValue(CameraIdleCommandProperty);
+        set => SetValue(CameraIdleCommandProperty, value);
     }
 
-    public static readonly BindableProperty VisibleRegionChangedCommandProperty =
+    public static readonly BindableProperty CameraIdleCommandProperty =
         BindableProperty.Create(
-            nameof(VisibleRegionChangedCommand),
+            nameof(CameraIdleCommand),
             typeof(ICommand),
             typeof(GoogleMap));
     #endregion

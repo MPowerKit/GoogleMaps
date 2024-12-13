@@ -14,7 +14,7 @@
         <VerticalStackLayout>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="indoor" />
+                    <CheckBox IsChecked="{Binding IndoorEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Enable indoor"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -23,7 +23,7 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="1">
-                    <CheckBox x:Name="buildings" />
+                    <CheckBox IsChecked="{Binding BuildingsEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Enable buildings"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -32,7 +32,7 @@
 
                 <Grid ColumnDefinitions="Auto,*"
                       Grid.Column="2">
-                    <CheckBox x:Name="poi" />
+                    <CheckBox IsChecked="{Binding HandlePoiClick, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Handle PoI clicks"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -41,7 +41,7 @@
             </Grid>
             <Grid ColumnDefinitions="*,*,*">
                 <Grid ColumnDefinitions="Auto,*">
-                    <CheckBox x:Name="traffic" />
+                    <CheckBox IsChecked="{Binding TrafficEnabled, Source={x:Reference map}, Mode=TwoWay}" />
                     <Label Text="Enable traffic"
                            VerticalOptions="Center"
                            LineBreakMode="WordWrap"
@@ -104,10 +104,8 @@
         </VerticalStackLayout>
 
         <gm:GoogleMap Grid.Row="1"
-                      IndoorEnabled="{Binding IsChecked, Source={x:Reference indoor}, Mode=TwoWay}"
-                      BuildingsEnabled="{Binding IsChecked, Source={x:Reference buildings}, Mode=TwoWay}"
-                      HandlePoiClick="{Binding IsChecked, Source={x:Reference poi}, Mode=TwoWay}"
-                      TrafficEnabled="{Binding IsChecked, Source={x:Reference traffic}, Mode=TwoWay}"
+                      x:Name="map"
+                      Padding="{Binding Value, Source={x:Reference padding}, Mode=TwoWay}"
                       FocusedBuilding="{Binding FocusedBuilding, Mode=OneWayToSource}"
                       MapType="{Binding MapType}"
                       MapColorScheme="{Binding MapColorScheme}"
@@ -117,7 +115,6 @@
                       MapClickedCommand="{Binding MapClickedCommand}"
                       MapLongClickedCommand="{Binding MapLongClickCommand}"
                       TakeSnapshotFunc="{Binding TakeSnapshotFunc, Mode=OneWayToSource}"
-                      Padding="{Binding Value, Source={x:Reference padding}}"
                       MapCoordsToScreenLocationFunc="{Binding MapCoordsToScreenLocationFunc, Mode=OneWayToSource}">
             <gm:GoogleMap.Triggers>
                 <DataTrigger TargetType="gm:GoogleMap"

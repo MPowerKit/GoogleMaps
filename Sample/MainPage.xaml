@@ -18,6 +18,16 @@
                     Clicked="Button_Clicked_4" />
             <Button Text="Map features"
                     Clicked="Button_Clicked_5" />
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5">
+                <Button Text="Camera with default position"
+                        LineBreakMode="WordWrap"
+                        Clicked="Button_Clicked_6" />
+                <Button Text="Camera with random initial position"
+                        LineBreakMode="WordWrap"
+                        Clicked="Button_Clicked_7"
+                        Grid.Column="1" />
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

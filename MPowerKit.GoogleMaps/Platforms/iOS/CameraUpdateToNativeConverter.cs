@@ -85,7 +85,7 @@ public class CameraUpadateToNativeConverter
 
     public static NCameraUpdate NewLatLngBoundsSizeCameraUpdate(VCameraUpdate cameraUpdate)
     {
-        throw new NotImplementedException("NewLatLngBoundsSizeCameraUpdate is not implemented in iOS");
+        throw new NotImplementedException("NewLatLngBoundsSizeCameraUpdate is not implemented in GoogleMaps iOS SDK");
     }
 
     public static NCameraUpdate NewLatLngBoundsCameraUpdate(VCameraUpdate cameraUpdate)

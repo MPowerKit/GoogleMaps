@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.CameraPage"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             Title="Camera Page"
+             x:DataType="vm:CameraPageViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*">
+                <VerticalStackLayout>
+                    <Label Text="{Binding Value, Source={x:Reference minZoom}, StringFormat='Min zoom {0:F1}'}" />
+                    <Slider Minimum="1"
+                            Maximum="10"
+                            Value="{Binding MinZoom, Source={x:Reference map}, Mode=TwoWay}"
+                            x:Name="minZoom" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="{Binding Value, Source={x:Reference maxZoom}, StringFormat='Max zoom {0:F1}'}" />
+                    <Slider Minimum="10"
+                            Maximum="21"
+                            Value="{Binding MaxZoom, Source={x:Reference map}, Mode=TwoWay}"
+                            x:Name="maxZoom" />
+                </VerticalStackLayout>
+            </Grid>
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding MoveCameraCommand}"
+                        CommandParameter="False"
+                        Text="Instatly move camera to a random position"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center" />
+
+                <Button Command="{Binding MoveCameraCommand}"
+                        CommandParameter="True"
+                        Text="Animate camera to a random position"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center"
+                        Grid.Column="1" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="5"
+                  Margin="0,5,0,0">
+                <Button Command="{Binding RestrictPanningCommand}"
+                        IsVisible="{Binding RestrictPanningToArea, Converter={StaticResource ObjectToBooleanInvertedConverter}}"
+                        Text="Restrict panning to current visible region"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center" />
+                <Button Command="{Binding CancelRestrictionCommand}"
+                        IsVisible="{Binding RestrictPanningToArea, Converter={StaticResource ObjectToBooleanConverter}}"
+                        Text="Reset panning restriction"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center" />
+
+                <Button Command="{Binding ResetMinMaxZoomCommand}"
+                        IsVisible="{OnPlatform iOS=False, Default=True}"
+                        Text="Reset min max zoom"
+                        LineBreakMode="WordWrap"
+                        VerticalOptions="Center"
+                        Grid.Column="1" />
+            </Grid>
+            
+            <Label TextColor="Green"
+                   Text="{Binding CameraStartReason}" />
+            <Label TextColor="Purple"
+                   Text="{Binding CameraMoving}" />
+            <Label TextColor="Red"
+                   Text="{Binding CameraPosition, Source={x:Reference map}, StringFormat='Camera position at: {0}'}" />
+            <Label TextColor="Orange"
+                   Text="{Binding VisibleRegion, Source={x:Reference map}, StringFormat='Current visible region: {0}'}" />
+        </VerticalStackLayout>
+
+        <!--Min and max zoom properties can be bound by different modes, such as TwoWay etc -->
+        <gm:GoogleMap Grid.Row="1"
+                      x:Name="map"
+                      MoveCameraAction="{Binding MoveCameraAction, Mode=OneWayToSource}"
+                      AnimateCameraFunc="{Binding AnimateCameraFunc, Mode=OneWayToSource}"
+                      MinZoom="{Binding MinZoom, Mode=OneWayToSource}" 
+                      MaxZoom="{Binding MaxZoom, Mode=OneWayToSource}"
+                      CameraPosition="{Binding CameraPosition, Mode=OneWayToSource}"
+                      VisibleRegion="{Binding VisibleRegion, Mode=OneWayToSource}"
+                      InitialCameraPosition="{Binding InitialCameraPosition}"
+                      NativeMapReadyCommand="{Binding NativeMapReadyCommand}"
+                      CameraMoveStartedCommand="{Binding CameraMoveStartedCommand}"
+                      CameraMoveCommand="{Binding CameraMoveCommand}"
+                      CameraPositionChangedCommand="{Binding CameraPositionChangedCommand}"
+                      CameraIdleCommand="{Binding CameraIdleCommand}"
+                      ResetMinMaxZoomAction="{Binding ResetMinMaxZoomAction, Mode=OneWayToSource}"
+                      RestrictPanningToArea="{Binding RestrictPanningToArea}"
+                      Width="{Binding MapWidth, Mode=OneWayToSource}" 
+                      Height="{Binding MapHeight, Mode=OneWayToSource}" />
+    </Grid>
+</ContentPage>

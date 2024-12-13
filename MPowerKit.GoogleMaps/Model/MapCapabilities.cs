@@ -1,3 +1,3 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-public record MapCapabilities(bool IsAdvancedMarkersAvailable, bool IsDataDrivenStylingAvailable);
+public record struct MapCapabilities(bool IsAdvancedMarkersAvailable, bool IsDataDrivenStylingAvailable);

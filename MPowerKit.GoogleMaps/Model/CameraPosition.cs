@@ -7,6 +7,11 @@ public class CameraPosition
     public float Bearing { get; set; }
     public float Tilt { get; set; }
 
+    public override string ToString()
+    {
+        return $"{{Lat={Target.X:F2}, Lon={Target.Y:F2}}}, Zoom={Zoom:F1}, Bearing={Bearing:F1}, Tilt={Tilt:F1}";
+    }
+
     public class Builder
     {
         private readonly CameraPosition _cameraPosition = new();
