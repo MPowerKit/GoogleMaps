@@ -61,11 +61,11 @@ public partial class TileOverlaysPageViewModel : ObservableObject
 
         var tile = res switch
         {
-            "Url" => new TileOverlay(GetUrlTiles),
-            "File" => new TileOverlay(GetFileTiles),
-            "Stream" => new TileOverlay(GetStreamTiles),
-            "View" => new TileOverlay(GetViewTiles),
-            "Some Fun" => new TileOverlay(GetSomeFunTiles)
+            "Url" => new TileOverlay { GetTileFunc = GetUrlTiles },
+            "File" => new TileOverlay { GetTileFunc = GetFileTiles },
+            "Stream" => new TileOverlay { GetTileFunc = GetStreamTiles },
+            "View" => new TileOverlay { GetTileFunc = GetViewTiles },
+            "Some Fun" => new TileOverlay { GetTileFunc = GetSomeFunTiles }
         };
 
         tile.SetBinding(TileOverlay.OpacityProperty, new Binding(nameof(Opacity), source: this));

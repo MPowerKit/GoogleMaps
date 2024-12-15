@@ -2,15 +2,6 @@
 
 public class TileOverlay : VisualElement
 {
-    public Func<Point, int, int, ImageSource?> GetTileFunc { get; }
-    public int TileSize { get; } = 256;
-
-    public TileOverlay(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize = 256)
-    {
-        GetTileFunc = getTileFunc;
-        TileSize = tileSize;
-    }
-
     public virtual void ClearTileCache()
     {
         var native = NativeObjectAttachedProperty.GetNativeObject(this);
@@ -34,5 +25,34 @@ public class TileOverlay : VisualElement
             typeof(bool),
             typeof(TileOverlay),
             true);
+    #endregion
+
+    #region TileSize
+    public int TileSize
+    {
+        get { return (int)GetValue(TileSizeProperty); }
+        set { SetValue(TileSizeProperty, value); }
+    }
+
+    public static readonly BindableProperty TileSizeProperty =
+        BindableProperty.Create(
+            nameof(TileSize),
+            typeof(int),
+            typeof(TileOverlay),
+            256);
+    #endregion
+
+    #region GetTileFunc
+    public Func<Point, int, int, ImageSource?> GetTileFunc
+    {
+        get { return (Func<Point, int, int, ImageSource?>)GetValue(GetTileFuncProperty); }
+        set { SetValue(GetTileFuncProperty, value); }
+    }
+
+    public static readonly BindableProperty GetTileFuncProperty =
+        BindableProperty.Create(
+            nameof(GetTileFunc),
+            typeof(Func<Point, int, int, ImageSource?>),
+            typeof(TileOverlay));
     #endregion
 }
