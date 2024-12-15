@@ -11,8 +11,7 @@ public class ViewImageSourceService : ImageSourceService, IImageSourceService<IV
 
         var view = viewImageSource.View;
 
-        if (view is null)
-            return Task.FromResult<IImageSourceServiceResult<UIImage>?>(null);
+        if (view is null) return Task.FromResult<IImageSourceServiceResult<UIImage>?>(null);
 
         var image = view.ToImage(Application.Current!.Handler.MauiContext!);
 

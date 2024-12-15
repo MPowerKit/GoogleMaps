@@ -1,10 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-using Foundation;
-
 using Google.Maps;
-
-using UIKit;
 
 using NTileOverlay = Google.Maps.TileLayer;
 using VTileOverlay = MPowerKit.GoogleMaps.TileOverlay;
@@ -213,83 +209,47 @@ public static class TileOverlayExtensions
 
     public static NTileOverlay ToTileLayer(this VTileOverlay tileOverlay, IMauiContext context)
     {
-        return tileOverlay switch
-        {
-            UrlTileOverlay urlTileOverlay => UrlTileLayer.FromUrlConstructor((x, y, z) => tileOverlay.GetTileFunc.ToUrl((int)x, (int)y, (int)z)),
-            FileTileOverlay fileTileOverlay => new FileTileLayer(fileTileOverlay.GetTileFunc, context),
-            ViewTileOverlay viewTileOverlay => new ViewTileProvider(viewTileOverlay.GetTileFunc, viewTileOverlay.TileSize, context),
-            _ => throw new NotSupportedException("VTileOverlay type not supported.")
-        };
-    }
-
-    public static NSUrl? ToUrl(this Func<Point, int, ImageSource?> getTileFunc, int x, int y, int zoom)
-    {
-        var uri = getTileFunc?.Invoke(new(x, y), zoom);
-
-        return uri is UriImageSource uriImageSource && !uriImageSource.IsEmpty ? new NSUrl(uriImageSource.Uri.AbsoluteUri) : null;
+        return new CommonTileProvider(tileOverlay.GetTileFunc, tileOverlay.TileSize, context);
     }
 }
 
-public class FileTileLayer : NTileOverlay
+public class CommonTileProvider : NTileOverlay
 {
-    private readonly Func<Point, int, ImageSource?> _getTileFunc;
-    private readonly IMauiContext _context;
-
-    public FileTileLayer(Func<Point, int, ImageSource?> getTileFunc, IMauiContext context)
-    {
-        _getTileFunc = getTileFunc;
-        _context = context;
-    }
-
-    public override async void RequestTile(nuint x, nuint y, nuint zoom, ITileReceiver receiver)
-    {
-        var fileSource = _getTileFunc?.Invoke(new(x, y), (int)zoom) as IFileImageSource;
-        var file = fileSource!.File;
-
-        if (fileSource.IsEmpty)
-        {
-            receiver.ReceiveTile(x, y, zoom, null);
-            return;
-        }
-
-        try
-        {
-            var image = await fileSource.GetPlatformImageAsync(_context);
-
-            if (image?.Value is null)
-            {
-                receiver.ReceiveTile(x, y, zoom, null);
-                return;
-            }
-
-            receiver.ReceiveTile(x, y, zoom, image.Value);
-        }
-        catch { Console.WriteLine($"Cannot find file or resource with name {file}"); }
-    }
-}
-
-public class ViewTileProvider : SyncTileLayer
-{
-    private readonly Func<Point, int, ImageSource?> _getTileFunc;
+    private readonly Func<Point, int, int, ImageSource?> _getTileFunc;
     private readonly int _tileSize;
     private readonly IMauiContext _mauiContext;
 
-    public ViewTileProvider(Func<Point, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
+    public CommonTileProvider(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
     {
         _getTileFunc = getTileFunc;
         _tileSize = tileSize;
         _mauiContext = mauiContext;
     }
 
-    public override UIImage? Tile(nuint x, nuint y, nuint zoom)
+    public override async void RequestTile(nuint x, nuint y, nuint zoom, ITileReceiver receiver)
     {
-        var view = _getTileFunc?.Invoke(new(x, y), (int)zoom);
-
-        if (view is ViewImageSource viewSource && !viewSource.IsEmpty)
+        var image = await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            return viewSource.View!.ToImage(_mauiContext);
-        }
+            var source = _getTileFunc?.Invoke(new(x, y), (int)zoom, _tileSize);
 
-        return null;
+            if (source is null) return null;
+            if (source is NoTileImageSource) return Constants.TileLayerNoTile;
+
+            try
+            {
+                var imageResult = await source.GetPlatformImageAsync(_mauiContext);
+                if (imageResult?.Value is null) throw new Exception();
+
+                return imageResult.Value;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot find or load resource");
+            }
+
+            return null;
+        });
+
+        receiver.ReceiveTile(x, y, zoom, image);
     }
 }

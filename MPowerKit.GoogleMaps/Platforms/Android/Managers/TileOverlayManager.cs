@@ -1,8 +1,7 @@
 ﻿using System.Collections.Specialized;
 
 using Android.Gms.Maps.Model;
-
-using Java.Net;
+using Android.Graphics.Drawables;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 using NTileOverlay = Android.Gms.Maps.Model.TileOverlay;
@@ -210,72 +209,17 @@ public static class TileOverlayExtensions
 
     public static ITileProvider ToTileProvider(this VTileOverlay tileOverlay, IMauiContext context)
     {
-        return tileOverlay switch
-        {
-            UrlTileOverlay urlTileOverlay => new CustomUriTileProvider(urlTileOverlay.GetTileFunc, urlTileOverlay.TileSize),
-            FileTileOverlay fileTileOverlay => new FileTileProvider(fileTileOverlay.GetTileFunc, fileTileOverlay.TileSize, context),
-            ViewTileOverlay viewTileOverlay => new ViewTileProvider(viewTileOverlay.GetTileFunc, viewTileOverlay.TileSize, context),
-            _ => throw new NotSupportedException("TileOverlay type not supported.")
-        };
+        return new CommonTileProvider(tileOverlay.GetTileFunc, tileOverlay.TileSize, context);
     }
 }
 
-public class FileTileProvider : Java.Lang.Object, ITileProvider
+public class CommonTileProvider : Java.Lang.Object, ITileProvider
 {
-    private readonly Func<Point, int, ImageSource?> _getTileFunc;
-    private readonly int _tileSize;
-    private readonly IMauiContext _context;
-
-    public FileTileProvider(Func<Point, int, ImageSource?> getTileFunc, int tileSize, IMauiContext context)
-    {
-        _getTileFunc = getTileFunc;
-        _tileSize = tileSize;
-        _context = context;
-    }
-
-    public Tile? GetTile(int x, int y, int zoom)
-    {
-        var fileSource = _getTileFunc?.Invoke(new(x, y), zoom) as FileImageSource;
-        var file = fileSource!.File;
-
-        if (fileSource.IsEmpty) return TileProvider.NoTile;
-
-        try
-        {
-            var bitmap = file.GetBitmap(_context.Context!);
-
-            return new Tile(_tileSize, _tileSize, bitmap.ToArray());
-        }
-        catch { Console.WriteLine($"Cannot find file or resource with name {file}"); }
-
-        return TileProvider.NoTile;
-    }
-}
-
-public class CustomUriTileProvider : UrlTileProvider
-{
-    private readonly Func<Point, int, ImageSource?> _getTileFunc;
-
-    public CustomUriTileProvider(Func<Point, int, ImageSource?> getTileFunc, int tileSize) : base(tileSize, tileSize)
-    {
-        _getTileFunc = getTileFunc;
-    }
-
-    public override URL? GetTileUrl(int x, int y, int zoom)
-    {
-        var uri = _getTileFunc?.Invoke(new(x, y), zoom);
-
-        return uri is UriImageSource uriImageSource && !uriImageSource.IsEmpty ? new URL(uriImageSource.Uri.AbsoluteUri) : null;
-    }
-}
-
-public class ViewTileProvider : Java.Lang.Object, ITileProvider
-{
-    private readonly Func<Point, int, ImageSource?> _getTileFunc;
+    private readonly Func<Point, int, int, ImageSource?> _getTileFunc;
     private readonly int _tileSize;
     private readonly IMauiContext _mauiContext;
 
-    public ViewTileProvider(Func<Point, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
+    public CommonTileProvider(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
     {
         _getTileFunc = getTileFunc;
         _tileSize = tileSize;
@@ -284,13 +228,25 @@ public class ViewTileProvider : Java.Lang.Object, ITileProvider
 
     public Tile? GetTile(int x, int y, int zoom)
     {
-        var view = _getTileFunc?.Invoke(new(x, y), zoom);
+        var source = _getTileFunc?.Invoke(new(x, y), zoom, _tileSize);
 
-        if (view is ViewImageSource viewSource && !viewSource.IsEmpty)
+        if (source is null) return null;
+        if (source is NoTileImageSource) return TileProvider.NoTile;
+
+        try
         {
-            using var bitmap = viewSource.View.ToBitmap(_mauiContext);
+            var imageResult = Task.Run(() => source.GetPlatformImageAsync(_mauiContext)).Result;
+            if (imageResult?.Value is null) throw new Exception();
+
+            using var bitmap = (imageResult.Value as BitmapDrawable)!.Bitmap!;
+
             return new Tile(_tileSize, _tileSize, bitmap.ToArray());
         }
-        else return TileProvider.NoTile;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Cannot find or load resource");
+        }
+
+        return null;
     }
 }

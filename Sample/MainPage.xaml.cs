@@ -53,4 +53,9 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new CameraPage(true)));
     }
+
+    private void Button_Clicked_8(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new TileOverlaysTabbedPage()));
+    }
 }

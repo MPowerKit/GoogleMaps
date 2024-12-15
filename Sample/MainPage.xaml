@@ -28,6 +28,8 @@
                         Clicked="Button_Clicked_7"
                         Grid.Column="1" />
             </Grid>
+            <Button Text="Tile Overlays"
+                    Clicked="Button_Clicked_8" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

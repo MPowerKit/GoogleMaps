@@ -12,8 +12,7 @@ public class ViewImageSourceService : ImageSourceService, IImageSourceService<IV
 
         var view = viewImageSource.View;
 
-        if (view is null)
-            return Task.FromResult<IImageSourceServiceResult<Drawable>?>(null);
+        if (view is null) return Task.FromResult<IImageSourceServiceResult<Drawable>?>(null);
 
         var bitmap = view.ToBitmap(Application.Current!.Handler.MauiContext!);
 

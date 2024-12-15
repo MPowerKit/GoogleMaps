@@ -102,7 +102,6 @@ public static class Extensions
         using MemoryStream byteStream = new();
         bitmap.Compress(Bitmap.CompressFormat.Png!, 100, byteStream);
         var byteArray = byteStream.ToArray();
-        bitmap.Recycle();
 
         return byteArray;
     }

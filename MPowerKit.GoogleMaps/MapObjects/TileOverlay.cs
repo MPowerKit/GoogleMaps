@@ -1,14 +1,24 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-public abstract class TileOverlay : VisualElement
+public class TileOverlay : VisualElement
 {
-    public Func<Point, int, ImageSource?> GetTileFunc { get; }
+    public Func<Point, int, int, ImageSource?> GetTileFunc { get; }
     public int TileSize { get; } = 256;
 
-    public TileOverlay(Func<Point, int, ImageSource?> getTileFunc, int tileSize = 256)
+    public TileOverlay(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize = 256)
     {
         GetTileFunc = getTileFunc;
         TileSize = tileSize;
+    }
+
+    public virtual void ClearTileCache()
+    {
+        var native = NativeObjectAttachedProperty.GetNativeObject(this);
+#if ANDROID
+        (native as Android.Gms.Maps.Model.TileOverlay)?.ClearTileCache();
+#else
+        (native as Google.Maps.TileLayer)?.ClearTileCache();
+#endif
     }
 
     #region FadeIn
@@ -25,28 +35,4 @@ public abstract class TileOverlay : VisualElement
             typeof(TileOverlay),
             true);
     #endregion
-}
-
-public class UrlTileOverlay : TileOverlay
-{
-    public UrlTileOverlay(Func<Point, int, UriImageSource?> getTileFunc, int tileSize = 256) : base(getTileFunc, tileSize)
-    {
-
-    }
-}
-
-public class FileTileOverlay : TileOverlay
-{
-    public FileTileOverlay(Func<Point, int, FileImageSource?> getTileFunc, int tileSize = 256) : base(getTileFunc, tileSize)
-    {
-
-    }
-}
-
-public class ViewTileOverlay : TileOverlay
-{
-    public ViewTileOverlay(Func<Point, int, ViewImageSource?> getTileFunc, int tileSize = 256) : base(getTileFunc, tileSize)
-    {
-
-    }
 }
