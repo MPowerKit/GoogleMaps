@@ -7,4 +7,5 @@
             android:TabbedPage.IsSwipePagingEnabled="False"
             Title="TileOverlays Page">
     <local:TileOverlaysPage />
+    <local:TileOverlaysSourcePage />
 </TabbedPage>

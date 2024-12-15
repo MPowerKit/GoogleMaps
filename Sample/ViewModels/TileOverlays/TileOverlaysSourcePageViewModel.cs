@@ -1,89 +1,68 @@
 ﻿using System.Collections.ObjectModel;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-using Controls.UserDialogs.Maui;
 
 using MPowerKit.GoogleMaps;
 
 namespace Sample.ViewModels;
 
-public partial class TileOverlaysPageViewModel : ObservableObject
+public class TileOverlaysTemplateSelector : DataTemplateSelector
 {
-    public TileOverlaysPageViewModel()
+    public DataTemplate UrlTemplate { get; set; }
+    public DataTemplate FileTemplate { get; set; }
+    public DataTemplate StreamTemplate { get; set; }
+    public DataTemplate ViewTemplate { get; set; }
+
+    protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {
-        SetupTiles();
+        if (item is TileOverlayDataObject tile)
+        {
+            return tile.Type switch
+            {
+                TileOverlayType.Url => UrlTemplate,
+                TileOverlayType.File => FileTemplate,
+                TileOverlayType.Stream => StreamTemplate,
+                TileOverlayType.View => ViewTemplate,
+            };
+        }
+
+        return null;
+    }
+}
+
+public partial class TileOverlayDataObject : ObservableObject
+{
+    public Func<Point, int, int, ImageSource?> GetTileFunc { get; set; }
+    public TileOverlayType Type { get; set; }
+}
+
+public enum TileOverlayType
+{
+    Url,
+    File,
+    Stream,
+    View
+}
+
+public partial class TileOverlaysSourcePageViewModel : ObservableObject
+{
+    public TileOverlaysSourcePageViewModel()
+    {
+        SetupItems();
     }
 
     [ObservableProperty]
-    private ObservableCollection<TileOverlay> _tiles = [];
+    private ObservableCollection<TileOverlayDataObject> _items = [];
 
     [ObservableProperty]
     private CameraPosition _cameraPosition;
 
-    [ObservableProperty]
-    private string _selectedTileOverlay;
-
-    [ObservableProperty]
-    private double _opacity = 1;
-
-    [ObservableProperty]
-    private bool _isVisible = true;
-
-    [ObservableProperty]
-    private bool _fadeIn = true;
-
-    private async void SetupTiles()
+    private void SetupItems()
     {
-        await Task.Yield();
-        await ChangeTileOverlay();
-    }
-
-    [RelayCommand]
-    private void ClearTileCache()
-    {
-        var tile = Tiles.FirstOrDefault();
-        tile?.ClearTileCache();
-    }
-
-    [RelayCommand]
-    private async Task ChangeTileOverlay()
-    {
-        var res = await UserDialogs.Instance.ActionSheetAsync(null,
-            "Choose tile source",
-            "Cancel",
-            buttons:
-            [
-                "Url",
-                "File",
-                "Stream",
-                "View",
-                "Some Fun"
-            ]);
-
-        if (res == "Cancel") return;
-
-        Tiles.Clear();
-
-        Func<Point, int, int, ImageSource?> func = res switch
-        {
-            "Url" => GetUrlTiles,
-            "File" => GetFileTiles,
-            "Stream" => GetStreamTiles,
-            "View" => GetViewTiles,
-            "Some Fun" => GetSomeFunTiles
-        };
-
-        var tile = new TileOverlay { GetTileFunc = func };
-
-        tile.SetBinding(TileOverlay.OpacityProperty, new Binding(nameof(Opacity), source: this));
-        tile.SetBinding(TileOverlay.IsVisibleProperty, new Binding(nameof(IsVisible), source: this));
-        tile.SetBinding(TileOverlay.FadeInProperty, new Binding(nameof(FadeIn), source: this));
-
-        Tiles.Add(tile);
-
-        SelectedTileOverlay = res;
+        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetUrlTiles, Type = TileOverlayType.Url });
+        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetFileTiles, Type = TileOverlayType.File });
+        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetStreamTiles, Type = TileOverlayType.Stream });
+        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetViewTiles, Type = TileOverlayType.View });
     }
 
     private ImageSource? GetUrlTiles(Point coord, int zoom, int tileSize)
@@ -159,20 +138,5 @@ public partial class TileOverlaysPageViewModel : ObservableObject
         // that data is currently unavailable
         // but that it may be available in the future
         return null;
-    }
-
-    private static int _index;
-    private ImageSource? GetSomeFunTiles(Point coord, int zoom, int tileSize)
-    {
-        var option = _index % 4;
-        _index++;
-
-        return option switch
-        {
-            0 => GetUrlTiles(coord, zoom, tileSize),
-            1 => GetFileTiles(coord, zoom, tileSize),
-            2 => GetStreamTiles(coord, zoom, tileSize),
-            3 => GetViewTiles(coord, zoom, tileSize),
-        };
     }
 }
