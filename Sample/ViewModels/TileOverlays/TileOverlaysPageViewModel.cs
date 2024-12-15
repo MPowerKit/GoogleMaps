@@ -41,6 +41,13 @@ public partial class TileOverlaysPageViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void ClearTileCache()
+    {
+        var tile = Tiles.FirstOrDefault();
+        tile?.ClearTileCache();
+    }
+
+    [RelayCommand]
     private async Task ChangeTileOverlay()
     {
         var res = await UserDialogs.Instance.ActionSheetAsync(null,
@@ -75,9 +82,8 @@ public partial class TileOverlaysPageViewModel : ObservableObject
         tile.SetBinding(TileOverlay.FadeInProperty, new Binding(nameof(FadeIn), source: this));
 
         Tiles.Add(tile);
+
         SelectedTileOverlay = res;
-        await Task.Yield();
-        tile.ClearTileCache();
     }
 
     private ImageSource? GetUrlTiles(Point coord, int zoom, int tileSize)

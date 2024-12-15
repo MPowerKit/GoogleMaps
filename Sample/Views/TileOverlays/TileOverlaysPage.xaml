@@ -49,6 +49,8 @@
                            Grid.Column="1" />
                 </Grid>
             </Grid>
+            <Button Text="Clear tile cache"
+                    Command="{Binding ClearTileCacheCommand}" />
         </VerticalStackLayout>
         <gm:GoogleMap TileOverlays="{Binding Tiles}"
                       CameraPosition="{Binding CameraPosition, Mode=OneWayToSource}"
