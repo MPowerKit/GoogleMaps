@@ -253,9 +253,10 @@ public class PinManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         {
             native.Flat = pin.IsFlat;
         }
-        else if (e.PropertyName == VPin.AnchorProperty.PropertyName)
+        else if (e.PropertyName == VPin.AnchorXProperty.PropertyName
+            || e.PropertyName == VPin.AnchorYProperty.PropertyName)
         {
-            native.GroundAnchor = pin.Anchor;
+            native.GroundAnchor = new(pin.AnchorX, pin.AnchorY);
         }
         else if (e.PropertyName == VPin.InfoWindowAnchorProperty.PropertyName)
         {
@@ -379,7 +380,7 @@ public static class PinExtensions
         native.Snippet = pin.Snippet;
         native.Title = pin.Title;
         native.ZIndex = pin.ZIndex;
-        native.GroundAnchor = pin.Anchor;
+        native.GroundAnchor = new(pin.AnchorX, pin.AnchorY);
         native.Draggable = pin.Draggable;
         native.Flat = pin.IsFlat;
         native.InfoWindowAnchor = pin.InfoWindowAnchor;

@@ -30,6 +30,8 @@
             </Grid>
             <Button Text="Tile Overlays"
                     Clicked="Button_Clicked_8" />
+            <Button Text="Ground Overlays"
+                    Clicked="Button_Clicked_9" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

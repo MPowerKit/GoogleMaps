@@ -13,6 +13,12 @@ public class Pin : VisualElement
 {
     public bool InfoWindowShown { get; protected set; }
 
+    public Pin()
+    {
+        AnchorX = 0.5;
+        AnchorY = 1d;
+    }
+
     public virtual void ShowInfoWindow()
     {
         if (!ShowInfoWindowOnPinSelection) return;
@@ -163,22 +169,6 @@ public class Pin : VisualElement
             typeof(bool),
             typeof(Pin),
             true
-            );
-    #endregion
-
-    #region Anchor
-    public Point Anchor
-    {
-        get { return (Point)GetValue(AnchorProperty); }
-        set { SetValue(AnchorProperty, value); }
-    }
-
-    public static readonly BindableProperty AnchorProperty =
-        BindableProperty.Create(
-            nameof(Anchor),
-            typeof(Point),
-            typeof(Pin),
-            new Point(0.5, 1d)
             );
     #endregion
 

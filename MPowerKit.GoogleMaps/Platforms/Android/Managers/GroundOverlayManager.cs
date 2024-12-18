@@ -132,6 +132,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         AddGroundOverlaysToNativeMap(groundOverlays);
     }
 
+    private bool _overlayPositionBanchUpdate;
     protected virtual void GroundOverlay_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         var groundOverlay = (sender as VGroundOverlay)!;
@@ -158,13 +159,51 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         {
             native.Bearing = groundOverlay.Bearing;
         }
-        else if (e.PropertyName == VGroundOverlay.GroundOverlayPositionProperty.PropertyName)
+        else if (e.PropertyName == VGroundOverlay.PositionProperty.PropertyName
+            || e.PropertyName == VGroundOverlay.WidthRequestProperty.PropertyName
+            || e.PropertyName == VGroundOverlay.HeightRequestProperty.PropertyName)
         {
-            groundOverlay.GroundOverlayPosition?.SetupPostionForOverlay(native);
+            if (_overlayPositionBanchUpdate) return;
+
+            native.Position = groundOverlay.Position.ToLatLng();
+            if (groundOverlay.WidthRequest > 0d)
+            {
+                if (groundOverlay.HeightRequest > 0d)
+                {
+                    native.SetDimensions((float)groundOverlay.WidthRequest, (float)groundOverlay.HeightRequest);
+                }
+                else
+                {
+                    native.SetDimensions((float)groundOverlay.WidthRequest);
+                }
+            }
+
+            _overlayPositionBanchUpdate = true;
+            groundOverlay.OverlayBounds = native.Bounds.ToCrossPlatform();
+            _overlayPositionBanchUpdate = false;
+        }
+        else if (e.PropertyName == VGroundOverlay.OverlayBoundsProperty.PropertyName)
+        {
+            if (_overlayPositionBanchUpdate) return;
+
+            native.SetPositionFromBounds(groundOverlay.OverlayBounds?.ToNative());
+
+            _overlayPositionBanchUpdate = true;
+            groundOverlay.Position = native.Position.ToCrossPlatformPoint();
+            groundOverlay.WidthRequest = native.Width;
+            groundOverlay.HeightRequest = native.Height;
+            _overlayPositionBanchUpdate = false;
         }
         else if (e.PropertyName == VGroundOverlay.ImageProperty.PropertyName)
         {
-            SetGroundOverlayImage(groundOverlay, native);
+            SetGroundOverlayImage(groundOverlay, native)
+                .ContinueWith(t =>
+                {
+                    groundOverlay.OverlayBounds = native.Bounds.ToCrossPlatform();
+                    groundOverlay.Position = native.Position.ToCrossPlatformPoint();
+                    groundOverlay.WidthRequest = native.Width;
+                    groundOverlay.HeightRequest = native.Height;
+                });
         }
     }
 
@@ -194,9 +233,21 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
 
         foreach (var groundOverlay in overlays)
         {
-            var ngo = NativeView!.AddGroundOverlay(groundOverlay.ToNative());
+            var ngo = NativeView!.AddGroundOverlay(groundOverlay.ToNative(Handler!.MauiContext!))!;
             NativeObjectAttachedProperty.SetNativeObject(groundOverlay, ngo);
-            SetGroundOverlayImage(groundOverlay, ngo);
+            groundOverlay.OverlayBounds = ngo.Bounds.ToCrossPlatform();
+            groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
+            SetGroundOverlayImage(groundOverlay, ngo)
+                .ContinueWith(t =>
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        groundOverlay.OverlayBounds = ngo.Bounds.ToCrossPlatform();
+                        groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
+                        groundOverlay.WidthRequest = ngo.Width;
+                        groundOverlay.HeightRequest = ngo.Height;
+                    });
+                });
             groundOverlay.PropertyChanged += GroundOverlay_PropertyChanged;
             GroundOverlays.Add(groundOverlay);
         }
@@ -210,7 +261,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         }
         catch (Exception)
         {
-            ngo.SetImage(null);
+            ngo.SetImage(GroundOverlayExtensions.DummyImage(Handler!.MauiContext!));
         }
     }
 
@@ -230,7 +281,9 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
 
 public static class GroundOverlayExtensions
 {
-    public static GroundOverlayOptions ToNative(this VGroundOverlay groundOverlay)
+    public static BitmapDescriptor DummyImage(IMauiContext mauiContext) => BitmapDescriptorFactory.FromBitmap(new ContentView() { WidthRequest = 1, HeightRequest = 1 }.ToBitmap(mauiContext));
+
+    public static GroundOverlayOptions ToNative(this VGroundOverlay groundOverlay, IMauiContext mauiContext)
     {
         var options = new GroundOverlayOptions();
 
@@ -240,43 +293,30 @@ public static class GroundOverlayExtensions
         options.Visible(groundOverlay.IsVisible);
         options.InvokeTransparency(1f - (float)groundOverlay.Opacity);
         options.InvokeBearing(groundOverlay.Bearing);
-        options.Anchor((float)groundOverlay.Anchor.X, (float)groundOverlay.Anchor.Y);
-        groundOverlay.GroundOverlayPosition?.SetupPostionForOptions(options);
+        options.Anchor((float)groundOverlay.AnchorX, (float)groundOverlay.AnchorY);
+        groundOverlay.SetupPostionForOptions(options);
+        // this needs to be here because SDK does not allow to create overlay without any image
+        options.InvokeImage(DummyImage(mauiContext));
 
         return options;
     }
 
-    public static void SetupPostionForOptions(this GroundOverlayPosition groundOverlayPosition, GroundOverlayOptions options)
+    public static void SetupPostionForOptions(this VGroundOverlay groundOverlay, GroundOverlayOptions options)
     {
-        switch (groundOverlayPosition)
+        if (groundOverlay.OverlayBounds is LatLngBounds bounds)
         {
-            case BoundsPosition bounds:
-                options.PositionFromBounds(bounds.Bounds.ToNative());
-                break;
-            case CenterAndWidthPosition centerAndWidth:
-                options.Position(centerAndWidth.Center.ToLatLng(), centerAndWidth.Width);
-                break;
-            case CenterAndSizePosition centerAndSize:
-                options.Position(centerAndSize.Center.ToLatLng(), (float)centerAndSize.Size.Width, (float)centerAndSize.Size.Height);
-                break;
+            options.PositionFromBounds(bounds.ToNative());
         }
-    }
-
-    public static void SetupPostionForOverlay(this GroundOverlayPosition groundOverlayPosition, NGroundOverlay overlay)
-    {
-        switch (groundOverlayPosition)
+        else if (groundOverlay.Position is Point position && groundOverlay.WidthRequest > 0d)
         {
-            case BoundsPosition bounds:
-                overlay.SetPositionFromBounds(new Android.Gms.Maps.Model.LatLngBounds(bounds.Bounds.SouthWest.ToLatLng(), bounds.Bounds.NorthEast.ToLatLng()));
-                break;
-            case CenterAndWidthPosition centerAndWidth:
-                overlay.Position = centerAndWidth.Center.ToLatLng();
-                overlay.SetDimensions(centerAndWidth.Width);
-                break;
-            case CenterAndSizePosition centerAndSize:
-                overlay.Position = centerAndSize.Center.ToLatLng();
-                overlay.SetDimensions((float)centerAndSize.Size.Width, (float)centerAndSize.Size.Height);
-                break;
+            if (groundOverlay.HeightRequest > 0d)
+            {
+                options.Position(position.ToLatLng(), (float)groundOverlay.WidthRequest, (float)groundOverlay.HeightRequest);
+            }
+            else
+            {
+                options.Position(position.ToLatLng(), (float)groundOverlay.WidthRequest);
+            }
         }
     }
 }

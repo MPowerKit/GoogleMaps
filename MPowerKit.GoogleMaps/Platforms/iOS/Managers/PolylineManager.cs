@@ -246,7 +246,6 @@ public static class PolylineExtensions
         native.StrokeWidth = (float)polyline.StrokeThickness;
         native.Tappable = polyline.IsEnabled;
         native.Spans = polyline.ToSpans(map, pixelDependentDashedPattern);
-        native.Geodesic = true;
 
         if (polyline.IsVisible)
         {

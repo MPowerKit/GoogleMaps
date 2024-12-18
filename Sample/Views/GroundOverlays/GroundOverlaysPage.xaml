@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.GroundOverlaysPage"
+             Title="GroundOverlays"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             x:DataType="vm:GroundOverlaysPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:GroundOverlaysPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*,*">
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" />
+                    <Label Text="Is visible"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1">
+                    <CheckBox IsChecked="{Binding Clickable, Mode=TwoWay}" />
+                    <Label Text="Is clickable"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Bearing" />
+                    <Slider Value="{Binding Bearing, Mode=TwoWay}"
+                            Minimum="-180"
+                            Maximum="180" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout>
+                    <Label Text="Opacity" />
+                    <Slider Value="{Binding Opacity, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1"
+                                     IsVisible="{OnPlatform Android=False, Default=True}">
+                    <Label Text="Anchor X" />
+                    <Slider Value="{Binding AnchorX, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2"
+                                     IsVisible="{OnPlatform Android=False, Default=True}">
+                    <Label Text="Anchor Y" />
+                    <Slider Value="{Binding AnchorY, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*">
+                <VerticalStackLayout>
+                    <Label Text="Selected Ground Overlay" />
+                    <Label Text="{Binding SelectedImageSource}"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Button Text="Change overlay image"
+                        Command="{Binding ChangeOverlayImageCommand}"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="1" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*"
+                  Margin="0,5,0,0">
+                <VerticalStackLayout>
+                    <Label Text="Selected Overlay Position" />
+                    <Label Text="{Binding SelectedOverlayPosition}"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Button Text="Change overlay position"
+                        Command="{Binding ChangeOverlayPositionCommand}"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="1" />
+            </Grid>
+
+            <Label TextColor="Red"
+                   Text="{Binding Bounds, StringFormat='Overlay bounds: {0}'}" />
+            <Label TextColor="Orange"
+                   Text="{Binding Position, StringFormat='Current overlay position: {0}'}" />
+            <Label TextColor="Green"
+                   IsVisible="{OnPlatform iOS=False, Default=True}">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{Binding Width, StringFormat='Overlay width: {0}, '}"/>
+                        <Span Text="{Binding Height, StringFormat='Overlay height: {0}'}"/>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </VerticalStackLayout>
+        <gm:GoogleMap GroundOverlays="{Binding Overlays}"
+                      GroundOverlayClickedCommand="{Binding GroundOverlayClickedCommand}"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>

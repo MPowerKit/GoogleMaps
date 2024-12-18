@@ -4,6 +4,12 @@ namespace MPowerKit.GoogleMaps;
 
 public class GroundOverlay : VisualElement
 {
+    public GroundOverlay()
+    {
+        AnchorX = 0.5;
+        AnchorY = 0.5;
+    }
+
     protected override void OnBindingContextChanged()
     {
         base.OnBindingContextChanged();
@@ -57,85 +63,33 @@ public class GroundOverlay : VisualElement
             );
     #endregion
 
-    #region GroundOverlayPosition
-    public GroundOverlayPosition GroundOverlayPosition
+    #region Position
+    public Point Position
     {
-        get { return (GroundOverlayPosition)GetValue(GroundOverlayPositionProperty); }
-        set { SetValue(GroundOverlayPositionProperty, value); }
+        get { return (Point)GetValue(PositionProperty); }
+        set { SetValue(PositionProperty, value); }
     }
 
-    public static readonly BindableProperty GroundOverlayPositionProperty =
+    public static readonly BindableProperty PositionProperty =
         BindableProperty.Create(
-            nameof(GroundOverlayPosition),
-            typeof(GroundOverlayPosition),
+            nameof(Position),
+            typeof(Point),
             typeof(GroundOverlay)
             );
     #endregion
 
-    #region Anchor
-    public Point Anchor
+    #region OverlayBounds
+    public LatLngBounds? OverlayBounds
     {
-        get { return (Point)GetValue(AnchorProperty); }
-        set { SetValue(AnchorProperty, value); }
+        get { return (LatLngBounds?)GetValue(OverlayBoundsProperty); }
+        set { SetValue(OverlayBoundsProperty, value); }
     }
 
-    public static readonly BindableProperty AnchorProperty =
+    public static readonly BindableProperty OverlayBoundsProperty =
         BindableProperty.Create(
-            nameof(Anchor),
-            typeof(Point),
-            typeof(GroundOverlay),
-            new Point(0.5, 0.5));
+            nameof(OverlayBounds),
+            typeof(LatLngBounds?),
+            typeof(GroundOverlay)
+            );
     #endregion
-}
-
-public abstract class GroundOverlayPosition
-{
-    public static GroundOverlayPosition FromBounds(LatLngBounds bounds)
-    {
-        return new BoundsPosition(bounds);
-    }
-
-    public static GroundOverlayPosition FromCenterAndWidth(Point center, float width)
-    {
-        return new CenterAndWidthPosition(center, width);
-    }
-
-    public static GroundOverlayPosition FromCenterAndSize(Point center, Size size)
-    {
-        return new CenterAndSizePosition(center, size);
-    }
-}
-
-public class CenterAndWidthPosition : GroundOverlayPosition
-{
-    public Point Center { get; set; }
-    public float Width { get; set; }
-
-    public CenterAndWidthPosition(Point center, float width)
-    {
-        Center = center;
-        Width = width;
-    }
-}
-
-public class CenterAndSizePosition : GroundOverlayPosition
-{
-    public Point Center { get; set; }
-    public Size Size { get; set; }
-
-    public CenterAndSizePosition(Point center, Size size)
-    {
-        Center = center;
-        Size = size;
-    }
-}
-
-public class BoundsPosition : GroundOverlayPosition
-{
-    public LatLngBounds Bounds { get; set; }
-
-    public BoundsPosition(LatLngBounds bounds)
-    {
-        Bounds = bounds;
-    }
 }

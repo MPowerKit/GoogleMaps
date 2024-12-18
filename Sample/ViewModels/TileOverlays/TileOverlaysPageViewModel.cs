@@ -94,7 +94,7 @@ public partial class TileOverlaysPageViewModel : ObservableObject
             return NoTileImageSource.Instance;
         }
 
-        return ImageSource.FromUri(new Uri($"https://mt1.google.com/vt/lyrs=s&x={coord.X}&y={coord.Y}&z={zoom}")) as UriImageSource;
+        return ImageSource.FromUri(new Uri($"https://mt1.google.com/vt/lyrs=s&x={coord.X}&y={coord.Y}&z={zoom}"));
     }
 
     private ImageSource? GetFileTiles(Point coord, int zoom, int tileSize)
@@ -105,7 +105,7 @@ public partial class TileOverlaysPageViewModel : ObservableObject
             return NoTileImageSource.Instance;
         }
 
-        return ImageSource.FromFile("tile.png") as FileImageSource;
+        return ImageSource.FromFile("tile.png");
     }
 
     private ImageSource? GetStreamTiles(Point coord, int zoom, int tileSize)
@@ -116,7 +116,7 @@ public partial class TileOverlaysPageViewModel : ObservableObject
             return NoTileImageSource.Instance;
         }
 
-        return ImageSource.FromStream(ct => FileSystem.Current.OpenAppPackageFileAsync("bot.png")) as StreamImageSource;
+        return ImageSource.FromStream(ct => FileSystem.Current.OpenAppPackageFileAsync("bot.png"));
     }
 
     private ImageSource? GetViewTiles(Point coord, int zoom, int tileSize)

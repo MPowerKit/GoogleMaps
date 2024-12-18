@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-
 using Google.Maps;
 
 using NGroundOverlay = Google.Maps.GroundOverlay;
@@ -159,13 +158,30 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, Googl
         {
             native.Bearing = groundOverlay.Bearing;
         }
-        else if (e.PropertyName == VGroundOverlay.GroundOverlayPositionProperty.PropertyName)
+        else if (e.PropertyName == VisualElement.AnchorXProperty.PropertyName
+            || e.PropertyName == VisualElement.AnchorYProperty.PropertyName)
         {
-            groundOverlay.GroundOverlayPosition?.SetupPostion(native);
+            native.Anchor = new(groundOverlay.AnchorX, groundOverlay.AnchorY);
+            groundOverlay.Position = native.Position.ToCrossPlatformPoint();
+        }
+        else if (e.PropertyName == VGroundOverlay.PositionProperty.PropertyName)
+        {
+            native.Position = groundOverlay.Position.ToCoord();
+            groundOverlay.OverlayBounds = native.Bounds!.ToCrossPlatform();
+        }
+        else if (e.PropertyName == VGroundOverlay.OverlayBoundsProperty.PropertyName)
+        {
+            native.Bounds = groundOverlay.OverlayBounds?.ToNative();
+            groundOverlay.Position = native.Position.ToCrossPlatformPoint();
         }
         else if (e.PropertyName == VGroundOverlay.ImageProperty.PropertyName)
         {
-            SetGroundOverlayImage(groundOverlay, native);
+            SetGroundOverlayImage(groundOverlay, native)
+                .ContinueWith(t =>
+                {
+                    groundOverlay.OverlayBounds = native.Bounds!.ToCrossPlatform();
+                    groundOverlay.Position = native.Position.ToCrossPlatformPoint();
+                });
         }
     }
 
@@ -195,7 +211,12 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, Googl
         {
             var ngo = groundOverlay.ToNative(NativeView!);
             NativeObjectAttachedProperty.SetNativeObject(groundOverlay, ngo);
-            SetGroundOverlayImage(groundOverlay, ngo);
+            SetGroundOverlayImage(groundOverlay, ngo)
+                .ContinueWith(t =>
+                {
+                    groundOverlay.OverlayBounds = ngo.Bounds!.ToCrossPlatform();
+                    groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
+                });
             groundOverlay.PropertyChanged += GroundOverlay_PropertyChanged;
             GroundOverlays.Add(groundOverlay);
         }
@@ -240,11 +261,11 @@ public static class GroundOverlayExtensions
             Tappable = groundOverlay.IsEnabled,
             ZIndex = groundOverlay.ZIndex,
             Bearing = groundOverlay.Bearing,
-            Anchor = groundOverlay.Anchor,
+            Anchor = new(groundOverlay.AnchorX, groundOverlay.AnchorY),
             Opacity = (float)groundOverlay.Opacity
         };
 
-        groundOverlay.GroundOverlayPosition?.SetupPostion(native);
+        groundOverlay.SetupPostionForOverlay(native);
 
         if (groundOverlay.IsVisible)
         {
@@ -254,12 +275,15 @@ public static class GroundOverlayExtensions
         return native;
     }
 
-    public static void SetupPostion(this GroundOverlayPosition groundOverlayPosition, NGroundOverlay native)
+    public static void SetupPostionForOverlay(this VGroundOverlay groundOverlay, NGroundOverlay overlay)
     {
-        native.Bounds = groundOverlayPosition switch
+        if (groundOverlay.OverlayBounds is LatLngBounds bounds)
         {
-            BoundsPosition bounds => new CoordinateBounds(bounds.Bounds.SouthWest.ToCoord(), bounds.Bounds.NorthEast.ToCoord()),
-            _ => throw new NotImplementedException($"{groundOverlayPosition.GetType().Name} is not supported on iOS for GroundOverlayPosition"),
-        };
+            overlay.Bounds = bounds.ToNative();
+        }
+        else if (groundOverlay.Position is Point position)
+        {
+            overlay.Position = position.ToCoord();
+        }
     }
 }

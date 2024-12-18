@@ -55,17 +55,9 @@ public partial class PinsPageViewModel : ObservableObject
 
     [ObservableProperty]
     private double _anchorX;
-    partial void OnAnchorXChanged(double oldValue, double newValue)
-    {
-        _pin.Anchor = new Point(newValue, _pin.Anchor.Y);
-    }
 
     [ObservableProperty]
     private double _anchorY;
-    partial void OnAnchorYChanged(double oldValue, double newValue)
-    {
-        _pin.Anchor = new Point(_pin.Anchor.X, newValue);
-    }
 
     [ObservableProperty]
     private double _infoWindowAnchorX;
@@ -137,10 +129,12 @@ public partial class PinsPageViewModel : ObservableObject
         _pin.SetBinding(Pin.IsVisibleProperty, new Binding(nameof(IsVisible), source: this));
         Opacity = _pin.Opacity;
         _pin.SetBinding(Pin.OpacityProperty, new Binding(nameof(Opacity), source: this));
+        AnchorX = _pin.AnchorX;
+        _pin.SetBinding(Pin.AnchorXProperty, new Binding(nameof(AnchorX), source: this, mode: BindingMode.TwoWay));
+        AnchorY = _pin.AnchorY;
+        _pin.SetBinding(Pin.AnchorYProperty, new Binding(nameof(AnchorY), source: this, mode: BindingMode.TwoWay));
         PositionX = _pin.Position.X;
         PositionY = _pin.Position.Y;
-        AnchorX = _pin.Anchor.X;
-        AnchorY = _pin.Anchor.Y;
         InfoWindowAnchorX = _pin.InfoWindowAnchor.X;
         InfoWindowAnchorY = _pin.InfoWindowAnchor.Y;
 
@@ -157,11 +151,6 @@ public partial class PinsPageViewModel : ObservableObject
         {
             PositionX = _pin.Position.X;
             PositionY = _pin.Position.Y;
-        }
-        else if (e.PropertyName == Pin.AnchorProperty.PropertyName)
-        {
-            AnchorX = _pin.Anchor.X;
-            AnchorY = _pin.Anchor.Y;
         }
         else if (e.PropertyName == Pin.InfoWindowAnchorProperty.PropertyName)
         {

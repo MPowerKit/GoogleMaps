@@ -68,7 +68,7 @@
                                     Title="{Binding Name}"
                                     Rotation="{Binding Orientation}"
                                     Icon="car_pin"
-                                    Anchor="0.5,0.5" />
+                                    AnchorY="0.5" />
                         </DataTemplate>
                     </vm:PinTemplateSelector.CarTemplate>
                     <vm:PinTemplateSelector.LocationTemplate>

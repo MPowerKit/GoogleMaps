@@ -39,7 +39,8 @@ public class TileOverlay : VisualElement
             nameof(TileSize),
             typeof(int),
             typeof(TileOverlay),
-            256);
+            256,
+            defaultBindingMode: BindingMode.OneTime);
     #endregion
 
     #region GetTileFunc
@@ -53,6 +54,7 @@ public class TileOverlay : VisualElement
         BindableProperty.Create(
             nameof(GetTileFunc),
             typeof(Func<Point, int, int, ImageSource?>),
-            typeof(TileOverlay));
+            typeof(TileOverlay),
+            defaultBindingMode: BindingMode.OneTime);
     #endregion
 }
