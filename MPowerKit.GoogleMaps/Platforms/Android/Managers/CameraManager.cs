@@ -13,70 +13,80 @@ namespace MPowerKit.GoogleMaps;
 public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
-    protected GMap? NativeView { get; set; }
+    protected GMap? PlatformView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
     public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
-        NativeView = platformView;
+        PlatformView = platformView;
         Handler = handler;
 
+        InitCamera(virtualView, platformView, handler);
+
+        SubscribeToEvents(virtualView, platformView, handler);
+    }
+
+    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    {
+        UnsubscribeFromEvents(virtualView, platformView, handler);
+
+        VirtualView = null;
+        PlatformView = null;
+        Handler = null;
+    }
+
+    protected virtual void InitCamera(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    {
+        platformView.SetMinZoomPreference(virtualView.MinZoom);
+        platformView.SetMaxZoomPreference(virtualView.MaxZoom);
+
+        if (virtualView.RestrictPanningToArea is not null)
+        {
+            platformView.SetLatLngBoundsForCameraTarget(virtualView.RestrictPanningToArea?.ToNative());
+            return;
+        }
+
+        if (virtualView.InitialCameraPosition is not null)
+        {
+            platformView.MoveCamera(virtualView.InitialCameraPosition.ToNative(handler.Context));
+            return;
+        }
+
+        virtualView.SendCameraChange(platformView.CameraPosition.ToCrossPlatform(), false);
+        virtualView.SendCameraIdle(platformView.Projection.VisibleRegion.ToCrossPlatform(), false);
+    }
+
+    protected virtual void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    {
         virtualView.PropertyChanged += VirtualView_PropertyChanged;
         virtualView.PropertyChanging += VirtualView_PropertyChanging;
 
-        platformView.CameraChange += NativeMap_CameraChange;
-        platformView.CameraIdle += NativeMap_CameraIdle;
-        platformView.CameraMove += NativeMap_CameraMove;
-        platformView.CameraMoveCanceled += NativeMap_CameraMoveCanceled;
-        platformView.CameraMoveStarted += NativeMap_CameraMoveStarted;
+        platformView.CameraChange += PlatformView_CameraChange;
+        platformView.CameraIdle += PlatformView_CameraIdle;
+        platformView.CameraMove += PlatformView_CameraMove;
+        platformView.CameraMoveCanceled += PlatformView_CameraMoveCanceled;
+        platformView.CameraMoveStarted += PlatformView_CameraMoveStarted;
 
         virtualView.MoveCameraActionInternal = MoveCamera;
         virtualView.AnimateCameraFuncInternal = AnimateCamera;
         virtualView.ResetMinMaxZoomActionInternal = ResetMinMaxZoom;
-
-        InitCamera();
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         virtualView.MoveCameraActionInternal = null;
         virtualView.AnimateCameraFuncInternal = null;
         virtualView.ResetMinMaxZoomActionInternal = null;
 
-        platformView.CameraChange -= NativeMap_CameraChange;
-        platformView.CameraIdle -= NativeMap_CameraIdle;
-        platformView.CameraMove -= NativeMap_CameraMove;
-        platformView.CameraMoveCanceled -= NativeMap_CameraMoveCanceled;
-        platformView.CameraMoveStarted -= NativeMap_CameraMoveStarted;
+        platformView.CameraChange -= PlatformView_CameraChange;
+        platformView.CameraIdle -= PlatformView_CameraIdle;
+        platformView.CameraMove -= PlatformView_CameraMove;
+        platformView.CameraMoveCanceled -= PlatformView_CameraMoveCanceled;
+        platformView.CameraMoveStarted -= PlatformView_CameraMoveStarted;
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-
-        VirtualView = null;
-        NativeView = null;
-        Handler = null;
-    }
-
-    protected virtual void InitCamera()
-    {
-        NativeView!.SetMinZoomPreference(VirtualView!.MinZoom);
-        NativeView.SetMaxZoomPreference(VirtualView.MaxZoom);
-
-        if (VirtualView.RestrictPanningToArea is not null)
-        {
-            NativeView.SetLatLngBoundsForCameraTarget(VirtualView.RestrictPanningToArea?.ToNative());
-            return;
-        }
-
-        if (VirtualView.InitialCameraPosition is not null)
-        {
-            NativeView.MoveCamera(VirtualView.InitialCameraPosition.ToNative(Handler!.Context));
-            return;
-        }
-
-        VirtualView.SendCameraChange(NativeView.CameraPosition.ToCrossPlatform(), false);
-        VirtualView.SendCameraIdle(NativeView.Projection.VisibleRegion.ToCrossPlatform(), false);
     }
 
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
@@ -86,64 +96,82 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
 
     protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        var virtualView = VirtualView!;
+        var platformView = PlatformView!;
+
         if (e.PropertyName == GoogleMap.MinZoomProperty.PropertyName)
         {
-            NativeView!.SetMinZoomPreference(VirtualView!.MinZoom);
+            OnMinZoomChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.MaxZoomProperty.PropertyName)
         {
-            NativeView!.SetMaxZoomPreference(VirtualView!.MaxZoom);
+            OnMaxZoomChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.RestrictPanningToAreaProperty.PropertyName)
         {
-            NativeView!.SetLatLngBoundsForCameraTarget(VirtualView!.RestrictPanningToArea?.ToNative());
+            OnRestrictPanningToAreaChanged(virtualView, platformView);
         }
     }
 
-    protected virtual void NativeMap_CameraMoveStarted(object? sender, GMap.CameraMoveStartedEventArgs e)
+    protected virtual void OnMinZoomChanged(GoogleMap virtualView, GMap platformView)
+    {
+        platformView.SetMinZoomPreference(virtualView.MinZoom);
+    }
+
+    protected virtual void OnMaxZoomChanged(GoogleMap virtualView, GMap platformView)
+    {
+        platformView.SetMaxZoomPreference(virtualView.MinZoom);
+    }
+
+    protected virtual void OnRestrictPanningToAreaChanged(GoogleMap virtualView, GMap platformView)
+    {
+        platformView.SetLatLngBoundsForCameraTarget(virtualView.RestrictPanningToArea?.ToNative());
+    }
+
+    protected virtual void PlatformView_CameraMoveStarted(object? sender, GMap.CameraMoveStartedEventArgs e)
     {
         VirtualView!.SendCameraMoveStart((CameraMoveReason)e.Reason);
     }
 
-    protected virtual void NativeMap_CameraMoveCanceled(object? sender, EventArgs e)
+    protected virtual void PlatformView_CameraMoveCanceled(object? sender, EventArgs e)
     {
         VirtualView!.SendCameraMoveCanceled();
     }
 
-    protected virtual void NativeMap_CameraMove(object? sender, EventArgs e)
+    protected virtual void PlatformView_CameraMove(object? sender, EventArgs e)
     {
         VirtualView!.SendCameraMove();
     }
 
-    protected virtual void NativeMap_CameraIdle(object? sender, EventArgs e)
+    protected virtual void PlatformView_CameraIdle(object? sender, EventArgs e)
     {
-        VirtualView!.SendCameraIdle(NativeView!.Projection.VisibleRegion.ToCrossPlatform());
+        VirtualView!.SendCameraIdle(PlatformView!.Projection.VisibleRegion.ToCrossPlatform());
     }
 
-    protected virtual void NativeMap_CameraChange(object? sender, GMap.CameraChangeEventArgs e)
+    protected virtual void PlatformView_CameraChange(object? sender, GMap.CameraChangeEventArgs e)
     {
         VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
     }
 
     protected virtual void ResetMinMaxZoom()
     {
-        NativeView!.ResetMinMaxZoomPreference();
-        VirtualView!.MinZoom = NativeView.MinZoomLevel;
-        VirtualView!.MaxZoom = NativeView.MaxZoomLevel;
+        PlatformView!.ResetMinMaxZoomPreference();
+        VirtualView!.MinZoom = PlatformView.MinZoomLevel;
+        VirtualView!.MaxZoom = PlatformView.MaxZoomLevel;
     }
 
     protected virtual Task AnimateCamera(VCameraUpdate update, int durationMils = 300)
     {
         TaskCompletionSource tcs = new();
 
-        NativeView!.AnimateCamera(update.ToNative(Handler!.Context), durationMils, new CancelableCallback(tcs));
+        PlatformView!.AnimateCamera(update.ToNative(Handler!.Context), durationMils, new CancelableCallback(tcs));
 
         return tcs.Task;
     }
 
     protected virtual void MoveCamera(VCameraUpdate update)
     {
-        NativeView!.MoveCamera(update.ToNative(Handler!.Context));
+        PlatformView!.MoveCamera(update.ToNative(Handler!.Context));
     }
 
     public class CancelableCallback : Java.Lang.Object, GMap.ICancelableCallback

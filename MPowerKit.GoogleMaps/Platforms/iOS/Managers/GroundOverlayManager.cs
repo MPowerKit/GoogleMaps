@@ -226,6 +226,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, Googl
     {
         try
         {
+            await Task.Yield();
             ngo.Icon = (await vgo.Image.GetPlatformImageAsync(Handler!.MauiContext!))?.Value;
         }
         catch (Exception)

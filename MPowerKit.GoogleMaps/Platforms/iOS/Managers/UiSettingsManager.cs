@@ -7,40 +7,50 @@ namespace MPowerKit.GoogleMaps;
 public class UiSettingsManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
-    protected MapView? NativeView { get; set; }
+    protected MapView? PlatformView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
     public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
-        NativeView = platformView;
+        PlatformView = platformView;
         Handler = handler;
 
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
+        InitUiSettings(virtualView, platformView, handler);
 
-        InitUiSettings();
+        SubscribeToEvents(virtualView, platformView, handler);
     }
 
     public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
+        UnsubscribeFromEvents(virtualView, platformView, handler);
 
         VirtualView = null;
-        NativeView = null;
+        PlatformView = null;
         Handler = null;
     }
 
-    protected virtual void InitUiSettings()
+    protected virtual void InitUiSettings(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        NativeView!.Settings.CompassButton = VirtualView!.CompassEnabled;
-        NativeView.Settings.ZoomGestures = VirtualView.ZoomGesturesEnabled;
-        NativeView.Settings.ScrollGestures = VirtualView.ScrollGesturesEnabled;
-        NativeView.Settings.TiltGestures = VirtualView.TiltGesturesEnabled;
-        NativeView.Settings.RotateGestures = VirtualView.RotateGesturesEnabled;
-        NativeView.Settings.MyLocationButton = VirtualView.MyLocationButtonEnabled;
-        NativeView.Settings.IndoorPicker = VirtualView.IndoorLevelPickerEnabled;
+        OnCompassEnabledChanged(virtualView, platformView);
+        OnZoomGesturesEnabledChanged(virtualView, platformView);
+        OnScrollGesturesEnabledChanged(virtualView, platformView);
+        OnTiltGesturesEnabledChanged(virtualView, platformView);
+        OnRotateGesturesEnabledChanged(virtualView, platformView);
+        OnMyLocationButtonEnabledChanged(virtualView, platformView);
+        OnIndoorLevelPickerEnabledChanged(virtualView, platformView);
+    }
+
+    protected virtual void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    {
+        virtualView.PropertyChanged += VirtualView_PropertyChanged;
+        virtualView.PropertyChanging += VirtualView_PropertyChanging;
+    }
+
+    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    {
+        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
+        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
     }
 
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
@@ -50,33 +60,71 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, MapView, GoogleMa
 
     protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        var virtualView = VirtualView!;
+        var platformView = PlatformView!;
+
         if (e.PropertyName == GoogleMap.CompassEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.CompassButton = VirtualView!.CompassEnabled;
+            OnCompassEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.ZoomGesturesEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.ZoomGestures = VirtualView!.ZoomGesturesEnabled;
+            OnZoomGesturesEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.ScrollGesturesEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.ScrollGestures = VirtualView!.ScrollGesturesEnabled;
+            OnScrollGesturesEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.TiltGesturesEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.TiltGestures = VirtualView!.TiltGesturesEnabled;
+            OnTiltGesturesEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.RotateGesturesEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.RotateGestures = VirtualView!.RotateGesturesEnabled;
+            OnRotateGesturesEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.MyLocationButtonEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.MyLocationButton = VirtualView!.MyLocationButtonEnabled;
+            OnMyLocationButtonEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.IndoorLevelPickerEnabledProperty.PropertyName)
         {
-            NativeView!.Settings.IndoorPicker = VirtualView!.IndoorLevelPickerEnabled;
+            OnIndoorLevelPickerEnabledChanged(virtualView, platformView);
         }
+    }
+
+    protected virtual void OnCompassEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.CompassButton = virtualView.CompassEnabled;
+    }
+
+    protected virtual void OnZoomGesturesEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.ZoomGestures = virtualView.ZoomGesturesEnabled;
+    }
+
+    protected virtual void OnScrollGesturesEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.ScrollGestures = virtualView.ScrollGesturesEnabled;
+    }
+
+    protected virtual void OnTiltGesturesEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.TiltGestures = virtualView.TiltGesturesEnabled;
+    }
+
+    protected virtual void OnRotateGesturesEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.RotateGestures = virtualView.RotateGesturesEnabled;
+    }
+
+    protected virtual void OnMyLocationButtonEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.MyLocationButton = virtualView.MyLocationButtonEnabled;
+    }
+
+    protected virtual void OnIndoorLevelPickerEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Settings.IndoorPicker = virtualView.IndoorLevelPickerEnabled;
     }
 }

@@ -5,6 +5,7 @@ public interface IViewImageSource : IImageSource
     View? View { get; }
 }
 
+[ContentProperty("View")]
 public class ViewImageSource : ImageSource, IViewImageSource
 {
     public View? View { get; set; }

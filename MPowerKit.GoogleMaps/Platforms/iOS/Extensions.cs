@@ -67,7 +67,7 @@ public static class Extensions
 
     public static UIImage ToImage(this UIView v)
     {
-        var renderer = new UIGraphicsImageRenderer(v.Bounds.Size, new UIGraphicsImageRendererFormat()
+        UIGraphicsImageRenderer renderer = new(v.Bounds.Size, new()
         {
             Opaque = false,
             Scale = 1f

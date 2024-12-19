@@ -196,14 +196,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         }
         else if (e.PropertyName == VGroundOverlay.ImageProperty.PropertyName)
         {
-            SetGroundOverlayImage(groundOverlay, native)
-                .ContinueWith(t =>
-                {
-                    groundOverlay.OverlayBounds = native.Bounds.ToCrossPlatform();
-                    groundOverlay.Position = native.Position.ToCrossPlatformPoint();
-                    groundOverlay.WidthRequest = native.Width;
-                    groundOverlay.HeightRequest = native.Height;
-                });
+            SetGroundOverlayImage(groundOverlay, native);
         }
     }
 
@@ -235,19 +228,7 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         {
             var ngo = NativeView!.AddGroundOverlay(groundOverlay.ToNative(Handler!.MauiContext!))!;
             NativeObjectAttachedProperty.SetNativeObject(groundOverlay, ngo);
-            groundOverlay.OverlayBounds = ngo.Bounds.ToCrossPlatform();
-            groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
-            SetGroundOverlayImage(groundOverlay, ngo)
-                .ContinueWith(t =>
-                {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        groundOverlay.OverlayBounds = ngo.Bounds.ToCrossPlatform();
-                        groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
-                        groundOverlay.WidthRequest = ngo.Width;
-                        groundOverlay.HeightRequest = ngo.Height;
-                    });
-                });
+            SetGroundOverlayImage(groundOverlay, ngo);
             groundOverlay.PropertyChanged += GroundOverlay_PropertyChanged;
             GroundOverlays.Add(groundOverlay);
         }
@@ -263,6 +244,18 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, GMap, GoogleMa
         {
             ngo.SetImage(GroundOverlayExtensions.DummyImage(Handler!.MauiContext!));
         }
+
+        UpdateBoundsAndPosition(vgo, ngo);
+    }
+
+    protected virtual void UpdateBoundsAndPosition(VGroundOverlay vgo, NGroundOverlay ngo)
+    {
+        _overlayPositionBanchUpdate = true;
+        vgo.OverlayBounds = ngo.Bounds.ToCrossPlatform();
+        vgo.Position = ngo.Position.ToCrossPlatformPoint();
+        vgo.WidthRequest = ngo.Width;
+        vgo.HeightRequest = ngo.Height;
+        _overlayPositionBanchUpdate = false;
     }
 
     protected virtual void RemoveGroundOverlaysFromNativeMap(IEnumerable<VGroundOverlay> overlays)

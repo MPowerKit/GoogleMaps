@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.GroundOverlaysSourcePage"
+             Title="GroundOverlaysSource"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             x:DataType="vm:GroundOverlaysSourcePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:GroundOverlaysSourcePageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <gm:GoogleMap GroundOverlaysSource="{Binding Items}"
+                      GroundOverlayClickedCommand="{Binding GroundOverlayClickedCommand}"
+                      Grid.Row="1">
+            <gm:GoogleMap.GroundOverlayItemTemplate>
+                <vm:GroundOverlaysTemplateSelector>
+                    <vm:GroundOverlaysTemplateSelector.UrlTemplate>
+                        <DataTemplate x:DataType="vm:GroundOverlayDataObject">
+                            <gm:GroundOverlay ZIndex="{Binding ZIndex}"
+                                              Image="https://picsum.photos/200/300"
+                                              OverlayBounds="{Binding Bounds}" />
+                        </DataTemplate>
+                    </vm:GroundOverlaysTemplateSelector.UrlTemplate>
+                    <vm:GroundOverlaysTemplateSelector.FileTemplate>
+                        <DataTemplate x:DataType="vm:GroundOverlayDataObject">
+                            <gm:GroundOverlay ZIndex="{Binding ZIndex}"
+                                              Image="tile.png"
+                                              OverlayBounds="{Binding Bounds}" />
+                        </DataTemplate>
+                    </vm:GroundOverlaysTemplateSelector.FileTemplate>
+                    <vm:GroundOverlaysTemplateSelector.ViewTemplate>
+                        <DataTemplate x:DataType="vm:GroundOverlayDataObject">
+                            <gm:GroundOverlay ZIndex="{Binding ZIndex}"
+                                              OverlayBounds="{Binding Bounds}" >
+                                <gm:GroundOverlay.Image>
+                                    <gm:ViewImageSource>
+                                        <ContentView BackgroundColor="Orange"
+                                                     Padding="20">
+                                            <Label Text="This is overlay's image from view."
+                                                   TextColor="Black" />
+                                        </ContentView>
+                                    </gm:ViewImageSource>
+                                </gm:GroundOverlay.Image>
+                            </gm:GroundOverlay>
+                        </DataTemplate>
+                    </vm:GroundOverlaysTemplateSelector.ViewTemplate>
+                </vm:GroundOverlaysTemplateSelector>
+            </gm:GoogleMap.GroundOverlayItemTemplate>
+        </gm:GoogleMap>
+    </Grid>
+</ContentPage>
