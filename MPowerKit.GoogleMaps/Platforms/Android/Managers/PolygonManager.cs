@@ -28,7 +28,7 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
 
     protected override string GetVirtualViewItemsPropertyName()
     {
-        return GoogleMap.PinsProperty.PropertyName;
+        return GoogleMap.PolygonsProperty.PropertyName;
     }
 
     protected override IEnumerable<VPolygon> GetVirtualViewItems()

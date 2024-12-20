@@ -28,7 +28,7 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GoogleMap,
 
     protected override string GetVirtualViewItemsPropertyName()
     {
-        return GoogleMap.PinsProperty.PropertyName;
+        return GoogleMap.CirclesProperty.PropertyName;
     }
 
     protected override IEnumerable<VCircle> GetVirtualViewItems()
