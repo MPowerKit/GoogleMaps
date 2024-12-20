@@ -11,33 +11,61 @@ namespace MPowerKit.GoogleMaps;
 public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
     protected GoogleMap? VirtualView { get; set; }
-    protected MapView? NativeView { get; set; }
+    protected MapView? PlatformView { get; set; }
     protected GoogleMapHandler? Handler { get; set; }
 
     public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         VirtualView = virtualView;
-        NativeView = platformView;
+        PlatformView = platformView;
         Handler = handler;
 
+        InitMap(virtualView, platformView, handler);
+
+        SubscribeToEvents(virtualView, platformView, handler);
+    }
+
+    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    {
+        UnsubscribeFromEvents(virtualView, platformView, handler);
+
+        VirtualView = null;
+        PlatformView = null;
+        Handler = null;
+    }
+
+    protected virtual void InitMap(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    {
+        virtualView.SendMapCapabilitiesChanged(platformView.MapCapabilities.ToCrossPlatform(), false);
+        virtualView.SendIndoorBuildingFocused(platformView.IndoorDisplay?.ActiveBuilding?.ToCrossPlatform(platformView), false);
+        virtualView.SendIndoorLevelActivated(platformView.IndoorDisplay?.ActiveLevel?.ToCrossPlatform(platformView), false);
+
+        OnHandlePoiClickChanged(virtualView, platformView);
+        OnIndoorEnabledChanged(virtualView, platformView);
+        OnBuildingsEnabledChanged(virtualView, platformView);
+        OnMapTypeChanged(virtualView, platformView);
+        OnMyLocationEnabledChanged(virtualView, platformView);
+        OnTrafficEnabledChanged(virtualView, platformView);
+        OnPaddingChanged(virtualView, platformView);
+        OnMapStyleChanged(virtualView, platformView);
+    }
+
+    protected virtual void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    {
         virtualView.PropertyChanged += VirtualView_PropertyChanged;
         virtualView.PropertyChanging += VirtualView_PropertyChanging;
 
-        virtualView.MapCoordsToScreenLocationFuncInternal = MapCoordsToScreenLocation;
-        virtualView.ScreenLocationToMapCoordsFuncInternal = ScreenLocationToMapCoords;
+        virtualView.MapCoordsToScreenLocationFuncInternal = ProjectMapCoordsToScreenLocation;
+        virtualView.ScreenLocationToMapCoordsFuncInternal = ProjectScreenLocationToMapCoords;
         virtualView.TakeSnapshotFuncInternal = TakeSnapshot;
 
         platformView.CoordinateTapped += PlatformView_CoordinateTapped;
         platformView.CoordinateLongPressed += PlatformView_CoordinateLongPressed;
         platformView.IndoorDisplay.Delegate = new IndoorDisplayDel(this);
         platformView.MapCapabilitiesChanged += PlatformView_MapCapabilitiesChanged;
-
-        HandlePoiClick();
-
-        InitMap();
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         virtualView.MapCoordsToScreenLocationFuncInternal = null;
         virtualView.ScreenLocationToMapCoordsFuncInternal = null;
@@ -51,26 +79,6 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
         virtualView.PropertyChanged -= VirtualView_PropertyChanged;
         virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-
-        VirtualView = null;
-        NativeView = null;
-        Handler = null;
-    }
-
-    protected virtual void InitMap()
-    {
-        VirtualView!.SendMapCapabilitiesChanged(NativeView!.MapCapabilities.ToCrossPlatform(), false);
-        VirtualView!.SendIndoorBuildingFocused(NativeView.IndoorDisplay?.ActiveBuilding?.ToCrossPlatform(NativeView), false);
-        VirtualView!.SendIndoorLevelActivated(NativeView.IndoorDisplay?.ActiveLevel?.ToCrossPlatform(NativeView), false);
-
-        NativeView!.IndoorEnabled = VirtualView!.IndoorEnabled;
-        NativeView.BuildingsEnabled = VirtualView.BuildingsEnabled;
-        NativeView.MapType = VirtualView.MapType.ToNative();
-        NativeView.MyLocationEnabled = VirtualView.MyLocationEnabled;
-        NativeView.TrafficEnabled = VirtualView.TrafficEnabled;
-        NativeView.Padding = VirtualView.Padding.ToNative();
-
-        SetMapStyle();
     }
 
     protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
@@ -80,49 +88,94 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
     protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        var virtualView = VirtualView!;
+        var platformView = PlatformView!;
+
         if (e.PropertyName == GoogleMap.HandlePoiClickProperty.PropertyName)
         {
-            HandlePoiClick();
+            OnHandlePoiClickChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.IndoorEnabledProperty.PropertyName)
         {
-            NativeView!.IndoorEnabled = VirtualView!.IndoorEnabled;
+            OnIndoorEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.BuildingsEnabledProperty.PropertyName)
         {
-            NativeView!.BuildingsEnabled = VirtualView!.BuildingsEnabled;
+            OnBuildingsEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.MapTypeProperty.PropertyName)
         {
-            NativeView!.MapType = VirtualView!.MapType.ToNative();
+            OnMapTypeChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.MyLocationEnabledProperty.PropertyName)
         {
-            NativeView!.MyLocationEnabled = VirtualView!.MyLocationEnabled;
+            OnMyLocationEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.TrafficEnabledProperty.PropertyName)
         {
-            NativeView!.TrafficEnabled = VirtualView!.TrafficEnabled;
+            OnTrafficEnabledChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.PaddingProperty.PropertyName)
         {
-            NativeView!.Padding = VirtualView!.Padding.ToNative();
+            OnPaddingChanged(virtualView, platformView);
         }
         else if (e.PropertyName == GoogleMap.MapStyleJsonProperty.PropertyName)
         {
-            SetMapStyle();
+            OnMapStyleChanged(virtualView, platformView);
         }
     }
 
-    protected virtual async Task SetMapStyle()
+    protected virtual void OnHandlePoiClickChanged(GoogleMap virtualView, MapView platformView)
     {
-        if (string.IsNullOrWhiteSpace(VirtualView!.MapStyleJson))
+        if (virtualView.HandlePoiClick)
         {
-            NativeView!.MapStyle = null;
+            platformView.PoiWithPlaceIdTapped += PlatformView_PoiWithPlaceIdTapped;
+        }
+        else
+        {
+            platformView.PoiWithPlaceIdTapped -= PlatformView_PoiWithPlaceIdTapped;
+        }
+    }
+
+    protected virtual void OnIndoorEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.IndoorEnabled = virtualView.IndoorEnabled;
+    }
+
+    protected virtual void OnBuildingsEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.BuildingsEnabled = virtualView.BuildingsEnabled;
+    }
+
+    protected virtual void OnMapTypeChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.MapType = virtualView.MapType.ToNative();
+    }
+
+    protected virtual void OnMyLocationEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.MyLocationEnabled = virtualView.MyLocationEnabled;
+    }
+
+    protected virtual void OnTrafficEnabledChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.TrafficEnabled = virtualView.TrafficEnabled;
+    }
+
+    protected virtual void OnPaddingChanged(GoogleMap virtualView, MapView platformView)
+    {
+        platformView.Padding = virtualView.Padding.ToNative();
+    }
+
+    protected virtual async Task OnMapStyleChanged(GoogleMap virtualView, MapView platformView)
+    {
+        if (string.IsNullOrWhiteSpace(virtualView.MapStyleJson))
+        {
+            platformView.MapStyle = null;
             return;
         }
 
-        var json = VirtualView!.MapStyleJson;
+        var json = virtualView.MapStyleJson;
 
         try
         {
@@ -147,26 +200,26 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
             return;
         }
 
-        NativeView!.MapStyle = MapStyle.FromJson(json, null);
+        platformView.MapStyle = MapStyle.FromJson(json, null);
     }
 
     protected virtual Task<Stream?> TakeSnapshot()
     {
-        var view = NativeView!.SnapshotView(true);
+        var view = PlatformView!.SnapshotView(true);
 
         var image = view.ToImage();
 
         return Task.FromResult(image?.AsPNG()?.AsStream());
     }
 
-    protected virtual Point ScreenLocationToMapCoords(Point point)
+    protected virtual Point ProjectScreenLocationToMapCoords(Point point)
     {
-        return NativeView!.Projection.CoordinateForPoint(point).ToCrossPlatformPoint();
+        return PlatformView!.Projection.CoordinateForPoint(point).ToCrossPlatformPoint();
     }
 
-    protected virtual Point MapCoordsToScreenLocation(Point point)
+    protected virtual Point ProjectMapCoordsToScreenLocation(Point point)
     {
-        return NativeView!.Projection.PointForCoordinate(point.ToCoord()).ToCrossPlatformPoint();
+        return PlatformView!.Projection.PointForCoordinate(point.ToCoord()).ToCrossPlatformPoint();
     }
 
     protected virtual void PlatformView_CoordinateTapped(object? sender, GMSCoordEventArgs e)
@@ -186,31 +239,19 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
         VirtualView!.SendPoiClick(e.ToCrossPlatform());
     }
 
-    protected virtual void HandlePoiClick()
-    {
-        if (VirtualView!.HandlePoiClick)
-        {
-            NativeView!.PoiWithPlaceIdTapped += PlatformView_PoiWithPlaceIdTapped;
-        }
-        else
-        {
-            NativeView!.PoiWithPlaceIdTapped -= PlatformView_PoiWithPlaceIdTapped;
-        }
-    }
-
     protected virtual void PlatformView_MapCapabilitiesChanged(object? sender, GMSMapCapabilitiesEventArgs e)
     {
         VirtualView!.SendMapCapabilitiesChanged(e.MapCapabilities.ToCrossPlatform());
     }
 
-    public virtual void DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
+    public virtual void PlatformView_DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
     {
-        VirtualView!.SendIndoorBuildingFocused(building?.ToCrossPlatform(NativeView!));
+        VirtualView!.SendIndoorBuildingFocused(building?.ToCrossPlatform(PlatformView!));
     }
 
-    public virtual void DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
+    public virtual void PlatformView_DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
     {
-        VirtualView!.SendIndoorLevelActivated(level?.ToCrossPlatform(NativeView!));
+        VirtualView!.SendIndoorLevelActivated(level?.ToCrossPlatform(PlatformView!));
     }
 
     public class IndoorDisplayDel : IndoorDisplayDelegate
@@ -224,12 +265,12 @@ public class MapManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandle
 
         public override void DidChangeActiveBuilding(Google.Maps.IndoorBuilding? building)
         {
-            _mapManager.DidChangeActiveBuilding(building);
+            _mapManager.PlatformView_DidChangeActiveBuilding(building);
         }
 
         public override void DidChangeActiveLevel(Google.Maps.IndoorLevel? level)
         {
-            _mapManager.DidChangeActiveLevel(level);
+            _mapManager.PlatformView_DidChangeActiveLevel(level);
         }
     }
 }

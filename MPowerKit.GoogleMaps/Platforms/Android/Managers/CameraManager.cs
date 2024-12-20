@@ -38,12 +38,12 @@ public class CameraManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandle
 
     protected virtual void InitCamera(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        platformView.SetMinZoomPreference(virtualView.MinZoom);
-        platformView.SetMaxZoomPreference(virtualView.MaxZoom);
+        OnMinZoomChanged(virtualView, platformView);
+        OnMaxZoomChanged(virtualView, platformView);
 
         if (virtualView.RestrictPanningToArea is not null)
         {
-            platformView.SetLatLngBoundsForCameraTarget(virtualView.RestrictPanningToArea?.ToNative());
+            OnRestrictPanningToAreaChanged(virtualView, platformView);
             return;
         }
 
