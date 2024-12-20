@@ -4,34 +4,12 @@ using Google.Maps;
 
 namespace MPowerKit.GoogleMaps;
 
-public class UiSettingsManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class UiSettingsManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected MapView? PlatformView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void Init(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        VirtualView = virtualView;
-        PlatformView = platformView;
-        Handler = handler;
+        base.Init(virtualView, platformView, handler);
 
-        InitUiSettings(virtualView, platformView, handler);
-
-        SubscribeToEvents(virtualView, platformView, handler);
-    }
-
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
-        UnsubscribeFromEvents(virtualView, platformView, handler);
-
-        VirtualView = null;
-        PlatformView = null;
-        Handler = null;
-    }
-
-    protected virtual void InitUiSettings(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
         OnCompassEnabledChanged(virtualView, platformView);
         OnZoomGesturesEnabledChanged(virtualView, platformView);
         OnScrollGesturesEnabledChanged(virtualView, platformView);
@@ -41,53 +19,35 @@ public class UiSettingsManager : IMapFeatureManager<GoogleMap, MapView, GoogleMa
         OnIndoorLevelPickerEnabledChanged(virtualView, platformView);
     }
 
-    protected virtual void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, MapView platformView, string? propertyName)
     {
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
-    }
+        base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
-    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-    }
-
-    protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
-    {
-
-    }
-
-    protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var virtualView = VirtualView!;
-        var platformView = PlatformView!;
-
-        if (e.PropertyName == GoogleMap.CompassEnabledProperty.PropertyName)
+        if (propertyName == GoogleMap.CompassEnabledProperty.PropertyName)
         {
             OnCompassEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.ZoomGesturesEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.ZoomGesturesEnabledProperty.PropertyName)
         {
             OnZoomGesturesEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.ScrollGesturesEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.ScrollGesturesEnabledProperty.PropertyName)
         {
             OnScrollGesturesEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.TiltGesturesEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.TiltGesturesEnabledProperty.PropertyName)
         {
             OnTiltGesturesEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.RotateGesturesEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.RotateGesturesEnabledProperty.PropertyName)
         {
             OnRotateGesturesEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.MyLocationButtonEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.MyLocationButtonEnabledProperty.PropertyName)
         {
             OnMyLocationButtonEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.IndoorLevelPickerEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.IndoorLevelPickerEnabledProperty.PropertyName)
         {
             OnIndoorLevelPickerEnabledChanged(virtualView, platformView);
         }

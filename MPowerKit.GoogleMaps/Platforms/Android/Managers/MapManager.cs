@@ -6,34 +6,12 @@ using GMap = Android.Gms.Maps.GoogleMap;
 
 namespace MPowerKit.GoogleMaps;
 
-public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class MapManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected GMap? PlatformView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    public virtual void Connect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        VirtualView = virtualView;
-        PlatformView = platformView;
-        Handler = handler;
+        base.Init(virtualView, platformView, handler);
 
-        InitMap(virtualView, platformView, handler);
-
-        SubscribeToEvents(virtualView, platformView, handler);
-    }
-
-    public virtual void Disconnect(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
-    {
-        UnsubscribeFromEvents(virtualView, platformView, handler);
-
-        VirtualView = null;
-        PlatformView = null;
-        Handler = null;
-    }
-
-    protected virtual void InitMap(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
-    {
         virtualView.SendMapCapabilitiesChanged(platformView.MapCapabilities.ToCrossPlatform(), false);
         virtualView.SendIndoorBuildingFocused(platformView.FocusedBuilding?.ToCrossPlatform(), false);
         virtualView.SendIndoorLevelActivated(platformView.FocusedBuilding?.Levels.ElementAtOrDefault(platformView.FocusedBuilding?.ActiveLevelIndex ?? 0)?.ToCrossPlatform(), false);
@@ -49,10 +27,9 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         OnMapStyleChanged(virtualView, platformView);
     }
 
-    protected virtual void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
+        base.SubscribeToEvents(virtualView, platformView, handler);
 
         virtualView.MapCoordsToScreenLocationFuncInternal = ProjectMapCoordsToScreenLocation;
         virtualView.ScreenLocationToMapCoordsFuncInternal = ProjectScreenLocationToMapCoords;
@@ -65,7 +42,7 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         platformView.IndoorBuildingFocused += PlatformView_IndoorBuildingFocused;
     }
 
-    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         virtualView.MapCoordsToScreenLocationFuncInternal = null;
         virtualView.ScreenLocationToMapCoordsFuncInternal = null;
@@ -78,53 +55,46 @@ public class MapManager : IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
         platformView.IndoorLevelActivated -= PlatformView_IndoorLevelActivated;
         platformView.IndoorBuildingFocused -= PlatformView_IndoorBuildingFocused;
 
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
+        base.UnsubscribeFromEvents(virtualView, platformView, handler);
     }
 
-    protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
+    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, GMap platformView, string? propertyName)
     {
+        base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
-    }
-
-    protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var virtualView = VirtualView!;
-        var platformView = PlatformView!;
-
-        if (e.PropertyName == GoogleMap.HandlePoiClickProperty.PropertyName)
+        if (propertyName == GoogleMap.HandlePoiClickProperty.PropertyName)
         {
             OnHandlePoiClickChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.IndoorEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.IndoorEnabledProperty.PropertyName)
         {
             OnIndoorEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.BuildingsEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.BuildingsEnabledProperty.PropertyName)
         {
             OnBuildingsEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.MapTypeProperty.PropertyName)
+        else if (propertyName == GoogleMap.MapTypeProperty.PropertyName)
         {
             OnMapTypeChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.MyLocationEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.MyLocationEnabledProperty.PropertyName)
         {
             OnMyLocationEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.MapColorSchemeProperty.PropertyName)
+        else if (propertyName == GoogleMap.MapColorSchemeProperty.PropertyName)
         {
             OnMapColorSchemeChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.TrafficEnabledProperty.PropertyName)
+        else if (propertyName == GoogleMap.TrafficEnabledProperty.PropertyName)
         {
             OnTrafficEnabledChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.PaddingProperty.PropertyName)
+        else if (propertyName == GoogleMap.PaddingProperty.PropertyName)
         {
             OnPaddingChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.MapStyleJsonProperty.PropertyName)
+        else if (propertyName == GoogleMap.MapStyleJsonProperty.PropertyName)
         {
             OnMapStyleChanged(virtualView, platformView);
         }

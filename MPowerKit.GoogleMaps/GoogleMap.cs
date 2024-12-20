@@ -102,42 +102,42 @@ public class GoogleMap : View
             || propertyName == PolylineItemTemplateProperty.PropertyName)
         {
             var polylines = Polylines;
-            Reset(PolylinesSource, ref polylines);
+            ResetSource(PolylinesSource, ref polylines);
             Polylines = polylines;
         }
         else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
             var polygons = Polygons;
-            Reset(PolygonsSource, ref polygons);
+            ResetSource(PolygonsSource, ref polygons);
             Polygons = polygons;
         }
         else if (propertyName == CirclesSourceProperty.PropertyName
             || propertyName == CircleItemTemplateProperty.PropertyName)
         {
             var circles = Circles;
-            Reset(CirclesSource, ref circles);
+            ResetSource(CirclesSource, ref circles);
             Circles = circles;
         }
         else if (propertyName == TileOverlaysSourceProperty.PropertyName
             || propertyName == TileOverlayItemTemplateProperty.PropertyName)
         {
             var tileOverlays = TileOverlays;
-            Reset(TileOverlaysSource, ref tileOverlays);
+            ResetSource(TileOverlaysSource, ref tileOverlays);
             TileOverlays = tileOverlays;
         }
         else if (propertyName == GroundOverlaysSourceProperty.PropertyName
             || propertyName == GroundOverlayItemTemplateProperty.PropertyName)
         {
             var groundOverlays = GroundOverlays;
-            Reset(GroundOverlaysSource, ref groundOverlays);
+            ResetSource(GroundOverlaysSource, ref groundOverlays);
             GroundOverlays = groundOverlays;
         }
         else if (propertyName == PinsSourceProperty.PropertyName
             || propertyName == PinItemTemplateProperty.PropertyName)
         {
             var pins = Pins;
-            Reset(PinsSource, ref pins);
+            ResetSource(PinsSource, ref pins);
             Pins = pins;
         }
         else if (propertyName == SelectedPinProperty.PropertyName)
@@ -154,42 +154,42 @@ public class GoogleMap : View
             || propertyName == PolylineItemTemplateProperty.PropertyName)
         {
             var polylines = Polylines;
-            Init(PolylinesSource, PolylineItemTemplate, ref polylines);
+            InitSource(PolylinesSource, PolylineItemTemplate, ref polylines);
             Polylines = polylines;
         }
         else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
             var polygons = Polygons;
-            Init(PolygonsSource, PolygonItemTemplate, ref polygons);
+            InitSource(PolygonsSource, PolygonItemTemplate, ref polygons);
             Polygons = polygons;
         }
         else if (propertyName == CirclesSourceProperty.PropertyName
             || propertyName == CircleItemTemplateProperty.PropertyName)
         {
             var circles = Circles;
-            Init(CirclesSource, CircleItemTemplate, ref circles);
+            InitSource(CirclesSource, CircleItemTemplate, ref circles);
             Circles = circles;
         }
         else if (propertyName == TileOverlaysSourceProperty.PropertyName
             || propertyName == TileOverlayItemTemplateProperty.PropertyName)
         {
             var tileOverlays = TileOverlays;
-            Init(TileOverlaysSource, TileOverlayItemTemplate, ref tileOverlays);
+            InitSource(TileOverlaysSource, TileOverlayItemTemplate, ref tileOverlays);
             TileOverlays = tileOverlays;
         }
         else if (propertyName == GroundOverlaysSourceProperty.PropertyName
             || propertyName == GroundOverlayItemTemplateProperty.PropertyName)
         {
             var groundOverlays = GroundOverlays;
-            Init(GroundOverlaysSource, GroundOverlayItemTemplate, ref groundOverlays);
+            InitSource(GroundOverlaysSource, GroundOverlayItemTemplate, ref groundOverlays);
             GroundOverlays = groundOverlays;
         }
         else if (propertyName == PinsSourceProperty.PropertyName
             || propertyName == PinItemTemplateProperty.PropertyName)
         {
             var pins = Pins;
-            Init(PinsSource, PinItemTemplate, ref pins);
+            InitSource(PinsSource, PinItemTemplate, ref pins);
             Pins = pins;
         }
         else if (propertyName == SelectedPinDataProperty.PropertyName && PinsSource is not null)
@@ -223,7 +223,7 @@ public class GoogleMap : View
         SelectedPin?.ShowInfoWindow();
     }
 
-    protected virtual void Reset<T>(IEnumerable source, ref IEnumerable<T>? mapObjects)
+    protected virtual void ResetSource<T>(IEnumerable source, ref IEnumerable<T>? mapObjects)
         where T : VisualElement
     {
         if (source is INotifyCollectionChanged collectionChanged)
@@ -231,12 +231,16 @@ public class GoogleMap : View
             collectionChanged.CollectionChanged -= Source_CollectionChanged<T>;
         }
 
+        if (typeof(T).Name == nameof(Pin))
+        {
+            SelectedPin = null;
+        }
+
         (mapObjects as ObservableCollection<T>)?.Clear();
         mapObjects = null;
-        SelectedPin = null;
     }
 
-    protected virtual void Init<T>(IEnumerable source, DataTemplate itemTemplate, ref IEnumerable<T> mapObjects)
+    protected virtual void InitSource<T>(IEnumerable source, DataTemplate itemTemplate, ref IEnumerable<T> mapObjects)
         where T : VisualElement
     {
         if (source is null || itemTemplate is null) return;

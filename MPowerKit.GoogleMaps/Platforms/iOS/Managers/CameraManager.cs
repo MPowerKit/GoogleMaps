@@ -9,34 +9,12 @@ using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class CameraManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected MapView? PlatformView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void Init(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        VirtualView = virtualView;
-        PlatformView = platformView;
-        Handler = handler;
+        base.Init(virtualView, platformView, handler);
 
-        InitCamera(virtualView, platformView, handler);
-
-        SubscribeToEvents(virtualView, platformView, handler);
-    }
-
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
-        UnsubscribeFromEvents(virtualView, platformView, handler);
-
-        VirtualView = null;
-        PlatformView = null;
-        Handler = null;
-    }
-
-    protected virtual void InitCamera(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
         OnMinMaxZoomChanged(virtualView, platformView);
 
         if (virtualView.RestrictPanningToArea is not null)
@@ -55,10 +33,9 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         virtualView.SendCameraIdle(platformView.Projection.VisibleRegion.ToCrossPlatform(), false);
     }
 
-    protected virtual void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
+        base.SubscribeToEvents(virtualView, platformView, handler);
 
         platformView.CameraPositionChanged += PlatformView_CameraPositionChanged;
         platformView.CameraPositionIdle += PlatformView_CameraPositionIdle;
@@ -68,7 +45,7 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         virtualView.AnimateCameraFuncInternal = AnimateCamera;
     }
 
-    protected virtual void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         virtualView.MoveCameraActionInternal = null;
         virtualView.AnimateCameraFuncInternal = null;
@@ -77,26 +54,19 @@ public class CameraManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHan
         platformView.CameraPositionIdle -= PlatformView_CameraPositionIdle;
         platformView.WillMove -= PlatformView_WillMove;
 
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
+        base.UnsubscribeFromEvents(virtualView, platformView, handler);
     }
 
-    protected virtual void VirtualView_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
+    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, MapView platformView, string? propertyName)
     {
+        base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
-    }
-
-    protected virtual void VirtualView_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var virtualView = VirtualView!;
-        var platformView = PlatformView!;
-
-        if (e.PropertyName == GoogleMap.MinZoomProperty.PropertyName
-            || e.PropertyName == GoogleMap.MaxZoomProperty.PropertyName)
+        if (propertyName == GoogleMap.MinZoomProperty.PropertyName
+            || propertyName == GoogleMap.MaxZoomProperty.PropertyName)
         {
             OnMinMaxZoomChanged(virtualView, platformView);
         }
-        else if (e.PropertyName == GoogleMap.RestrictPanningToAreaProperty.PropertyName)
+        else if (propertyName == GoogleMap.RestrictPanningToAreaProperty.PropertyName)
         {
             OnRestrictPanningToAreaChanged(virtualView, platformView);
         }
