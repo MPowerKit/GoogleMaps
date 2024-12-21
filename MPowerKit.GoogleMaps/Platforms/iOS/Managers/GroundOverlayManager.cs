@@ -1,228 +1,138 @@
-﻿using System.Collections.Specialized;
-using Google.Maps;
+﻿using Google.Maps;
 
 using NGroundOverlay = Google.Maps.GroundOverlay;
 using VGroundOverlay = MPowerKit.GoogleMaps.GroundOverlay;
 
 namespace MPowerKit.GoogleMaps;
 
-public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGroundOverlay, GoogleMap, MapView, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected MapView? NativeView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    protected List<VGroundOverlay> GroundOverlays { get; set; } = [];
-
-    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        VirtualView = virtualView;
-        NativeView = platformView;
-        Handler = handler;
+        base.SubscribeToEvents(virtualView, platformView, handler);
 
-        ResetGroundOverlays();
-
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
-
-        if (virtualView.GroundOverlays is INotifyCollectionChanged groundOverlays)
-        {
-            groundOverlays.CollectionChanged += GroundOverlays_CollectionChanged;
-        }
-
-        platformView.OverlayTapped += NativeMap_OverlayTapped;
+        platformView.OverlayTapped += PlatformView_OverlayTapped;
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        platformView.OverlayTapped -= NativeMap_OverlayTapped;
+        platformView.OverlayTapped -= PlatformView_OverlayTapped;
 
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-
-        if (virtualView.GroundOverlays is INotifyCollectionChanged groundOverlays)
-        {
-            groundOverlays.CollectionChanged -= GroundOverlays_CollectionChanged;
-        }
-
-        ClearGroundOverlays();
-
-        VirtualView = null;
-        NativeView = null;
-        Handler = null;
+        base.UnsubscribeFromEvents(virtualView, platformView, handler);
     }
 
-    protected virtual void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    protected override string GetVirtualViewItemsPropertyName()
     {
-        var groundOverlay = GroundOverlays.SingleOrDefault(go => NativeObjectAttachedProperty.GetNativeObject(go) == e.Overlay);
-
-        if (groundOverlay is null) return;
-
-        VirtualView!.SendGroundOverlayClick(groundOverlay);
+        return GoogleMap.GroundOverlaysProperty.PropertyName;
     }
 
-    protected virtual void VirtualView_PropertyChanging(object sender, PropertyChangingEventArgs e)
+    protected override IEnumerable<VGroundOverlay> GetVirtualViewItems()
     {
-        if (e.PropertyName == GoogleMap.GroundOverlaysProperty.PropertyName)
-        {
-            if (VirtualView!.GroundOverlays is INotifyCollectionChanged groundOverlays)
-            {
-                groundOverlays.CollectionChanged -= GroundOverlays_CollectionChanged;
-            }
+        return VirtualView!.GroundOverlays;
+    }
 
-            ClearGroundOverlays();
+    protected override void RemoveItemFromPlatformView(NGroundOverlay? nItem)
+    {
+        if (nItem is not null)
+        {
+            nItem.Map = null;
         }
     }
 
-    protected virtual void VirtualView_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    protected override NGroundOverlay AddItemToPlatformView(VGroundOverlay vItem)
     {
-        if (e.PropertyName == GoogleMap.GroundOverlaysProperty.PropertyName)
-        {
-            InitGroundOverlays();
+        var ngo = vItem.ToNative(PlatformView!);
+        OnImageChanged(vItem, ngo);
+        return ngo;
+    }
 
-            if (VirtualView!.GroundOverlays is INotifyCollectionChanged groundOverlays)
-            {
-                groundOverlays.CollectionChanged += GroundOverlays_CollectionChanged;
-            }
+    protected override void ItemPropertyChanged(VGroundOverlay vItem, NGroundOverlay nItem, string? propertyName)
+    {
+        base.ItemPropertyChanged(vItem, nItem, propertyName);
+
+        if (propertyName == VisualElement.IsEnabledProperty.PropertyName)
+        {
+            OnIsEnabledChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.IsVisibleProperty.PropertyName)
+        {
+            OnIsVisibleChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.ZIndexProperty.PropertyName)
+        {
+            OnZIndexChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.OpacityProperty.PropertyName)
+        {
+            OnOpacityChanged(vItem, nItem);
+        }
+        else if (propertyName == VGroundOverlay.BearingProperty.PropertyName)
+        {
+            OnBearingChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.AnchorXProperty.PropertyName
+            || propertyName == VisualElement.AnchorYProperty.PropertyName)
+        {
+            OnAnchorChanged(vItem, nItem);
+        }
+        else if (propertyName == VGroundOverlay.PositionProperty.PropertyName)
+        {
+            OnPositionChanged(vItem, nItem);
+        }
+        else if (propertyName == VGroundOverlay.OverlayBoundsProperty.PropertyName)
+        {
+            OnOverlayBoundsChanged(vItem, nItem);
+        }
+        else if (propertyName == VGroundOverlay.ImageProperty.PropertyName)
+        {
+            OnImageChanged(vItem, nItem);
         }
     }
 
-    protected virtual void GroundOverlays_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    protected virtual void OnIsEnabledChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                AddGroundOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                RemoveGroundOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                ReplaceGroundOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Move:
-                break;
-            case NotifyCollectionChangedAction.Reset:
-            default:
-                ResetGroundOverlays();
-                break;
-        }
+        ngo.Tappable = vgo.IsEnabled;
     }
 
-    protected virtual void ResetGroundOverlays()
+    protected virtual void OnIsVisibleChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        ClearGroundOverlays();
-
-        InitGroundOverlays();
+        ngo.Map = vgo.IsVisible ? PlatformView! : null;
     }
 
-    protected virtual void ClearGroundOverlays()
+    protected virtual void OnZIndexChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        RemoveGroundOverlaysFromNativeMap([..GroundOverlays]);
+        ngo.ZIndex = vgo.ZIndex;
     }
 
-    protected virtual void InitGroundOverlays()
+    protected virtual void OnOpacityChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        if (VirtualView!.GroundOverlays?.Count() is null or 0) return;
-
-        var groundOverlays = VirtualView!.GroundOverlays.ToList();
-
-        GroundOverlays = new(groundOverlays.Count);
-
-        AddGroundOverlaysToNativeMap(groundOverlays);
+        ngo.Opacity = (float)vgo.Opacity;
     }
 
-    protected virtual void GroundOverlay_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    protected virtual void OnBearingChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        var groundOverlay = (sender as VGroundOverlay)!;
-
-        if (NativeObjectAttachedProperty.GetNativeObject(groundOverlay) is not NGroundOverlay native) return;
-
-        if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-        {
-            native.Tappable = groundOverlay.IsEnabled;
-        }
-        else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
-        {
-            native.Map = groundOverlay.IsVisible ? NativeView! : null;
-        }
-        else if (e.PropertyName == VisualElement.ZIndexProperty.PropertyName)
-        {
-            native.ZIndex = groundOverlay.ZIndex;
-        }
-        else if (e.PropertyName == VisualElement.OpacityProperty.PropertyName)
-        {
-            native.Opacity = (float)groundOverlay.Opacity;
-        }
-        else if (e.PropertyName == VGroundOverlay.BearingProperty.PropertyName)
-        {
-            native.Bearing = groundOverlay.Bearing;
-        }
-        else if (e.PropertyName == VisualElement.AnchorXProperty.PropertyName
-            || e.PropertyName == VisualElement.AnchorYProperty.PropertyName)
-        {
-            native.Anchor = new(groundOverlay.AnchorX, groundOverlay.AnchorY);
-            groundOverlay.Position = native.Position.ToCrossPlatformPoint();
-        }
-        else if (e.PropertyName == VGroundOverlay.PositionProperty.PropertyName)
-        {
-            native.Position = groundOverlay.Position.ToCoord();
-            groundOverlay.OverlayBounds = native.Bounds!.ToCrossPlatform();
-        }
-        else if (e.PropertyName == VGroundOverlay.OverlayBoundsProperty.PropertyName)
-        {
-            native.Bounds = groundOverlay.OverlayBounds?.ToNative();
-            groundOverlay.Position = native.Position.ToCrossPlatformPoint();
-        }
-        else if (e.PropertyName == VGroundOverlay.ImageProperty.PropertyName)
-        {
-            SetGroundOverlayImage(groundOverlay, native)
-                .ContinueWith(t =>
-                {
-                    groundOverlay.OverlayBounds = native.Bounds!.ToCrossPlatform();
-                    groundOverlay.Position = native.Position.ToCrossPlatformPoint();
-                });
-        }
+        ngo.Bearing = vgo.Bearing;
     }
 
-    protected virtual void AddGroundOverlays(NotifyCollectionChangedEventArgs e)
+    protected virtual void OnAnchorChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        if (e.NewItems?.Count is null or 0 || NativeView is null) return;
-
-        AddGroundOverlaysToNativeMap(e.NewItems.Cast<VGroundOverlay>());
+        ngo.Anchor = new(vgo.AnchorX, vgo.AnchorY);
+        vgo.Position = ngo.Position.ToCrossPlatformPoint();
     }
 
-    protected virtual void RemoveGroundOverlays(NotifyCollectionChangedEventArgs e)
+    protected virtual void OnPositionChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        if (e.OldItems?.Count is null or 0 || NativeView is null) return;
-
-        RemoveGroundOverlaysFromNativeMap(e.OldItems.Cast<VGroundOverlay>());
+        ngo.Position = vgo.Position.ToCoord();
+        vgo.OverlayBounds = ngo.Bounds!.ToCrossPlatform();
     }
 
-    protected virtual void ReplaceGroundOverlays(NotifyCollectionChangedEventArgs e)
+    protected virtual void OnOverlayBoundsChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        RemoveGroundOverlays(e);
-        AddGroundOverlays(e);
+        ngo.Bounds = vgo.OverlayBounds?.ToNative();
+        vgo.Position = ngo.Position.ToCrossPlatformPoint();
     }
 
-    protected virtual void AddGroundOverlaysToNativeMap(IEnumerable<VGroundOverlay> overlays)
-    {
-        foreach (var groundOverlay in overlays)
-        {
-            var ngo = groundOverlay.ToNative(NativeView!);
-            NativeObjectAttachedProperty.SetNativeObject(groundOverlay, ngo);
-            SetGroundOverlayImage(groundOverlay, ngo)
-                .ContinueWith(t =>
-                {
-                    groundOverlay.OverlayBounds = ngo.Bounds!.ToCrossPlatform();
-                    groundOverlay.Position = ngo.Position.ToCrossPlatformPoint();
-                });
-            groundOverlay.PropertyChanged += GroundOverlay_PropertyChanged;
-            GroundOverlays.Add(groundOverlay);
-        }
-    }
-
-    protected virtual async Task SetGroundOverlayImage(VGroundOverlay vgo, NGroundOverlay ngo)
+    protected virtual async Task OnImageChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
         try
         {
@@ -233,23 +143,23 @@ public class GroundOverlayManager : IMapFeatureManager<GoogleMap, MapView, Googl
         {
             ngo.Icon = null;
         }
+
+        UpdateBoundsAndPosition(vgo, ngo);
     }
 
-    protected virtual void RemoveGroundOverlaysFromNativeMap(IEnumerable<VGroundOverlay> overlays)
+    protected virtual void UpdateBoundsAndPosition(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        foreach (var groundOverlay in overlays)
-        {
-            groundOverlay.PropertyChanged -= GroundOverlay_PropertyChanged;
+        vgo.OverlayBounds = ngo.Bounds?.ToCrossPlatform();
+        vgo.Position = ngo.Position.ToCrossPlatformPoint();
+    }
 
-            var native = NativeObjectAttachedProperty.GetNativeObject(groundOverlay) as NGroundOverlay;
+    protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    {
+        var groundOverlay = Items.SingleOrDefault(go => NativeObjectAttachedProperty.GetNativeObject(go) == e.Overlay);
 
-            if (native is not null)
-            {
-                native.Map = null;
-            }
+        if (groundOverlay is null) return;
 
-            GroundOverlays.Remove(groundOverlay);
-        }
+        VirtualView!.SendGroundOverlayClick(groundOverlay);
     }
 }
 
