@@ -1,194 +1,75 @@
-﻿using System.Collections.Specialized;
-
-using Google.Maps;
+﻿using Google.Maps;
 
 using NTileOverlay = Google.Maps.TileLayer;
 using VTileOverlay = MPowerKit.GoogleMaps.TileOverlay;
 
 namespace MPowerKit.GoogleMaps;
 
-public class TileOverlayManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOverlay, GoogleMap, MapView, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected MapView? NativeView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    protected List<VTileOverlay> TileOverlays { get; set; } = [];
-
-    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override string GetVirtualViewItemsPropertyName()
     {
-        VirtualView = virtualView;
-        NativeView = platformView;
-        Handler = handler;
+        return GoogleMap.TileOverlaysProperty.PropertyName;
+    }
 
-        ResetTileOverlays();
+    protected override IEnumerable<VTileOverlay> GetVirtualViewItems()
+    {
+        return VirtualView!.TileOverlays;
+    }
 
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
-
-        if (virtualView.TileOverlays is INotifyCollectionChanged tileOverlays)
+    protected override void RemoveItemFromPlatformView(NTileOverlay? nItem)
+    {
+        if (nItem is not null)
         {
-            tileOverlays.CollectionChanged += TileOverlays_CollectionChanged;
+            nItem.Map = null;
         }
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override NTileOverlay AddItemToPlatformView(VTileOverlay vItem)
     {
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-
-        if (virtualView.TileOverlays is INotifyCollectionChanged tileOverlays)
-        {
-            tileOverlays.CollectionChanged -= TileOverlays_CollectionChanged;
-        }
-
-        ClearTileOverlays();
-
-        VirtualView = null;
-        NativeView = null;
-        Handler = null;
+        return vItem.ToNative(Handler!.MauiContext!, PlatformView!);
     }
 
-    protected virtual void VirtualView_PropertyChanging(object sender, PropertyChangingEventArgs e)
+    protected override void ItemPropertyChanged(VTileOverlay vItem, NTileOverlay nItem, string? propertyName)
     {
-        if (e.PropertyName == GoogleMap.TileOverlaysProperty.PropertyName)
-        {
-            if (VirtualView!.TileOverlays is INotifyCollectionChanged tileOverlays)
-            {
-                tileOverlays.CollectionChanged -= TileOverlays_CollectionChanged;
-            }
+        base.ItemPropertyChanged(vItem, nItem, propertyName);
 
-            ClearTileOverlays();
+        if (propertyName == VisualElement.IsVisibleProperty.PropertyName)
+        {
+            OnIsVisibleChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.ZIndexProperty.PropertyName)
+        {
+            OnZIndexChanged(vItem, nItem);
+        }
+        else if (propertyName == VisualElement.OpacityProperty.PropertyName)
+        {
+            OnOpacityChanged(vItem, nItem);
+        }
+        else if (propertyName == VTileOverlay.FadeInProperty.PropertyName)
+        {
+            OnFadeInChanged(vItem, nItem);
         }
     }
 
-    protected virtual void VirtualView_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    protected virtual void OnIsVisibleChanged(VTileOverlay vTileOverlay, NTileOverlay nTileOverlay)
     {
-        if (e.PropertyName == GoogleMap.TileOverlaysProperty.PropertyName)
-        {
-            InitTileOverlays();
-
-            if (VirtualView!.TileOverlays is INotifyCollectionChanged tileOverlays)
-            {
-                tileOverlays.CollectionChanged += TileOverlays_CollectionChanged;
-            }
-        }
+        nTileOverlay.Map = vTileOverlay.IsVisible ? PlatformView! : null;
     }
 
-    protected virtual void TileOverlays_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    protected virtual void OnZIndexChanged(VTileOverlay vTileOverlay, NTileOverlay nTileOverlay)
     {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                AddTileOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                RemoveTileOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                ReplaceTileOverlays(e);
-                break;
-            case NotifyCollectionChangedAction.Move:
-                break;
-            case NotifyCollectionChangedAction.Reset:
-            default:
-                ResetTileOverlays();
-                break;
-        }
+        nTileOverlay.ZIndex = vTileOverlay.ZIndex;
     }
 
-    protected virtual void ResetTileOverlays()
+    protected virtual void OnOpacityChanged(VTileOverlay vTileOverlay, NTileOverlay nTileOverlay)
     {
-        ClearTileOverlays();
-
-        InitTileOverlays();
+        nTileOverlay.Opacity = (float)vTileOverlay.Opacity;
     }
 
-    protected virtual void ClearTileOverlays()
+    protected virtual void OnFadeInChanged(VTileOverlay vTileOverlay, NTileOverlay nTileOverlay)
     {
-        RemoveTileOverlaysFromNativeMap([..TileOverlays]);
-    }
-
-    protected virtual void InitTileOverlays()
-    {
-        if (VirtualView!.TileOverlays?.Count() is null or 0) return;
-
-        var tileOverlays = VirtualView!.TileOverlays.ToList();
-
-        TileOverlays = new(tileOverlays.Count);
-
-        AddTileOverlaysToNativeMap(tileOverlays);
-    }
-
-    protected virtual void TileOverlay_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        var tileOverlay = (sender as VTileOverlay)!;
-
-        if (NativeObjectAttachedProperty.GetNativeObject(tileOverlay) is not NTileOverlay native) return;
-
-        if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
-        {
-            native.Map = tileOverlay.IsVisible ? NativeView! : null;
-        }
-        else if (e.PropertyName == VisualElement.ZIndexProperty.PropertyName)
-        {
-            native.ZIndex = tileOverlay.ZIndex;
-        }
-        else if (e.PropertyName == VisualElement.OpacityProperty.PropertyName)
-        {
-            native.Opacity = (float)tileOverlay.Opacity;
-        }
-        else if (e.PropertyName == VTileOverlay.FadeInProperty.PropertyName)
-        {
-            native.FadeIn = tileOverlay.FadeIn;
-        }
-    }
-
-    protected virtual void AddTileOverlays(NotifyCollectionChangedEventArgs e)
-    {
-        if (e.NewItems?.Count is null or 0 || NativeView is null) return;
-
-        AddTileOverlaysToNativeMap(e.NewItems.Cast<VTileOverlay>());
-    }
-
-    protected virtual void RemoveTileOverlays(NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems?.Count is null or 0 || NativeView is null) return;
-
-        RemoveTileOverlaysFromNativeMap(e.OldItems.Cast<VTileOverlay>());
-    }
-
-    protected virtual void ReplaceTileOverlays(NotifyCollectionChangedEventArgs e)
-    {
-        RemoveTileOverlays(e);
-        AddTileOverlays(e);
-    }
-
-    protected virtual void AddTileOverlaysToNativeMap(IEnumerable<VTileOverlay> overlays)
-    {
-        foreach (var tileOverlay in overlays)
-        {
-            NativeObjectAttachedProperty.SetNativeObject(tileOverlay, tileOverlay.ToNative(Handler!.MauiContext!, NativeView!));
-            tileOverlay.PropertyChanged += TileOverlay_PropertyChanged;
-            TileOverlays.Add(tileOverlay);
-        }
-    }
-
-    protected virtual void RemoveTileOverlaysFromNativeMap(IEnumerable<VTileOverlay> overlays)
-    {
-        foreach (var tileOverlay in overlays)
-        {
-            tileOverlay.PropertyChanged -= TileOverlay_PropertyChanged;
-
-            var native = NativeObjectAttachedProperty.GetNativeObject(tileOverlay) as NTileOverlay;
-
-            if (native is not null)
-            {
-                native.Map = null;
-            }
-
-            TileOverlays.Remove(tileOverlay);
-        }
+        nTileOverlay.FadeIn = vTileOverlay.FadeIn;
     }
 }
 

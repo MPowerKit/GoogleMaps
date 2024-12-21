@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using Foundation;
+﻿using Foundation;
 
 using Google.Maps;
 
@@ -13,225 +12,153 @@ using VPolyline = Microsoft.Maui.Controls.Shapes.Polyline;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PolylineManager : IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GoogleMap, MapView, GoogleMapHandler>
 {
-    protected GoogleMap? VirtualView { get; set; }
-    protected MapView? NativeView { get; set; }
-    protected GoogleMapHandler? Handler { get; set; }
-
-    protected List<VPolyline> Polylines { get; set; } = [];
-
-    public virtual void Connect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        VirtualView = virtualView;
-        NativeView = platformView;
-        Handler = handler;
+        base.SubscribeToEvents(virtualView, platformView, handler);
 
-        ResetPolylines();
-
-        virtualView.PropertyChanged += VirtualView_PropertyChanged;
-        virtualView.PropertyChanging += VirtualView_PropertyChanging;
-
-        if (virtualView.Polylines is INotifyCollectionChanged polyLines)
-        {
-            polyLines.CollectionChanged += PolyLines_CollectionChanged;
-        }
-
-        platformView.OverlayTapped += NativeMap_OverlayTapped;
+        platformView.OverlayTapped += PlatformView_OverlayTapped;
         platformView.CameraPositionChanged += PlatformView_CameraPositionChanged;
     }
 
-    public virtual void Disconnect(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
+    protected override void UnsubscribeFromEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
-        platformView.OverlayTapped -= NativeMap_OverlayTapped;
+        platformView.OverlayTapped -= PlatformView_OverlayTapped;
         platformView.CameraPositionChanged -= PlatformView_CameraPositionChanged;
 
-        virtualView.PropertyChanged -= VirtualView_PropertyChanged;
-        virtualView.PropertyChanging -= VirtualView_PropertyChanging;
-
-        if (virtualView.Polylines is INotifyCollectionChanged polyLines)
-        {
-            polyLines.CollectionChanged -= PolyLines_CollectionChanged;
-        }
-
-        ClearPolylines();
-
-        VirtualView = null;
-        NativeView = null;
-        Handler = null;
+        base.UnsubscribeFromEvents(virtualView, platformView, handler);
     }
 
-    private void NativeMap_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    protected override string GetVirtualViewItemsPropertyName()
     {
-        var polyline = Polylines.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
+        return GoogleMap.PolylinesProperty.PropertyName;
+    }
+
+    protected override IEnumerable<VPolyline> GetVirtualViewItems()
+    {
+        return VirtualView!.Polylines;
+    }
+
+    protected override void RemoveItemFromPlatformView(NPolyline? nItem)
+    {
+        if (nItem is not null)
+        {
+            nItem.Map = null;
+        }
+    }
+
+    protected override NPolyline AddItemToPlatformView(VPolyline vItem)
+    {
+        return vItem.ToNative(PlatformView!, PolylineAttached.GetiOSPixelDependentDashedPattern(vItem));
+    }
+
+    protected override void ItemPropertyChanged(VPolyline vItem, NPolyline nItem, string? propertyName)
+    {
+        base.ItemPropertyChanged(vItem, nItem, propertyName);
+
+        if (propertyName == Shape.IsEnabledProperty.PropertyName)
+        {
+            OnIsEnabledChanged(vItem, nItem);
+        }
+        else if (propertyName == Shape.IsVisibleProperty.PropertyName)
+        {
+            OnIsVisibleChanged(vItem, nItem);
+        }
+        else if (propertyName == Shape.ZIndexProperty.PropertyName)
+        {
+            OnZIndexChanged(vItem, nItem);
+        }
+        else if (propertyName == Shape.StrokeThicknessProperty.PropertyName)
+        {
+            OnStrokeThicknessChanged(vItem, nItem);
+        }
+        else if (propertyName == VPolyline.PointsProperty.PropertyName)
+        {
+            OnPointsChanged(vItem, nItem);
+        }
+        else if (propertyName == Shape.StrokeDashArrayProperty.PropertyName)
+        {
+            OnStrokeDashArrayChanged(vItem, nItem);
+        }
+        else if (propertyName == Shape.StrokeProperty.PropertyName)
+        {
+            OnStrokeChanged(vItem, nItem);
+        }
+        else if (propertyName == PolylineAttached.iOSPixelDependentDashedPatternProperty.PropertyName)
+        {
+            OnPixelDependentDashedPatternChanged(vItem, nItem);
+        }
+        else if (propertyName == PolylineAttached.TextureStampProperty.PropertyName)
+        {
+            OnTextureStampChanged(vItem, nItem);
+        }
+    }
+
+    protected virtual void OnIsEnabledChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.Tappable = vPolyline.IsEnabled;
+    }
+
+    protected virtual void OnIsVisibleChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.Map = vPolyline.IsVisible ? PlatformView! : null;
+    }
+
+    protected virtual void OnZIndexChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.ZIndex = vPolyline.ZIndex;
+    }
+
+    protected virtual void OnStrokeThicknessChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.StrokeWidth = (float)vPolyline.StrokeThickness;
+    }
+
+    protected virtual void OnPointsChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.Path = vPolyline.Points.ToPath();
+        OnStrokeChanged(vPolyline, nPolyline);
+    }
+
+    protected virtual void OnStrokeDashArrayChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        OnStrokeChanged(vPolyline, nPolyline);
+    }
+
+    protected virtual void OnStrokeChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        nPolyline.Spans = vPolyline.ToSpans(PlatformView!, PolylineAttached.GetiOSPixelDependentDashedPattern(vPolyline));
+    }
+
+    protected virtual void OnPixelDependentDashedPatternChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        OnStrokeChanged(vPolyline, nPolyline);
+    }
+
+    protected virtual void OnTextureStampChanged(VPolyline vPolyline, NPolyline nPolyline)
+    {
+        OnStrokeChanged(vPolyline, nPolyline);
+    }
+
+    protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
+    {
+        var polyline = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
 
         if (polyline is null) return;
 
         VirtualView!.SendPolylineClick(polyline);
     }
 
-    protected virtual void VirtualView_PropertyChanging(object sender, PropertyChangingEventArgs e)
-    {
-        if (e.PropertyName == GoogleMap.PolylinesProperty.PropertyName)
-        {
-            if (VirtualView!.Polylines is INotifyCollectionChanged polyLines)
-            {
-                polyLines.CollectionChanged -= PolyLines_CollectionChanged;
-            }
-
-            ClearPolylines();
-        }
-    }
-
-    protected virtual void VirtualView_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == GoogleMap.PolylinesProperty.PropertyName)
-        {
-            InitPolylines();
-
-            if (VirtualView!.Polylines is INotifyCollectionChanged polyLines)
-            {
-                polyLines.CollectionChanged += PolyLines_CollectionChanged;
-            }
-        }
-    }
-
-    protected virtual void PolyLines_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                AddPolylines(e);
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                RemovePolylines(e);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                ReplacePolylines(e);
-                break;
-            case NotifyCollectionChangedAction.Move:
-                break;
-            case NotifyCollectionChangedAction.Reset:
-            default:
-                ResetPolylines();
-                break;
-        }
-    }
-
-    protected virtual void ResetPolylines()
-    {
-        ClearPolylines();
-
-        InitPolylines();
-    }
-
-    protected virtual void ClearPolylines()
-    {
-        RemovePolylinesFromNativeMap([..Polylines]);
-    }
-
-    protected virtual void InitPolylines()
-    {
-        if (VirtualView!.Polylines?.Count() is null or 0) return;
-
-        var polylines = VirtualView!.Polylines.ToList();
-
-        Polylines = new(polylines.Count);
-
-        AddPolylinesToNativeMap(polylines);
-    }
-
-    protected virtual void Polyline_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        var polyline = (sender as VPolyline)!;
-
-        if (NativeObjectAttachedProperty.GetNativeObject(polyline) is not NPolyline native) return;
-
-        if (e.PropertyName == Shape.IsEnabledProperty.PropertyName)
-        {
-            native.Tappable = polyline.IsEnabled;
-        }
-        else if (e.PropertyName == Shape.ZIndexProperty.PropertyName)
-        {
-            native.ZIndex = polyline.ZIndex;
-        }
-        else if (e.PropertyName == Shape.StrokeThicknessProperty.PropertyName)
-        {
-            native.StrokeWidth = (float)polyline.StrokeThickness;
-        }
-        else if (e.PropertyName == Shape.IsVisibleProperty.PropertyName)
-        {
-            native.Map = polyline.IsVisible ? NativeView! : null;
-        }
-        else if (e.PropertyName == Shape.StrokeDashArrayProperty.PropertyName
-            || e.PropertyName == Shape.StrokeProperty.PropertyName
-            || e.PropertyName == VPolyline.PointsProperty.PropertyName
-            || e.PropertyName == PolylineAttached.iOSPixelDependentDashedPatternProperty.PropertyName
-            || e.PropertyName == PolylineAttached.TextureStampProperty.PropertyName)
-        {
-            if (e.PropertyName == VPolyline.PointsProperty.PropertyName)
-            {
-                native.Path = polyline.Points.ToPath();
-            }
-            native.Spans = polyline.ToSpans(NativeView!, PolylineAttached.GetiOSPixelDependentDashedPattern(polyline));
-        }
-    }
-
     protected virtual void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
     {
-        foreach (var polyline in Polylines.Where(p => p.StrokeDashPattern.Length != 0))
+        foreach (var polyline in Items.Where(p => p.StrokeDashPattern.Length != 0))
         {
             if (!PolylineAttached.GetiOSPixelDependentDashedPattern(polyline)) continue;
 
             if (NativeObjectAttachedProperty.GetNativeObject(polyline) is not NPolyline native) continue;
 
-            native.Spans = polyline.ToSpans(NativeView!, true);
-        }
-    }
-
-    protected virtual void AddPolylines(NotifyCollectionChangedEventArgs e)
-    {
-        if (e.NewItems?.Count is null or 0 || NativeView is null) return;
-
-        AddPolylinesToNativeMap(e.NewItems.Cast<VPolyline>());
-    }
-
-    protected virtual void RemovePolylines(NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems?.Count is null or 0 || NativeView is null) return;
-
-        RemovePolylinesFromNativeMap(e.OldItems.Cast<VPolyline>());
-    }
-
-    protected virtual void ReplacePolylines(NotifyCollectionChangedEventArgs e)
-    {
-        RemovePolylines(e);
-        AddPolylines(e);
-    }
-
-    protected virtual void AddPolylinesToNativeMap(IEnumerable<VPolyline> polylines)
-    {
-        foreach (var polyline in polylines)
-        {
-            NativeObjectAttachedProperty.SetNativeObject(polyline, polyline.ToNative(NativeView!, PolylineAttached.GetiOSPixelDependentDashedPattern(polyline)));
-            polyline.PropertyChanged += Polyline_PropertyChanged;
-            Polylines.Add(polyline);
-        }
-    }
-
-    protected virtual void RemovePolylinesFromNativeMap(IEnumerable<VPolyline> polylines)
-    {
-        foreach (var polyline in polylines)
-        {
-            polyline.PropertyChanged -= Polyline_PropertyChanged;
-
-            var native = NativeObjectAttachedProperty.GetNativeObject(polyline) as NPolyline;
-            if (native is not null)
-            {
-                native.Map = null;
-            }
-
-            Polylines.Remove(polyline);
+            native.Spans = polyline.ToSpans(PlatformView!, true);
         }
     }
 }
