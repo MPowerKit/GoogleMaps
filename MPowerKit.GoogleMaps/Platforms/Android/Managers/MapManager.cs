@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-using Microsoft.Maui.Platform;
+﻿using Microsoft.Maui.Platform;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-using CoreAnimation;
+﻿using CoreAnimation;
 
 using Google.Maps;
 

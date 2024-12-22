@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-using GMap = Android.Gms.Maps.GoogleMap;
+﻿using GMap = Android.Gms.Maps.GoogleMap;
 
 namespace MPowerKit.GoogleMaps;
 
