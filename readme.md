@@ -75,6 +75,8 @@ The full list of all properties and features you can find [here](https://github.
 
 ## API definition
 
+**!!! Important: If you cannot find documentation about some methods, event or properties here, then you can search some at offical Google Maps SDK web site.**
+
 API of this library is devided into 9 logical groups: Map features, Camera, UI Settings, Pins, Circles, Polylines, Polygons, Tiles, Ground overlays. Each logic group is represented as separate manager and responsible only for that part of logic, and preregistered in the public static dictionary inside the handler:
 
 ```csharp
@@ -154,6 +156,23 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 |AnimateCamera|AnimateCameraFunc|CameraPosition, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
 |ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects coordinates on map to the coordinates on the screen.|
 |ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on screen to the coordinates on the map.|
+
+### Bindable properties
+
+There are some readonly properties, which are not visible in XAML editor, but you can bind them. One condition, they can be bound only with `Mode=OneWayToSource`, otherwise it will not work. This means that value can be passed only from map control to the viewmodel.
+Example of usage:
+```xaml
+<gm:GoogleMap MapCapabilities="{Binding MapCapabilities, Mode=OneWayToSource}" />
+```
+
+|Readonly property|Property type|Comment|
+|-|-|-|
+|MapCapabilities|MapCapabilities?|Allows to track the availability of each map capability.|
+|FocusedBuilding|IndoorBuilding|Represents a currently focused building by camera position. Can be null if there is no building focused at the moment.|
+|ActiveLevel|IndoorLevel|Represents an active level of a currently focused building by camera position. Can be null if there is no building focused at the moment.|
+|IsNativeMapReady|bool|Indicates whether native map is initialized, rendered and ready to use.|
+|CameraPosition|CameraPosition|Represents current position of the camera.|
+|ResetMinMaxZoomAction|Action|Can be used as action to reset min and max zoom properties.|
 
 ## Map objects
 
