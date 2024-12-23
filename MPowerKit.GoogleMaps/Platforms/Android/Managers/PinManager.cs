@@ -273,7 +273,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, Go
         var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
         if (pin is null) return;
 
-        VirtualView!.SendInfoWindowClose(pin);
+        VirtualView!.SendInfoWindowClosed(pin);
     }
 }
 

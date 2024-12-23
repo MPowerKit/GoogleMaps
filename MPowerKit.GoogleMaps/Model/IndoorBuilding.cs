@@ -20,7 +20,7 @@ public class IndoorLevel
     {
 #if ANDROID
         (NativeIndoorLevel as Android.Gms.Maps.Model.IndoorLevel)?.Activate();
-#else
+#elif IOS
         //NativeMap.IndoorDisplay.ActiveLevel = (NativeIndoorLevel as Google.Maps.IndoorLevel);
         //ToDo: This is workaround. remove when property is added
         var level = NativeIndoorLevel as Google.Maps.IndoorLevel;

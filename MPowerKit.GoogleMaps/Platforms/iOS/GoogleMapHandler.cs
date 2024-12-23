@@ -4,7 +4,7 @@ using Microsoft.Maui.Handlers;
 
 namespace MPowerKit.GoogleMaps;
 
-public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
+public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 {
     public static PropertyMapper<GoogleMap, GoogleMapHandler> GoogleMapHandlerMapper = new(ViewMapper)
     {

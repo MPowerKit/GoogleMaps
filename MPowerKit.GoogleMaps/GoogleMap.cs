@@ -21,7 +21,7 @@ public class GoogleMap : View
     public event Action<Pin>? PinDragEnd;
     public event Action<Pin>? InfoWindowClick;
     public event Action<Pin>? InfoWindowLongClick;
-    public event Action<Pin>? InfoWindowClose;
+    public event Action<Pin>? InfoWindowClosed;
     public event Action<PointOfInterest>? PoiClick;
     public event Action<Point>? MapClick;
     public event Action<Point>? MapLongClick;
@@ -475,9 +475,9 @@ public class GoogleMap : View
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendInfoWindowClose(Pin pin)
+    public virtual void SendInfoWindowClosed(Pin pin)
     {
-        InfoWindowClose?.Invoke(pin);
+        InfoWindowClosed?.Invoke(pin);
 
         var parameter = pin.BindingContext ?? pin;
 
@@ -1736,7 +1736,7 @@ public class GoogleMap : View
             typeof(GoogleMap));
     #endregion
 
-    #region VisibleRegionChangedCommand
+    #region CameraIdleCommand
     public ICommand CameraIdleCommand
     {
         get => (ICommand)GetValue(CameraIdleCommandProperty);

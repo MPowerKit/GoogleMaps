@@ -9,7 +9,7 @@ using GMap = Android.Gms.Maps.GoogleMap;
 
 namespace MPowerKit.GoogleMaps;
 
-public class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
+public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 {
     public static PropertyMapper<GoogleMap, GoogleMapHandler> GoogleMapHandlerMapper = new(ViewMapper)
     {

@@ -2,10 +2,16 @@
 
 namespace MPowerKit.GoogleMaps;
 
-public abstract class MapFeatureManager<TVMap, TNMap, THandler> : IMapFeatureManager<TVMap, TNMap, THandler>
+public abstract class MapFeatureManager<TVMap, TNMap, THandler>
+    : IMapFeatureManager<TVMap, TNMap, THandler>
     where TVMap : GoogleMap
     where TNMap : class
-    where THandler : GoogleMapHandler
+    where THandler :
+#if ANDROID || IOS
+        GoogleMapHandler
+#else
+        class
+#endif
 {
     protected TVMap? VirtualView { get; set; }
     protected TNMap? PlatformView { get; set; }

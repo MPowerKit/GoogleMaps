@@ -3,8 +3,10 @@
 using NPin =
 #if ANDROID
     Android.Gms.Maps.Model.Marker;
-#else
+#elif IOS
     Google.Maps.Marker;
+#else
+    object;
 #endif
 
 namespace MPowerKit.GoogleMaps;

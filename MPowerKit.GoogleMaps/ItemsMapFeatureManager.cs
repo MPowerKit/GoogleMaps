@@ -2,12 +2,18 @@
 
 namespace MPowerKit.GoogleMaps;
 
-public abstract class ItemsMapFeatureManager<TVItem, TNItem, TVMap, TNMap, THandler> : MapFeatureManager<TVMap, TNMap, THandler>
+public abstract class ItemsMapFeatureManager<TVItem, TNItem, TVMap, TNMap, THandler>
+    : MapFeatureManager<TVMap, TNMap, THandler>
     where TVItem : VisualElement
     where TNItem : class
     where TVMap : GoogleMap
     where TNMap : class
-    where THandler : GoogleMapHandler
+    where THandler :
+#if ANDROID || IOS
+        GoogleMapHandler
+#else
+        class
+#endif
 {
     protected List<TVItem> Items { get; set; } = [];
 

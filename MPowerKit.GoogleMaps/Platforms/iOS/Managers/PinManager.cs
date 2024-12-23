@@ -315,7 +315,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, MapView,
 
         if (!pin.InfoWindowShown) return;
 
-        VirtualView!.SendInfoWindowClose(pin);
+        VirtualView!.SendInfoWindowClosed(pin);
     }
 }
 

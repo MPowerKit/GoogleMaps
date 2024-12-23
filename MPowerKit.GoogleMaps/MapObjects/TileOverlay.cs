@@ -7,7 +7,7 @@ public class TileOverlay : VisualElement
         var native = NativeObjectAttachedProperty.GetNativeObject(this);
 #if ANDROID
         (native as Android.Gms.Maps.Model.TileOverlay)?.ClearTileCache();
-#else
+#elif IOS
         (native as Google.Maps.TileLayer)?.ClearTileCache();
 #endif
     }
