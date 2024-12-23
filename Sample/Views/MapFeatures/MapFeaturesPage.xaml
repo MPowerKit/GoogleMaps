@@ -115,7 +115,7 @@
                       MapClickedCommand="{Binding MapClickedCommand}"
                       MapLongClickedCommand="{Binding MapLongClickCommand}"
                       TakeSnapshotFunc="{Binding TakeSnapshotFunc, Mode=OneWayToSource}"
-                      MapCoordsToScreenLocationFunc="{Binding MapCoordsToScreenLocationFunc, Mode=OneWayToSource}">
+                      ProjectMapCoordsToScreenLocationFunc="{Binding ProjectMapCoordsToScreenLocationFunc, Mode=OneWayToSource}">
             <gm:GoogleMap.Triggers>
                 <DataTrigger TargetType="gm:GoogleMap"
                              Binding="{Binding IsChecked, Source={x:Reference mapStyle}}"

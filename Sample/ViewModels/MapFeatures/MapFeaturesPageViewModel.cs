@@ -26,7 +26,7 @@ public partial class MapFeaturesPageViewModel : ObservableObject
     private ImageSource? _snapshot;
 
     [ObservableProperty]
-    private Func<Point, Point?> _mapCoordsToScreenLocationFunc;
+    private Func<Point, Point?> _projectMapCoordsToScreenLocationFunc;
 
     [ObservableProperty]
     private bool _enableMyLocation;
@@ -126,7 +126,7 @@ public partial class MapFeaturesPageViewModel : ObservableObject
     [RelayCommand]
     private async Task MapClicked(Point position)
     {
-        var screenCoords = MapCoordsToScreenLocationFunc(position);
+        var screenCoords = ProjectMapCoordsToScreenLocationFunc(position);
         await UserDialogs.Instance.AlertAsync($"Map clicked at {{Lat={position.X}, Lon={position.Y}}}\r\n\r\nThis is {screenCoords} in screen coords");
     }
 

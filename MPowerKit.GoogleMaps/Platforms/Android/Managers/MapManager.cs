@@ -29,8 +29,8 @@ public class MapManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
 
-        virtualView.MapCoordsToScreenLocationFuncInternal = ProjectMapCoordsToScreenLocation;
-        virtualView.ScreenLocationToMapCoordsFuncInternal = ProjectScreenLocationToMapCoords;
+        virtualView.ProjectMapCoordsToScreenLocationFuncInternal = ProjectMapCoordsToScreenLocation;
+        virtualView.ProjectScreenLocationToMapCoordsFuncInternal = ProjectScreenLocationToMapCoords;
         virtualView.TakeSnapshotFuncInternal = TakeSnapshot;
 
         platformView.MapClick += PlatformView_MapClick;
@@ -42,8 +42,8 @@ public class MapManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
 
     protected override void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
-        virtualView.MapCoordsToScreenLocationFuncInternal = null;
-        virtualView.ScreenLocationToMapCoordsFuncInternal = null;
+        virtualView.ProjectMapCoordsToScreenLocationFuncInternal = null;
+        virtualView.ProjectScreenLocationToMapCoordsFuncInternal = null;
         virtualView.TakeSnapshotFuncInternal = null;
 
         platformView.MapClick -= PlatformView_MapClick;

@@ -40,9 +40,9 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Func<CameraUpdate, int, Task>? AnimateCameraFuncInternal;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public Func<Point, Point>? MapCoordsToScreenLocationFuncInternal;
+    public Func<Point, Point>? ProjectMapCoordsToScreenLocationFuncInternal;
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public Func<Point, Point>? ScreenLocationToMapCoordsFuncInternal;
+    public Func<Point, Point>? ProjectScreenLocationToMapCoordsFuncInternal;
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Action? ResetMinMaxZoomActionInternal;
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -52,8 +52,8 @@ public class GoogleMap : View
 
     public GoogleMap()
     {
-        MapCoordsToScreenLocationFunc = MapCoordsToScreenLocation;
-        ScreenLocationToMapCoordsFunc = ScreenLocationToMapCoords;
+        ProjectMapCoordsToScreenLocationFunc = ProjectMapCoordsToScreenLocation;
+        ProjectScreenLocationToMapCoordsFunc = ProjectScreenLocationToMapCoords;
         MoveCameraAction = MoveCamera;
         AnimateCameraFunc = AnimateCamera;
         ResetMinMaxZoomAction = ResetMinMaxZoom;
@@ -84,14 +84,14 @@ public class GoogleMap : View
         return AnimateCameraFuncInternal.Invoke(cameraUpdate, durationMils);
     }
 
-    public virtual Point? MapCoordsToScreenLocation(Point latlng)
+    public virtual Point? ProjectMapCoordsToScreenLocation(Point latlng)
     {
-        return MapCoordsToScreenLocationFuncInternal?.Invoke(latlng);
+        return ProjectMapCoordsToScreenLocationFuncInternal?.Invoke(latlng);
     }
 
-    public virtual Point? ScreenLocationToMapCoords(Point point)
+    public virtual Point? ProjectScreenLocationToMapCoords(Point point)
     {
-        return ScreenLocationToMapCoordsFuncInternal?.Invoke(point);
+        return ProjectScreenLocationToMapCoordsFuncInternal?.Invoke(point);
     }
 
     protected override void OnPropertyChanging([CallerMemberName] string? propertyName = null)
@@ -101,44 +101,32 @@ public class GoogleMap : View
         if (propertyName == PolylinesSourceProperty.PropertyName
             || propertyName == PolylineItemTemplateProperty.PropertyName)
         {
-            var polylines = Polylines;
-            ResetSource(PolylinesSource, ref polylines);
-            Polylines = polylines;
+            ResetSource<Polyline>(PolylinesSource, PolylinesProperty);
         }
         else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
-            var polygons = Polygons;
-            ResetSource(PolygonsSource, ref polygons);
-            Polygons = polygons;
+            ResetSource<Polygon>(PolygonsSource, PolygonsProperty);
         }
         else if (propertyName == CirclesSourceProperty.PropertyName
             || propertyName == CircleItemTemplateProperty.PropertyName)
         {
-            var circles = Circles;
-            ResetSource(CirclesSource, ref circles);
-            Circles = circles;
+            ResetSource<Circle>(CirclesSource, CirclesProperty);
         }
         else if (propertyName == TileOverlaysSourceProperty.PropertyName
             || propertyName == TileOverlayItemTemplateProperty.PropertyName)
         {
-            var tileOverlays = TileOverlays;
-            ResetSource(TileOverlaysSource, ref tileOverlays);
-            TileOverlays = tileOverlays;
+            ResetSource<TileOverlay>(TileOverlaysSource, TileOverlaysProperty);
         }
         else if (propertyName == GroundOverlaysSourceProperty.PropertyName
             || propertyName == GroundOverlayItemTemplateProperty.PropertyName)
         {
-            var groundOverlays = GroundOverlays;
-            ResetSource(GroundOverlaysSource, ref groundOverlays);
-            GroundOverlays = groundOverlays;
+            ResetSource<GroundOverlay>(GroundOverlaysSource, GroundOverlaysProperty);
         }
         else if (propertyName == PinsSourceProperty.PropertyName
             || propertyName == PinItemTemplateProperty.PropertyName)
         {
-            var pins = Pins;
-            ResetSource(PinsSource, ref pins);
-            Pins = pins;
+            ResetSource<Pin>(PinsSource, PinsProperty);
         }
         else if (propertyName == SelectedPinProperty.PropertyName)
         {
@@ -153,44 +141,32 @@ public class GoogleMap : View
         if (propertyName == PolylinesSourceProperty.PropertyName
             || propertyName == PolylineItemTemplateProperty.PropertyName)
         {
-            var polylines = Polylines;
-            InitSource(PolylinesSource, PolylineItemTemplate, ref polylines);
-            Polylines = polylines;
+            InitSource<Polyline>(PolylinesSource, PolylineItemTemplate, PolylinesProperty);
         }
         else if (propertyName == PolygonsSourceProperty.PropertyName
             || propertyName == PolygonItemTemplateProperty.PropertyName)
         {
-            var polygons = Polygons;
-            InitSource(PolygonsSource, PolygonItemTemplate, ref polygons);
-            Polygons = polygons;
+            InitSource<Polygon>(PolygonsSource, PolygonItemTemplate, PolygonsProperty);
         }
         else if (propertyName == CirclesSourceProperty.PropertyName
             || propertyName == CircleItemTemplateProperty.PropertyName)
         {
-            var circles = Circles;
-            InitSource(CirclesSource, CircleItemTemplate, ref circles);
-            Circles = circles;
+            InitSource<Circle>(CirclesSource, CircleItemTemplate, CirclesProperty);
         }
         else if (propertyName == TileOverlaysSourceProperty.PropertyName
             || propertyName == TileOverlayItemTemplateProperty.PropertyName)
         {
-            var tileOverlays = TileOverlays;
-            InitSource(TileOverlaysSource, TileOverlayItemTemplate, ref tileOverlays);
-            TileOverlays = tileOverlays;
+            InitSource<TileOverlay>(TileOverlaysSource, TileOverlayItemTemplate, TileOverlaysProperty);
         }
         else if (propertyName == GroundOverlaysSourceProperty.PropertyName
             || propertyName == GroundOverlayItemTemplateProperty.PropertyName)
         {
-            var groundOverlays = GroundOverlays;
-            InitSource(GroundOverlaysSource, GroundOverlayItemTemplate, ref groundOverlays);
-            GroundOverlays = groundOverlays;
+            InitSource<GroundOverlay>(GroundOverlaysSource, GroundOverlayItemTemplate, GroundOverlaysProperty);
         }
         else if (propertyName == PinsSourceProperty.PropertyName
             || propertyName == PinItemTemplateProperty.PropertyName)
         {
-            var pins = Pins;
-            InitSource(PinsSource, PinItemTemplate, ref pins);
-            Pins = pins;
+            InitSource<Pin>(PinsSource, PinItemTemplate, PinsProperty);
         }
         else if (propertyName == SelectedPinDataProperty.PropertyName && PinsSource is not null)
         {
@@ -223,7 +199,7 @@ public class GoogleMap : View
         SelectedPin?.ShowInfoWindow();
     }
 
-    protected virtual void ResetSource<T>(IEnumerable source, ref IEnumerable<T>? mapObjects)
+    protected virtual void ResetSource<T>(IEnumerable source, BindableProperty property)
         where T : VisualElement
     {
         if (source is INotifyCollectionChanged collectionChanged)
@@ -236,51 +212,53 @@ public class GoogleMap : View
             SelectedPin = null;
         }
 
-        (mapObjects as ObservableCollection<T>)?.Clear();
-        mapObjects = null;
+        if (property is null) return;
+
+        var mapObjects = GetValue(property) as ObservableCollection<T>;
+
+        mapObjects?.Clear();
+        SetValue(property, null);
     }
 
-    protected virtual void InitSource<T>(IEnumerable source, DataTemplate itemTemplate, ref IEnumerable<T> mapObjects)
+    protected virtual void InitSource<T>(IEnumerable source, DataTemplate itemTemplate, BindableProperty property)
         where T : VisualElement
     {
-        if (source is null || itemTemplate is null) return;
+        if (source is null || itemTemplate is null || property is null) return;
 
         if (source is INotifyCollectionChanged collectionChanged)
         {
             collectionChanged.CollectionChanged += Source_CollectionChanged<T>;
         }
 
-        mapObjects = new ObservableCollection<T>();
+        var mapObjects = new ObservableCollection<T>();
 
-        AddMapObjects(source, (mapObjects as ObservableCollection<T>)!, 0, itemTemplate);
+        SetValue(property, mapObjects);
+
+        AddMapObjects(source, mapObjects, 0, itemTemplate);
     }
 
     protected virtual (ObservableCollection<T>?, DataTemplate?) GetMapObjectsAndTemplate<T>()
         where T : VisualElement
     {
-        var mapObjects = typeof(T).Name switch
+        switch (typeof(T).Name)
         {
-            nameof(Polyline) => Polylines as ObservableCollection<T>,
-            nameof(Polygon) => Polygons as ObservableCollection<T>,
-            nameof(Circle) => Circles as ObservableCollection<T>,
-            nameof(TileOverlay) => TileOverlays as ObservableCollection<T>,
-            nameof(GroundOverlay) => GroundOverlays as ObservableCollection<T>,
-            nameof(Pin) => Pins as ObservableCollection<T>,
-            _ => null
-        };
+            case nameof(Polyline):
+                return (Polylines as ObservableCollection<T>, PolylineItemTemplate);
+            case nameof(Polygon):
+                return (Polygons as ObservableCollection<T>, PolygonItemTemplate);
+            case nameof(Circle):
+                return (Circles as ObservableCollection<T>, CircleItemTemplate);
+            case nameof(TileOverlay):
+                return (TileOverlays as ObservableCollection<T>, TileOverlayItemTemplate);
+            case nameof(GroundOverlay):
+                return (GroundOverlays as ObservableCollection<T>, GroundOverlayItemTemplate);
+            case nameof(Pin):
+                return (Pins as ObservableCollection<T>, PinItemTemplate);
+            default:
+                break;
+        }
 
-        var itemTemplate = typeof(T).Name switch
-        {
-            nameof(Polyline) => PolylineItemTemplate,
-            nameof(Polygon) => PolygonItemTemplate,
-            nameof(Circle) => CircleItemTemplate,
-            nameof(TileOverlay) => TileOverlayItemTemplate,
-            nameof(GroundOverlay) => GroundOverlayItemTemplate,
-            nameof(Pin) => PinItemTemplate,
-            _ => null
-        };
-
-        return (mapObjects, itemTemplate);
+        return (null, null);
     }
 
     protected virtual void Source_CollectionChanged<T>(object? sender, NotifyCollectionChangedEventArgs e)
@@ -344,7 +322,8 @@ public class GoogleMap : View
             dest.RemoveAt(index);
         }
 
-        if (typeof(T).Name == nameof(Pin) && dest.Count == 0)
+        if (typeof(T).Name == nameof(Pin)
+            && ((source as IEnumerable<object>)?.Contains(SelectedPinData) is true || dest.Count == 0))
         {
             SelectedPin = null;
         }
@@ -369,6 +348,15 @@ public class GoogleMap : View
         if (source is null || dest is null || itemTemplate is null) return;
 
         AddMapObjects(source, dest, 0, itemTemplate);
+
+        if (typeof(T).Name == nameof(Pin))
+        {
+            if ((source as IEnumerable<object>)?.Contains(SelectedPinData) is true)
+            {
+                SelectedPin = Pins.FirstOrDefault(p => p.BindingContext == SelectedPinData);
+            }
+            else SelectedPin = null;
+        }
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1065,31 +1053,31 @@ public class GoogleMap : View
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
 
-    #region MapCoordsToScreenLocationFunc
-    public Func<Point, Point?> MapCoordsToScreenLocationFunc
+    #region ProjectMapCoordsToScreenLocationFunc
+    public Func<Point, Point?> ProjectMapCoordsToScreenLocationFunc
     {
-        get => (Func<Point, Point?>)GetValue(MapCoordsToScreenLocationFuncProperty);
-        protected set => SetValue(MapCoordsToScreenLocationFuncProperty, value);
+        get => (Func<Point, Point?>)GetValue(ProjectMapCoordsToScreenLocationFuncProperty);
+        protected set => SetValue(ProjectMapCoordsToScreenLocationFuncProperty, value);
     }
 
-    public static readonly BindableProperty MapCoordsToScreenLocationFuncProperty =
+    public static readonly BindableProperty ProjectMapCoordsToScreenLocationFuncProperty =
         BindableProperty.Create(
-            nameof(MapCoordsToScreenLocationFunc),
+            nameof(ProjectMapCoordsToScreenLocationFunc),
             typeof(Func<Point, Point?>),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
 
-    #region ScreenLocationToMapCoordsFunc
-    public Func<Point, Point?> ScreenLocationToMapCoordsFunc
+    #region ProjectScreenLocationToMapCoordsFunc
+    public Func<Point, Point?> ProjectScreenLocationToMapCoordsFunc
     {
-        get => (Func<Point, Point?>)GetValue(ScreenLocationToMapCoordsFuncProperty);
-        protected set => SetValue(ScreenLocationToMapCoordsFuncProperty, value);
+        get => (Func<Point, Point?>)GetValue(ProjectScreenLocationToMapCoordsFuncProperty);
+        protected set => SetValue(ProjectScreenLocationToMapCoordsFuncProperty, value);
     }
 
-    public static readonly BindableProperty ScreenLocationToMapCoordsFuncProperty =
+    public static readonly BindableProperty ProjectScreenLocationToMapCoordsFuncProperty =
         BindableProperty.Create(
-            nameof(ScreenLocationToMapCoordsFunc),
+            nameof(ProjectScreenLocationToMapCoordsFunc),
             typeof(Func<Point, Point?>),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
