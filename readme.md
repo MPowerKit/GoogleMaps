@@ -17,6 +17,7 @@ This library is designed for the .NET MAUI. The main control of this library `Go
     - [Public methods, actions, funcs](#public-methods-actions-funcs)
     - [Bindable properties](#bindable-properties)
         - [Read only properties](#read-only-properties)
+        - [Properties related to objects on the map](#properties-related-to-objects-on-the-map)
         - [Other properties](#other-properties)
 
 ## Setup
@@ -131,7 +132,7 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 ### Events and commands
 
-|Event|Command|Argument type|Comment|
+|Event|Command|Argument type|Description|
 |-|-|-|-|
 |NativeMapReady|NativeMapReadyCommand| |Raised, when native map is initialized and rendered and ready to go. Raises only once. All operations with map should be done only after this event. `IsNativeMapReady` property is set after this event to `true`.|
 |MapCapabilitiesChanged|MapCapabilitiesChangedCommand|MapCapabilities|Raised, when map capabilities were changed, the `MapCapabilities` property is set to the new value.|
@@ -159,7 +160,7 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 ### Public methods, actions, funcs
 
-|Method|Bindable property|Arguments types|Return type|Comment|
+|Method|Bindable property|Arguments types|Return type|Description|
 |-|-|-|-|-|
 |TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream?&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
 |ResetMinMaxZoom|ResetMinMaxZoomAction| | |Resets min and max zoom properties. Applies only to Android.|
@@ -178,13 +179,13 @@ Example of usage:
 <gm:GoogleMap MapCapabilities="{Binding MapCapabilities, Mode=OneWayToSource}" />
 ```
 
-|Readonly property|Property type|Comment|
+|Readonly bindable property|Property type|Description|
 |-|-|-|
 |IsNativeMapReady|bool|Indicates whether native map is initialized, rendered and ready to use. Otherwise `false`.|
 |MapCapabilities|MapCapabilities|Allows to track the availability of each map capability. Always has value after `IsNativeMapReady` set to `true`.|
 |FocusedBuilding|IndoorBuilding|Represents a currently focused building by camera position. Can be `null` if there is no building focused at the moment.|
 |ActiveLevel|IndoorLevel|Represents an active level of a currently focused building by camera position. Can be `null` if there is no building focused at the moment.|
-|CameraPosition|CameraPosition|Represents current position of the camera. Never `null` after `IsNativeMapReady` set to `true`.|
+|CameraPosition|CameraPosition|Represents current position of the camera and current zoom level. Never `null` after `IsNativeMapReady` set to `true`.|
 |VisibleRegion|VisibleRegion|Represents the visible map region the last time camera was idle. Always has value after `IsNativeMapReady` set to `true`.|
 |ResetMinMaxZoomAction|Action|Can be bound and called from viewmodel to reset min and max zoom properties. Never `null`.|
 |TakeSnapshotFunc|Func&lt;Task&lt;Stream?&gt;&gt;|Can be bound and called from viewmodel to take snapshots of the current map state. Never `null`.|
@@ -193,9 +194,35 @@ Example of usage:
 |ProjectMapCoordsToScreenLocationFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project map coordinates to coordinates on the screen whithin map control. Never `null`.|
 |ProjectScreenLocationToMapCoordsFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project coordinates on the screen to map coordinates. Never `null`.|
 
+#### Properties related to objects on the map
+
+|Bindable property|Property type|Description|
+|-|-|-|
+|Polylines|IEnumerable&lt;Polyline&gt;|Represents collection of the polylines. Supports `INotifyCollectionChanged` collection types, such as `ObservableCollection<Polyline>`.|
+|PolylinesSource|IEnumerable|Analogue to the `ItemsSource` of the `CollectionView`. Supports `INotifyCollectionChanged` collection types, such as `ObservableCollection<AnyObject>`. This is a `BindingContext` source to the `Polylines` property. Works in pair with `PolylineItemTemplate`, otherwise ignored. When this proeprty is set, the `Polylines` property will be replaced by new collection of polylines created from `PolylineItemTemplate`. The `BindingContext` of each polyline will be represented as each item of this collection.|
+|PolylineItemTemplate|DataTemplate|Analogue to the `ItemTemplate` of the `CollectionView`. Supports `DataTemplateSelector`. Works only in pair with `PolylinesSource` property, otherwise ignored. The root of this template should be `typeof(Polyline)`, otherwise will crash.|
+|Polygons|IEnumerable&lt;Polygon&gt;|Same as `Polylines`, but designed for polygons.|
+|PolygonsSource|IEnumerable|Same as `PolylinesSource`, but designed for polygons.|
+|PolygonItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for polygons.|
+|Circles|IEnumerable&lt;Circle&gt;|Same as `Polylines`, but designed for circles.|
+|CirclesSource|IEnumerable|Same as `PolylinesSource`, but designed for circles.|
+|CircleItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for circles.|
+|TileOverlays|IEnumerable&lt;TileOverlay&gt;|Same as `Polylines`, but designed for tiles.|
+|TileOverlaysSource|IEnumerable|Same as `PolylinesSource`, but designed for tiles.|
+|TileOverlayItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for tiles.|
+|GroundOverlays|IEnumerable&lt;GroundOverlay&gt;|Same as `Polylines`, but designed for ground overlays.|
+|GroundOverlaysSource|IEnumerable|Same as `PolylinesSource`, but designed for ground overlays.|
+|GroundOverlayItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for ground overlays.|
+|Pins|IEnumerable&lt;Pin&gt;|Same as `Polylines`, but designed for pins.|
+|PinsSource|IEnumerable|Same as `PolylinesSource`, but designed for pins.|
+|PinItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for pins.|
+|SelectedPin|Pin|Represents selected pin at the moment. `null` if there is no selected pin at the moment.|
+|SelectedPinData|object|This is a `BindingContext` of currently selected pin. `null` if there is no selected pin at the moment.|
+|InfoWindowTemplate|DataTemplate|Setting this property will instruct map to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. By default is `null`.|
+
 #### Other properties
 
-|Property|Property type|Comment|
+|Bindable property|Property type|Description|
 |-|-|-|
 |InitialCameraPosition|CameraUpdate|The initial position of the camera at the moment of map rendering. By default is `null`. Value of this property will be taken into account only before `IsNativeMapReady` property is set to `true`, otherwise it will be ignored.|
 |RestrictPanningToArea|LatLngBounds?|Setting this property to a non-`null` value will restrict user to a pan only in the bounds set. Settings this property to a `null` will remove pan restriction. By default is `null`.|
@@ -203,8 +230,22 @@ Example of usage:
 |BuildingsEnabled|bool|Enables 3D buildings on the map. Works only with `MapType=Normal`. By default is `false`.|
 |TrafficEnabled|bool|Enables traffic. By default is `false`.|
 |MyLocationEnabled|bool|Enables 'My location' to be shown on the map. By default is `false`. Before setting this property to `true` you must be sure the location permissions to are granted.|
-|MapType|MapType|Setting this proeprty you can change the type of the map. By default is `Normal`.|
-|MapColorScheme|MapColorScheme|Setting this proeprty you can change the map theme. By default is `FollowSystem`. Applies only for Android.|
+|MapType|MapType|Represents the type of the map. By default is `Normal`.|
+|MapColorScheme|MapColorScheme|Represents the map color theme. By default is `FollowSystem`. Applies only for Android.|
+|Padding|Thickness|Represents the edge insents of the map. By default is `default(Thickness)` or 0.|
+|MinZoom|float|Represents the minimum zoom the camera can take. By default is 2. For different `MapType` SDK may ignore minimum zoom settings.|
+|MaxZoom|float|Represents the maximum zoom the camera can take. By default is 21. For different `MapType` SDK may ignore maximum zoom settings.|
+|MapStyleJson|string|Setting this property you can change visual styling of the map. It can take url, file with `.json` extension from assets, or json code directly. More about styling you can read [here](https://developers.google.com/maps/documentation/android-sdk/styling) and [here](https://developers.google.com/maps/documentation/ios-sdk/styling). For iOS this is the only way to change map color scheme. By default is `null`.|
+|HandlePoiClick|bool|Indicates whether the map control should handle clicks on 'Point of Interest'. By default is `false`.|
+|MyLocationButtonEnabled|bool|Indicates whether the map control should show 'My location' button, this will work only if `MyLocationEnabled` is `true`. By default is `true`.|
+|IndoorLevelPickerEnabled|bool|Indicates whether the map control should show indoor level picker buttons, this will work only if `IndoorEnabled` is `true`. By default is `true`.|
+|CompassEnabled|bool|Indicates whether the map control should show compass button. By default is `true`.|
+|MapToolbarEnabled|bool|Indicates whether the map control should show toolbar buttons. By default is `true`. Applies only for Android.|
+|ZoomControlsEnabled|bool|Indicates whether the map control should show zoom +- buttons. By default is `true`. Applies only for Android.|
+|ZoomGesturesEnabled|bool|Indicates whether zoom gestures are enabled. By default is `true`.|
+|ScrollGesturesEnabled|bool|Indicates whether pan (scroll) gestures are enabled. By default is `true`.|
+|TiltGesturesEnabled|bool|Indicates whether tilt (two fingers swipe) gestures are enabled. By default is `true`.|
+|RotateGesturesEnabled|bool|Indicates whether rotate (two fingers) gestures are enabled. By default is `true`.|
 
 ## Map objects
 
