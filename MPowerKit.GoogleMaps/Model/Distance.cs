@@ -32,7 +32,7 @@ public static class Distance
         return EarthRadiusMeters * c;
     }
 
-    public static double ToLattitudeDegrees(double meters) => RadiansToDegrees(meters) / EarthRadiusMeters;
+    public static double ToLatitudeDegrees(double meters) => RadiansToDegrees(meters) / EarthRadiusMeters;
     public static double ToLongitudeDegrees(double meters, double latitude) => RadiansToDegrees(meters) / (EarthRadiusMeters * Math.Cos(DegreesToRadians(latitude)));
 
     public static double DegreesToRadians(double degrees)

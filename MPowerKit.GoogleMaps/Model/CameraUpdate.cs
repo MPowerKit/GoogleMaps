@@ -84,7 +84,7 @@ public static class CameraUpdateFactory
 
     public static CameraUpdate FromCenterAndRadius(Point center, double radiusMeters)
     {
-        var latOffset = Distance.ToLattitudeDegrees(radiusMeters);
+        var latOffset = Distance.ToLatitudeDegrees(radiusMeters);
         var lngOffset = Distance.ToLongitudeDegrees(radiusMeters, center.X);
 
         Point southWest = new(center.X - latOffset, center.Y - lngOffset);
