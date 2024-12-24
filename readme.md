@@ -19,6 +19,10 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [Read only properties](#read-only-properties)
         - [Properties related to objects on the map](#properties-related-to-objects-on-the-map)
         - [Other properties](#other-properties)
+    - [Models](#models)
+        - [Point](#point)
+        - [CameraMoveReason](#cameramovereason)
+        - [CameraPosition](#cameraposition)
 
 ## Setup
 
@@ -55,7 +59,7 @@ or in you Android's AndroidManifest.xml:
 
 ```xml
 <application>
-    <!-- you other settings -->
+    <!-- your other settings -->
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="Your Android API key here" />
 </application>
 ```
@@ -160,14 +164,14 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 ### Public methods, actions, funcs
 
-|Method|Bindable property|Arguments types|Return type|Description|
+|Method|Bindable property|Parameters|Return type|Description|
 |-|-|-|-|-|
 |TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream?&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
 |ResetMinMaxZoom|ResetMinMaxZoomAction| | |Resets min and max zoom properties. Applies only to Android.|
 |MoveCamera|MoveCameraAction|CameraUpdate| |Instantly moves camera to the new position.|
-|AnimateCamera|AnimateCameraFunc|CameraUpdate, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
-|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects map coordinates to the coordinates on the screen within map control.|
-|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on the screen to map coordinates.|
+|AnimateCamera|AnimateCameraFunc|CameraUpdate newCameraPosition, int durationMils|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
+|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point latlng|Point?|Projects map coordinates to the coordinates on the screen within map control.|
+|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point screenPoint|Point?|Projects coordinates on the screen to map coordinates.|
 
 ### Bindable properties
 
@@ -218,7 +222,7 @@ Example of usage:
 |PinItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for pins.|
 |SelectedPin|Pin|Represents selected pin at the moment. `null` if there is no selected pin at the moment.|
 |SelectedPinData|object|This is a `BindingContext` of currently selected pin. `null` if there is no selected pin at the moment.|
-|InfoWindowTemplate|DataTemplate|Setting this property will instruct map to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. By default is `null`.|
+|InfoWindowTemplate|DataTemplate|Setting this property will instruct map to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
 
 #### Other properties
 
@@ -235,7 +239,7 @@ Example of usage:
 |Padding|Thickness|Represents the edge insents of the map. By default is `default(Thickness)` or 0.|
 |MinZoom|float|Represents the minimum zoom the camera can take. By default is 2. For different `MapType` SDK may ignore minimum zoom settings.|
 |MaxZoom|float|Represents the maximum zoom the camera can take. By default is 21. For different `MapType` SDK may ignore maximum zoom settings.|
-|MapStyleJson|string|Setting this property you can change visual styling of the map. It can take url, file with `.json` extension from assets, or json code directly. More about styling you can read [here](https://developers.google.com/maps/documentation/android-sdk/styling) and [here](https://developers.google.com/maps/documentation/ios-sdk/styling). For iOS this is the only way to change map color scheme. By default is `null`.|
+|MapStyleJson|string|Setting this property you can change visual styling of the map. It can take url, file with `.json` extension from assets, or json code directly. More about styling you can read [Android](https://developers.google.com/maps/documentation/android-sdk/styling) and [iOS](https://developers.google.com/maps/documentation/ios-sdk/styling). For iOS this is the only way to change map color scheme. By default is `null`.|
 |HandlePoiClick|bool|Indicates whether the map control should handle clicks on 'Point of Interest'. By default is `false`.|
 |MyLocationButtonEnabled|bool|Indicates whether the map control should show 'My location' button, this will work only if `MyLocationEnabled` is `true`. By default is `true`.|
 |IndoorLevelPickerEnabled|bool|Indicates whether the map control should show indoor level picker buttons, this will work only if `IndoorEnabled` is `true`. By default is `true`.|
@@ -247,6 +251,34 @@ Example of usage:
 |TiltGesturesEnabled|bool|Indicates whether tilt (two fingers swipe) gestures are enabled. By default is `true`.|
 |RotateGesturesEnabled|bool|Indicates whether rotate (two fingers) gestures are enabled. By default is `true`.|
 
-## Map objects
+### Models
 
-There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polyline`, `Polygon`, `TileOverlay`, `GroundOverlay`. To simplify implementation of the library for polylines and polygons were used classes from `Microsoft.Maui.Controls.Shapes` namespace. `Circle` is derived from `Shape` class. `Pin`, `TileOverlay`, `GroundOverlay` are derived from `VisualElement` class.
+#### Point
+
+This structure is taken from `Microsoft.Maui.Graphics` namespace just to simplify the framework and not to 'invent the bicycle'. Basically it is used to represent coordinates on the map, where `X` - Latitude, `Y` - Longitude. But in some cases `Point` represents just point on the screen where `X` - x coordinate, `Y` - y coordinate. It depends on the context of usage of this structure.
+
+#### CameraMoveReason
+
+`CameraMoveReason` is an enum. It indicates the reason of camera movement.
+
+|Value|Description|
+|-|-|
+|Gesture|Camera motion initiated in response to user gestures on the map.|
+|ApiAnimation|Non-gesture animation initiated in response to user actions.|
+|DeveloperAnimation|Developer initiated animation. Applies only for Android.|
+
+#### CameraUpdate
+
+An abstract class that is used to update camera position. Can be created by different factory methods of `CameraUpdateFactory`.
+
+#### CameraUpdateFactory
+
+A class containing methods for creating `CameraUpdate` objects that change a map's camera. Each method returns `CameraUpdate` object.
+
+|Method|Parameters|Description|
+|-|-|-|
+
+
+### Map objects
+
+There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polyline`, `Polygon`, `TileOverlay`, `GroundOverlay`. To simplify implementation of the library for polylines and polygons were used already existing classes from `Microsoft.Maui.Controls.Shapes` namespace. `Circle` is derived from `Shape` class. `Pin`, `TileOverlay`, `GroundOverlay` are derived from `VisualElement` class.
