@@ -8,6 +8,17 @@
 
 This library is designed for the .NET MAUI. The main control of this library `GoogleMap` implements every single feature that Google Maps SDK for Android and iOS provides. Every feature of the SDK is represented as `BindableProperty`, so you can build very flexible solutions that require usage of Google Maps.
 
+## Table Of Contents
+
+- [Setup](#setup)
+- [Usage](#usage)
+- [API definition](#api-definition)
+    - [Events and commands](#events-and-commands)
+    - [Public methods, actions, funcs](#public-methods-actions-funcs)
+    - [Bindable properties](#bindable-properties)
+        - [Read only properties](#read-only-properties)
+        - [Other properties](#other-properties)
+
 ## Setup
 
 First of all you need to make sure you have set up [Google Cloud Console](https://developers.google.com/maps/get-started#create-project) and obtained Google Maps API key.
@@ -75,7 +86,7 @@ The full list of all properties and features you can find [here](https://github.
 
 ## API definition
 
-**!!! Important: If you cannot find documentation about some methods, event or properties here, then you can search some at offical Google Maps SDK web site.**
+**!!! Important: If you cannot find documentation about some methods, events or properties here, then you can search some at offical Google Maps SDK web site.**
 
 API of this library is devided into 9 logical groups: Map features, Camera, UI Settings, Pins, Circles, Polylines, Polygons, Tiles, Ground overlays. Each logic group is represented as separate manager and responsible only for that part of logic, and preregistered in the public static dictionary inside the handler:
 
@@ -122,23 +133,23 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 |Event|Command|Argument type|Comment|
 |-|-|-|-|
-|NativeMapReady|NativeMapReadyCommand| |Raised, when native map is initialized and rendered and ready to go. Raises only once. All operations with map should be done only after this event. `IsNativeMapReady` property is set after this event to `true` value|
+|NativeMapReady|NativeMapReadyCommand| |Raised, when native map is initialized and rendered and ready to go. Raises only once. All operations with map should be done only after this event. `IsNativeMapReady` property is set after this event to `true`.|
 |MapCapabilitiesChanged|MapCapabilitiesChangedCommand|MapCapabilities|Raised, when map capabilities were changed, the `MapCapabilities` property is set to the new value.|
-|IndoorBuildingFocused|IndoorBuildingFocusedCommand|IndoorBuilding?|Raised, when indoor building was focused, the `IndoorBuilding` property is set to the new value. Can be null if no building is focused|
-|IndoorLevelActivated|IndoorLevelActivatedCommand|IndoorLevel?|Raised, when indoor building was focused or active level was changed, the `ActiveLevel` property is set to the new value. Can have value only if `IndoorBuilding` is not null, otherwise null|
+|IndoorBuildingFocused|IndoorBuildingFocusedCommand|IndoorBuilding?|Raised, when indoor building was focused, the `IndoorBuilding` property is set to the new value. Can be `null` if no building is focused.|
+|IndoorLevelActivated|IndoorLevelActivatedCommand|IndoorLevel?|Raised, when indoor building was focused or active level was changed, the `ActiveLevel` property is set to the new value. Can have value only if `IndoorBuilding` is not `null`, otherwise `null`.|
 |MapClick|MapClickedCommand|Point|Raised, when user clicks on the map.|
 |MapLongClick|MapLongClickedCommand|Point|Raised, when user does long press on the map.|
 |PoiClick|PoiClickedCommand|PointOfInterest|Raised, when user on the 'Point of Interest'.|
-|CameraMoveStart|CameraMoveStartedCommand|CameraMoveReason|Raised, when camera starting change of it's position. `CameraMoveReason` is enum and representing the reason of camera move|
-|CameraMove|CameraMoveCommand| |Raised, when camera is moving. Can be risen only when camera is animated programmatically|
-|CameraPositionChanged|CameraPositionChangedCommand|CameraPosition|Raised, when camera is changing it's position, the `CameraPosition` property is set to the new value|
-|CameraMoveCanceled|CameraMoveCanceledCommand| |Raised, when camera move is canceled. Can be risen only when camera is animated programmatically and animation was canceled. Applies only to Android|
-|CameraIdle|CameraIdleCommand|VisibleRegion|Raised, when camera is idle (stopped). the `CameraPosition` property is set to the new value, the `VisibleRegion` property is set to the new value|
+|CameraMoveStart|CameraMoveStartedCommand|CameraMoveReason|Raised, when camera starting change of it's position. `CameraMoveReason` is enum and representing the reason of camera move.|
+|CameraMove|CameraMoveCommand| |Raised, when camera is moving. Can be risen only when camera is animated programmatically.|
+|CameraPositionChanged|CameraPositionChangedCommand|CameraPosition|Raised, when camera is changing it's position, the `CameraPosition` property is set to the new value.|
+|CameraMoveCanceled|CameraMoveCanceledCommand| |Raised, when camera move is canceled. Can be risen only when camera is animated programmatically and animation was canceled. Applies only to Android.|
+|CameraIdle|CameraIdleCommand|VisibleRegion|Raised, when camera is idle (stopped). the `CameraPosition` property is set to the new value, the `VisibleRegion` property is set to the new value.|
 |PolygonClick|PolygonClickedCommand|Polygon/object|Raised, when user clicks on the polygon. The argument type of the command depends on how polygon was added to the map.|
 |PolylineClick|PolylineClickedCommand|Polyline/object|Raised, when user clicks on the polyline. The argument type of the command depends on how polyline was added to the map.|
 |CircleClick|CircleClickedCommand|Circle/object|Raised, when user clicks on the circle. The argument type of the command depends on how circle was added to the map.|
 |GroundOverlayClick|GroundOverlayClickedCommand|GroundOverlay/object|Raised, when user clicks on the ground overlay. The argument type of the command depends on how ground overlay was added to the map.|
-|PinClick|PinClickedCommand|Pin/object|Raised, when user clicks on the pin. The argument type of the command depends on how pin was added to the map. the `SelectedPin` property is set to the new value, but only if this pin `CanBeSelected`|
+|PinClick|PinClickedCommand|Pin/object|Raised, when user clicks on the pin. The argument type of the command depends on how pin was added to the map. the `SelectedPin` property is set to the new value, but only if this pin `CanBeSelected`.|
 |PinDragStart|PinDragStartedCommand|Pin/object|Raised, when user starting drag the pin. The argument type of the command depends on how pin was added to the map.|
 |PinDragging|PinDraggingCommand|Pin/object|Raised, when user is dragging the pin. The argument type of the command depends on how pin was added to the map.|
 |PinDragEnd|PinDragEndedCommand|Pin/object|Raised, when pin dragging is ended. The argument type of the command depends on how pin was added to the map.|
@@ -150,14 +161,16 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 |Method|Bindable property|Arguments types|Return type|Comment|
 |-|-|-|-|-|
-|TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
+|TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream?&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
 |ResetMinMaxZoom|ResetMinMaxZoomAction| | |Resets min and max zoom properties. Applies only to Android.|
-|MoveCamera|MoveCameraAction|CameraPosition| |Instantly moves camera to the new position.|
-|AnimateCamera|AnimateCameraFunc|CameraPosition, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
-|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects coordinates on map to the coordinates on the screen.|
-|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on screen to the coordinates on the map.|
+|MoveCamera|MoveCameraAction|CameraUpdate| |Instantly moves camera to the new position.|
+|AnimateCamera|AnimateCameraFunc|CameraUpdate, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
+|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects map coordinates to the coordinates on the screen within map control.|
+|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on the screen to map coordinates.|
 
 ### Bindable properties
+
+#### Read only properties
 
 There are some readonly properties, which are not visible in XAML editor, but you can bind them. One condition, they can be bound only with `Mode=OneWayToSource`, otherwise it will not work. This means that value can be passed only from map control to the viewmodel.
 Example of usage:
@@ -167,12 +180,31 @@ Example of usage:
 
 |Readonly property|Property type|Comment|
 |-|-|-|
-|MapCapabilities|MapCapabilities?|Allows to track the availability of each map capability.|
-|FocusedBuilding|IndoorBuilding|Represents a currently focused building by camera position. Can be null if there is no building focused at the moment.|
-|ActiveLevel|IndoorLevel|Represents an active level of a currently focused building by camera position. Can be null if there is no building focused at the moment.|
-|IsNativeMapReady|bool|Indicates whether native map is initialized, rendered and ready to use.|
-|CameraPosition|CameraPosition|Represents current position of the camera.|
-|ResetMinMaxZoomAction|Action|Can be used as action to reset min and max zoom properties.|
+|IsNativeMapReady|bool|Indicates whether native map is initialized, rendered and ready to use. Otherwise `false`.|
+|MapCapabilities|MapCapabilities|Allows to track the availability of each map capability. Always has value after `IsNativeMapReady` set to `true`.|
+|FocusedBuilding|IndoorBuilding|Represents a currently focused building by camera position. Can be `null` if there is no building focused at the moment.|
+|ActiveLevel|IndoorLevel|Represents an active level of a currently focused building by camera position. Can be `null` if there is no building focused at the moment.|
+|CameraPosition|CameraPosition|Represents current position of the camera. Never `null` after `IsNativeMapReady` set to `true`.|
+|VisibleRegion|VisibleRegion|Represents the visible map region the last time camera was idle. Always has value after `IsNativeMapReady` set to `true`.|
+|ResetMinMaxZoomAction|Action|Can be bound and called from viewmodel to reset min and max zoom properties. Never `null`.|
+|TakeSnapshotFunc|Func&lt;Task&lt;Stream?&gt;&gt;|Can be bound and called from viewmodel to take snapshots of the current map state. Never `null`.|
+|AnimateCameraFunc|Func&lt;CameraUpdate, int, Task&gt;|Can be bound and called from viewmodel to move camera to the new position with animation. By default animation duration is 300 ms, but can be changed. Never `null`.|
+|MoveCameraAction|Action&lt;CameraUpdate, int&gt;|Can be bound and called from viewmodel to instantly move camera to the new position. Never `null`.|
+|ProjectMapCoordsToScreenLocationFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project map coordinates to coordinates on the screen whithin map control. Never `null`.|
+|ProjectScreenLocationToMapCoordsFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project coordinates on the screen to map coordinates. Never `null`.|
+
+#### Other properties
+
+|Property|Property type|Comment|
+|-|-|-|
+|InitialCameraPosition|CameraUpdate|The initial position of the camera at the moment of map rendering. By default is `null`. Value of this property will be taken into account only before `IsNativeMapReady` property is set to `true`, otherwise it will be ignored.|
+|RestrictPanningToArea|LatLngBounds?|Setting this property to a non-`null` value will restrict user to a pan only in the bounds set. Settings this property to a `null` will remove pan restriction. By default is `null`.|
+|IndoorEnabled|bool|Enables indoor buildings to be able to be focuses. Works only with `MapType=Normal`. By default is `false`.|
+|BuildingsEnabled|bool|Enables 3D buildings on the map. Works only with `MapType=Normal`. By default is `false`.|
+|TrafficEnabled|bool|Enables traffic. By default is `false`.|
+|MyLocationEnabled|bool|Enables 'My location' to be shown on the map. By default is `false`. Before setting this property to `true` you must be sure the location permissions to are granted.|
+|MapType|MapType|Setting this proeprty you can change the type of the map. By default is `Normal`.|
+|MapColorScheme|MapColorScheme|Setting this proeprty you can change the map theme. By default is `FollowSystem`. Applies only for Android.|
 
 ## Map objects
 
