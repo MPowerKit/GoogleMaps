@@ -622,45 +622,17 @@ public class GoogleMap : View
             IndoorLevelActivatedCommand.Execute(activeLevel);
     }
 
-    #region InitialCameraPosition
-    public CameraUpdate InitialCameraPosition
-    {
-        get => (CameraUpdate)GetValue(InitialCameraPositionProperty);
-        set => SetValue(InitialCameraPositionProperty, value);
-    }
-
-    public static readonly BindableProperty InitialCameraPositionProperty =
-        BindableProperty.Create(
-            nameof(InitialCameraPosition),
-            typeof(CameraUpdate),
-            typeof(GoogleMap));
-    #endregion
-
-    #region RestrictPanningToArea
-    public LatLngBounds? RestrictPanningToArea
-    {
-        get => (LatLngBounds?)GetValue(RestrictPanningToAreaProperty);
-        set => SetValue(RestrictPanningToAreaProperty, value);
-    }
-
-    public static readonly BindableProperty RestrictPanningToAreaProperty =
-        BindableProperty.Create(
-            nameof(RestrictPanningToArea),
-            typeof(LatLngBounds?),
-            typeof(GoogleMap));
-    #endregion
-
     #region MapCapabilities
-    public MapCapabilities? MapCapabilities
+    public MapCapabilities MapCapabilities
     {
-        get => (MapCapabilities?)GetValue(MapCapabilitiesProperty);
+        get => (MapCapabilities)GetValue(MapCapabilitiesProperty);
         protected set => SetValue(MapCapabilitiesProperty, value);
     }
 
     public static readonly BindableProperty MapCapabilitiesProperty =
         BindableProperty.Create(
             nameof(MapCapabilities),
-            typeof(MapCapabilities?),
+            typeof(MapCapabilities),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
     #endregion
@@ -693,6 +665,154 @@ public class GoogleMap : View
             typeof(IndoorLevel),
             typeof(GoogleMap),
             defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region VisibleRegion
+    public VisibleRegion VisibleRegion
+    {
+        get => (VisibleRegion)GetValue(VisibleRegionProperty);
+        protected set => SetValue(VisibleRegionProperty, value);
+    }
+
+    public static readonly BindableProperty VisibleRegionProperty =
+        BindableProperty.Create(
+            nameof(VisibleRegion),
+            typeof(VisibleRegion),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region CameraPosition
+    public CameraPosition CameraPosition
+    {
+        get => (CameraPosition)GetValue(CameraPositionProperty);
+        protected set => SetValue(CameraPositionProperty, value);
+    }
+
+    public static readonly BindableProperty CameraPositionProperty =
+        BindableProperty.Create(
+            nameof(CameraPosition),
+            typeof(CameraPosition),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region ResetMinMaxZoomAction
+    public Action ResetMinMaxZoomAction
+    {
+        get => (Action)GetValue(ResetMinMaxZoomActionProperty);
+        protected set => SetValue(ResetMinMaxZoomActionProperty, value);
+    }
+
+    public static readonly BindableProperty ResetMinMaxZoomActionProperty =
+        BindableProperty.Create(
+            nameof(ResetMinMaxZoomAction),
+            typeof(Action),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region TakeSnapshotFunc
+    public Func<Task<Stream?>> TakeSnapshotFunc
+    {
+        get => (Func<Task<Stream?>>)GetValue(TakeSnapshotFuncProperty);
+        protected set => SetValue(TakeSnapshotFuncProperty, value);
+    }
+
+    public static readonly BindableProperty TakeSnapshotFuncProperty =
+        BindableProperty.Create(
+            nameof(TakeSnapshotFunc),
+            typeof(Func<Task<Stream?>>),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region ProjectMapCoordsToScreenLocationFunc
+    public Func<Point, Point?> ProjectMapCoordsToScreenLocationFunc
+    {
+        get => (Func<Point, Point?>)GetValue(ProjectMapCoordsToScreenLocationFuncProperty);
+        protected set => SetValue(ProjectMapCoordsToScreenLocationFuncProperty, value);
+    }
+
+    public static readonly BindableProperty ProjectMapCoordsToScreenLocationFuncProperty =
+        BindableProperty.Create(
+            nameof(ProjectMapCoordsToScreenLocationFunc),
+            typeof(Func<Point, Point?>),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region ProjectScreenLocationToMapCoordsFunc
+    public Func<Point, Point?> ProjectScreenLocationToMapCoordsFunc
+    {
+        get => (Func<Point, Point?>)GetValue(ProjectScreenLocationToMapCoordsFuncProperty);
+        protected set => SetValue(ProjectScreenLocationToMapCoordsFuncProperty, value);
+    }
+
+    public static readonly BindableProperty ProjectScreenLocationToMapCoordsFuncProperty =
+        BindableProperty.Create(
+            nameof(ProjectScreenLocationToMapCoordsFunc),
+            typeof(Func<Point, Point?>),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region AnimateCameraFunc
+    public Func<CameraUpdate, int, Task> AnimateCameraFunc
+    {
+        get => (Func<CameraUpdate, int, Task>)GetValue(AnimateCameraFuncProperty);
+        protected set => SetValue(AnimateCameraFuncProperty, value);
+    }
+
+    public static readonly BindableProperty AnimateCameraFuncProperty =
+        BindableProperty.Create(
+            nameof(AnimateCameraFunc),
+            typeof(Func<CameraUpdate, int, Task>),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region MoveCameraAction
+    public Action<CameraUpdate> MoveCameraAction
+    {
+        get => (Action<CameraUpdate>)GetValue(MoveCameraActionProperty);
+        protected set => SetValue(MoveCameraActionProperty, value);
+    }
+
+    public static readonly BindableProperty MoveCameraActionProperty =
+        BindableProperty.Create(
+            nameof(MoveCameraAction),
+            typeof(Action<CameraUpdate>),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region InitialCameraPosition
+    public CameraUpdate InitialCameraPosition
+    {
+        get => (CameraUpdate)GetValue(InitialCameraPositionProperty);
+        set => SetValue(InitialCameraPositionProperty, value);
+    }
+
+    public static readonly BindableProperty InitialCameraPositionProperty =
+        BindableProperty.Create(
+            nameof(InitialCameraPosition),
+            typeof(CameraUpdate),
+            typeof(GoogleMap));
+    #endregion
+
+    #region RestrictPanningToArea
+    public LatLngBounds? RestrictPanningToArea
+    {
+        get => (LatLngBounds?)GetValue(RestrictPanningToAreaProperty);
+        set => SetValue(RestrictPanningToAreaProperty, value);
+    }
+
+    public static readonly BindableProperty RestrictPanningToAreaProperty =
+        BindableProperty.Create(
+            nameof(RestrictPanningToArea),
+            typeof(LatLngBounds?),
+            typeof(GoogleMap));
     #endregion
 
     #region IndoorEnabled
@@ -785,6 +905,112 @@ public class GoogleMap : View
             typeof(GoogleMap),
             MapColorScheme.FollowSystem
             );
+    #endregion
+
+    #region Padding
+    public Thickness Padding
+    {
+        get => (Thickness)GetValue(PaddingProperty);
+        set => SetValue(PaddingProperty, value);
+    }
+
+    public static readonly BindableProperty PaddingProperty =
+        BindableProperty.Create(
+            nameof(Padding),
+            typeof(Thickness),
+            typeof(GoogleMap)
+            );
+    #endregion
+
+    #region MinZoom
+    public float MinZoom
+    {
+        get => (float)GetValue(MinZoomProperty);
+        set => SetValue(MinZoomProperty, value);
+    }
+
+    public static readonly BindableProperty MinZoomProperty =
+        BindableProperty.Create(
+            nameof(MinZoom),
+            typeof(float),
+            typeof(GoogleMap),
+            2f
+            );
+    #endregion
+
+    #region MaxZoom
+    public float MaxZoom
+    {
+        get => (float)GetValue(MaxZoomProperty);
+        set => SetValue(MaxZoomProperty, value);
+    }
+
+    public static readonly BindableProperty MaxZoomProperty =
+        BindableProperty.Create(
+            nameof(MaxZoom),
+            typeof(float),
+            typeof(GoogleMap),
+            21f
+            );
+    #endregion
+
+    #region InfoWindowTemplate
+    public DataTemplate InfoWindowTemplate
+    {
+        get => (DataTemplate)GetValue(InfoWindowTemplateProperty);
+        set => SetValue(InfoWindowTemplateProperty, value);
+    }
+
+    public static readonly BindableProperty InfoWindowTemplateProperty =
+        BindableProperty.Create(
+            nameof(InfoWindowTemplate),
+            typeof(DataTemplate),
+            typeof(GoogleMap)
+            );
+    #endregion
+
+    #region IsNativeMapReady
+    public bool IsNativeMapReady
+    {
+        get => (bool)GetValue(IsNativeMapReadyProperty);
+        protected set => SetValue(IsNativeMapReadyProperty, value);
+    }
+
+    public static readonly BindableProperty IsNativeMapReadyProperty =
+        BindableProperty.Create(
+            nameof(IsNativeMapReady),
+            typeof(bool),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
+    #region MapStyleJson
+    public string MapStyleJson
+    {
+        get => (string)GetValue(MapStyleJsonProperty);
+        set => SetValue(MapStyleJsonProperty, value);
+    }
+
+    public static readonly BindableProperty MapStyleJsonProperty =
+        BindableProperty.Create(
+            nameof(MapStyleJson),
+            typeof(string),
+            typeof(GoogleMap)
+            );
+    #endregion
+
+    #region HandlePoiClick
+    public bool HandlePoiClick
+    {
+        get => (bool)GetValue(HandlePoiClickProperty);
+        set => SetValue(HandlePoiClickProperty, value);
+    }
+
+    public static readonly BindableProperty HandlePoiClickProperty =
+        BindableProperty.Create(
+            nameof(HandlePoiClick),
+            typeof(bool),
+            typeof(GoogleMap));
     #endregion
 
     #region MyLocationButtonEnabled
@@ -929,232 +1155,6 @@ public class GoogleMap : View
             typeof(GoogleMap),
             true
             );
-    #endregion
-
-    #region Padding
-    public Thickness Padding
-    {
-        get => (Thickness)GetValue(PaddingProperty);
-        set => SetValue(PaddingProperty, value);
-    }
-
-    public static readonly BindableProperty PaddingProperty =
-        BindableProperty.Create(
-            nameof(Padding),
-            typeof(Thickness),
-            typeof(GoogleMap)
-            );
-    #endregion
-
-    #region MinZoom
-    public float MinZoom
-    {
-        get => (float)GetValue(MinZoomProperty);
-        set => SetValue(MinZoomProperty, value);
-    }
-
-    public static readonly BindableProperty MinZoomProperty =
-        BindableProperty.Create(
-            nameof(MinZoom),
-            typeof(float),
-            typeof(GoogleMap),
-            2f
-            );
-    #endregion
-
-    #region MaxZoom
-    public float MaxZoom
-    {
-        get => (float)GetValue(MaxZoomProperty);
-        set => SetValue(MaxZoomProperty, value);
-    }
-
-    public static readonly BindableProperty MaxZoomProperty =
-        BindableProperty.Create(
-            nameof(MaxZoom),
-            typeof(float),
-            typeof(GoogleMap),
-            21f
-            );
-    #endregion
-
-    #region InfoWindowTemplate
-    public DataTemplate InfoWindowTemplate
-    {
-        get => (DataTemplate)GetValue(InfoWindowTemplateProperty);
-        set => SetValue(InfoWindowTemplateProperty, value);
-    }
-
-    public static readonly BindableProperty InfoWindowTemplateProperty =
-        BindableProperty.Create(
-            nameof(InfoWindowTemplate),
-            typeof(DataTemplate),
-            typeof(GoogleMap)
-            );
-    #endregion
-
-    #region IsNativeMapReady
-    public bool IsNativeMapReady
-    {
-        get => (bool)GetValue(IsNativeMapReadyProperty);
-        protected set => SetValue(IsNativeMapReadyProperty, value);
-    }
-
-    public static readonly BindableProperty IsNativeMapReadyProperty =
-        BindableProperty.Create(
-            nameof(IsNativeMapReady),
-            typeof(bool),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region MapStyleJson
-    public string MapStyleJson
-    {
-        get => (string)GetValue(MapStyleJsonProperty);
-        set => SetValue(MapStyleJsonProperty, value);
-    }
-
-    public static readonly BindableProperty MapStyleJsonProperty =
-        BindableProperty.Create(
-            nameof(MapStyleJson),
-            typeof(string),
-            typeof(GoogleMap)
-            );
-    #endregion
-
-    #region ResetMinMaxZoomAction
-    public Action ResetMinMaxZoomAction
-    {
-        get => (Action)GetValue(ResetMinMaxZoomActionProperty);
-        protected set => SetValue(ResetMinMaxZoomActionProperty, value);
-    }
-
-    public static readonly BindableProperty ResetMinMaxZoomActionProperty =
-        BindableProperty.Create(
-            nameof(ResetMinMaxZoomAction),
-            typeof(Action),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region TakeSnapshotFunc
-    public Func<Task<Stream?>> TakeSnapshotFunc
-    {
-        get => (Func<Task<Stream?>>)GetValue(TakeSnapshotFuncProperty);
-        protected set => SetValue(TakeSnapshotFuncProperty, value);
-    }
-
-    public static readonly BindableProperty TakeSnapshotFuncProperty =
-        BindableProperty.Create(
-            nameof(TakeSnapshotFunc),
-            typeof(Func<Task<Stream?>>),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region ProjectMapCoordsToScreenLocationFunc
-    public Func<Point, Point?> ProjectMapCoordsToScreenLocationFunc
-    {
-        get => (Func<Point, Point?>)GetValue(ProjectMapCoordsToScreenLocationFuncProperty);
-        protected set => SetValue(ProjectMapCoordsToScreenLocationFuncProperty, value);
-    }
-
-    public static readonly BindableProperty ProjectMapCoordsToScreenLocationFuncProperty =
-        BindableProperty.Create(
-            nameof(ProjectMapCoordsToScreenLocationFunc),
-            typeof(Func<Point, Point?>),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region ProjectScreenLocationToMapCoordsFunc
-    public Func<Point, Point?> ProjectScreenLocationToMapCoordsFunc
-    {
-        get => (Func<Point, Point?>)GetValue(ProjectScreenLocationToMapCoordsFuncProperty);
-        protected set => SetValue(ProjectScreenLocationToMapCoordsFuncProperty, value);
-    }
-
-    public static readonly BindableProperty ProjectScreenLocationToMapCoordsFuncProperty =
-        BindableProperty.Create(
-            nameof(ProjectScreenLocationToMapCoordsFunc),
-            typeof(Func<Point, Point?>),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region AnimateCameraFunc
-    public Func<CameraUpdate, int, Task> AnimateCameraFunc
-    {
-        get => (Func<CameraUpdate, int, Task>)GetValue(AnimateCameraFuncProperty);
-        protected set => SetValue(AnimateCameraFuncProperty, value);
-    }
-
-    public static readonly BindableProperty AnimateCameraFuncProperty =
-        BindableProperty.Create(
-            nameof(AnimateCameraFunc),
-            typeof(Func<CameraUpdate, int, Task>),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region MoveCameraAction
-    public Action<CameraUpdate> MoveCameraAction
-    {
-        get => (Action<CameraUpdate>)GetValue(MoveCameraActionProperty);
-        protected set => SetValue(MoveCameraActionProperty, value);
-    }
-
-    public static readonly BindableProperty MoveCameraActionProperty =
-        BindableProperty.Create(
-            nameof(MoveCameraAction),
-            typeof(Action<CameraUpdate>),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region VisibleRegion
-    public VisibleRegion VisibleRegion
-    {
-        get => (VisibleRegion)GetValue(VisibleRegionProperty);
-        protected set => SetValue(VisibleRegionProperty, value);
-    }
-
-    public static readonly BindableProperty VisibleRegionProperty =
-        BindableProperty.Create(
-            nameof(VisibleRegion),
-            typeof(VisibleRegion),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region CameraPosition
-    public CameraPosition CameraPosition
-    {
-        get => (CameraPosition)GetValue(CameraPositionProperty);
-        protected set => SetValue(CameraPositionProperty, value);
-    }
-
-    public static readonly BindableProperty CameraPositionProperty =
-        BindableProperty.Create(
-            nameof(CameraPosition),
-            typeof(CameraPosition),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
-
-    #region HandlePoiClick
-    public bool HandlePoiClick
-    {
-        get => (bool)GetValue(HandlePoiClickProperty);
-        set => SetValue(HandlePoiClickProperty, value);
-    }
-
-    public static readonly BindableProperty HandlePoiClickProperty =
-        BindableProperty.Create(
-            nameof(HandlePoiClick),
-            typeof(bool),
-            typeof(GoogleMap));
     #endregion
 
     #region Polylines
