@@ -168,7 +168,7 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 |-|-|-|-|-|
 |TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream?&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
 |ResetMinMaxZoom|ResetMinMaxZoomAction| | |Resets min and max zoom properties. Applies only to Android.|
-|MoveCamera|MoveCameraAction|CameraUpdate| |Instantly moves camera to the new position.|
+|MoveCamera|MoveCameraAction|CameraUpdate newCameraPosition| |Instantly moves camera to the new position.|
 |AnimateCamera|AnimateCameraFunc|CameraUpdate newCameraPosition, int durationMils|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
 |ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point latlng|Point?|Projects map coordinates to the coordinates on the screen within map control.|
 |ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point screenPoint|Point?|Projects coordinates on the screen to map coordinates.|
@@ -257,15 +257,56 @@ Example of usage:
 
 This structure is taken from `Microsoft.Maui.Graphics` namespace just to simplify the framework and not to 'invent the bicycle'. Basically it is used to represent coordinates on the map, where `X` - Latitude, `Y` - Longitude. But in some cases `Point` represents just point on the screen where `X` - x coordinate, `Y` - y coordinate. It depends on the context of usage of this structure.
 
-#### CameraMoveReason
+#### LatLngBounds
 
-`CameraMoveReason` is an enum. It indicates the reason of camera movement.
+A structure that represents a latitude/longitude aligned rectangle.
 
-|Value|Description|
-|-|-|
-|Gesture|Camera motion initiated in response to user gestures on the map.|
-|ApiAnimation|Non-gesture animation initiated in response to user actions.|
-|DeveloperAnimation|Developer initiated animation. Applies only for Android.|
+|Property|Type|Description|
+|-|-|-|
+|SouthWest|Point|Southwest corner of the bound.|
+|NorthEast|Point|Northeast corner of the bound.|
+
+#### VisibleRegion
+
+`VisibleRegion` is a struct. Contains the four points defining the four-sided polygon that is visible in a map's camera. This polygon can be a trapezoid instead of a rectangle, because a camera can have tilt. If the camera is directly over the center of the camera, the shape is rectangular, but if the camera is tilted, the shape will appear to be a trapezoid whose smallest side is closest to the point of view.
+
+|Property|Type|Description|
+|-|-|-|
+|Bounds|LatLngBounds|The smallest bounding box that includes the visible region defined in this class.|
+|FarLeft|Point|Point on the map that defines the far left corner of the camera.|
+|FarRight|Point|Point on the map that defines the far right corner of the camera.|
+|NearLeft|Point|Point on the map that defines the bottom left corner of the camera.|
+|NearRight|Point|Point on the map that defines the bottom right corner of the camera.|
+
+#### MapCapabilities
+
+`MapCapabilities` is a struct that allows customers to track the availability of each capability.
+
+|Property|Type|Description|
+|-|-|-|
+|IsAdvancedMarkersAvailable|bool|`true` if advanced markers are available.|
+|IsDataDrivenStylingAvailable|bool|`true` if data-driven styling is available.|
+
+#### PointOfInterest
+
+`PointOfInterest` is a struct that contains information about a 'Point of Interest' that was clicked on.
+
+|Property|Type|Description|
+|-|-|-|
+|Position|Point|The position of the POI.|
+|PlaceId|string|The placeId of the POI.|
+|Name|string|The name of the POI.|
+
+#### CameraPosition
+
+An immutable class that aggregates all camera position parameters such as location, zoom level, tilt angle, and bearing. Use `CameraPosition.Builder` to construct a `CameraPosition` instance, which you can then use in conjunction with `CameraUpdateFactory`.
+
+|Property|Type|Description|
+|-|-|-|
+|Target|Point|The location on the map that the camera is pointing at.|
+|Zoom|float|Zoom level near the center of the screen.|
+|Bearing|float|Direction that the camera is pointing in, in degrees clockwise from north.|
+|Tilt|float|The angle, in degrees, of the camera angle from the nadir (directly facing the Earth).|
 
 #### CameraUpdate
 
@@ -277,7 +318,50 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 
 |Method|Parameters|Description|
 |-|-|-|
+|ZoomIn| |Returns a `CameraUpdate` that zooms in on the map by moving the viewpoint's height closer to the Earth's surface.|
+|ZoomOut| |Returns a `CameraUpdate` that zooms out on the map by moving the viewpoint's height farther away from the Earth's surface.|
+|ZoomTo|float zoom|Returns a `CameraUpdate` that moves the camera viewpoint to a particular zoom level.|
+|ZoomBy|float zoomDelta|Returns a `CameraUpdate` that shifts the zoom level of the current camera viewpoint.|
+|ZoomBy|float zoomDelta, Point focusPointOnScreen|Returns a `CameraUpdate` that shifts the zoom level of the current camera viewpoint, focusing at the spcified point on the screen.|
+|ScrollBy|float dxPixels, float dyPixels|Returns a `CameraUpdate` that scrolls the camera over the map, shifting the center of view by the specified number of pixels in the x and y directions.|
+|NewCameraPosition|CameraPosition cameraPosition|Returns a `CameraUpdate` that moves the camera to a specified `CameraPosition`.|
+|NewLatLng|Point latLng|Returns a `CameraUpdate` that moves the center of the screen to a latitude and longitude specified by a point on the map.|
+|NewLatLngZoom|Point latLng, float zoom|Returns a `CameraUpdate` that moves the center of the screen to a latitude and longitude specified by a point on the map, and moves to the given zoom level.|
+|NewLatLngBounds|LatLngBounds bounds, double padding|Returns a `CameraUpdate` that transforms the camera such that the specified latitude/longitude bounds are centered on screen at the greatest possible zoom level.|
+|NewLatLngBounds|LatLngBounds bounds, double padding, Size size|Returns a `CameraUpdate` that transforms the camera such that the specified latitude/longitude bounds are centered on screen within a bounding box of specified dimensions at the greatest possible zoom level. Applies only for Android.|
+|FromCenterAndRadius|Point center, double radiusMeters|Returns a `CameraUpdate` that transforms the camera such that the specified latitude/longitude point are centered on screen within a bounding box of specified radius.|
 
+#### CameraMoveReason
+
+`CameraMoveReason` is an enum. It indicates the reason of camera movement.
+
+|Value|Description|
+|-|-|
+|Gesture|Camera motion initiated in response to user gestures on the map.|
+|ApiAnimation|Non-gesture animation initiated in response to user actions.|
+|DeveloperAnimation|Developer initiated animation. Applies only for Android.|
+
+#### MapType
+
+`MapType` is an enum. Indicates what type of map tiles that should be displayed.
+
+|Value|Description|
+|-|-|
+|None|No base map tiles.|
+|Normal|Basic map.|
+|Satellite|Satellite imagery.|
+|Terrain|Topographic data.|
+|Hybrid|Satellite imagery with roads and labels.|
+
+#### MapColorScheme
+
+`MapColorScheme` is an enum. Indicates what color mode should be used to show the map. Applies on for Android.
+
+|Value|Description|
+|-|-|
+|Light|Represents light mode.|
+|Dark|Represents dark mode.|
+|FolllowSystem|Represents color mode used by system.|
 
 ### Map objects
 
