@@ -622,6 +622,21 @@ public class GoogleMap : View
             IndoorLevelActivatedCommand.Execute(activeLevel);
     }
 
+    #region IsNativeMapReady
+    public bool IsNativeMapReady
+    {
+        get => (bool)GetValue(IsNativeMapReadyProperty);
+        protected set => SetValue(IsNativeMapReadyProperty, value);
+    }
+
+    public static readonly BindableProperty IsNativeMapReadyProperty =
+        BindableProperty.Create(
+            nameof(IsNativeMapReady),
+            typeof(bool),
+            typeof(GoogleMap),
+            defaultBindingMode: BindingMode.OneWayToSource);
+    #endregion
+
     #region MapCapabilities
     public MapCapabilities MapCapabilities
     {
@@ -952,37 +967,7 @@ public class GoogleMap : View
             typeof(GoogleMap),
             21f
             );
-    #endregion
-
-    #region InfoWindowTemplate
-    public DataTemplate InfoWindowTemplate
-    {
-        get => (DataTemplate)GetValue(InfoWindowTemplateProperty);
-        set => SetValue(InfoWindowTemplateProperty, value);
-    }
-
-    public static readonly BindableProperty InfoWindowTemplateProperty =
-        BindableProperty.Create(
-            nameof(InfoWindowTemplate),
-            typeof(DataTemplate),
-            typeof(GoogleMap)
-            );
-    #endregion
-
-    #region IsNativeMapReady
-    public bool IsNativeMapReady
-    {
-        get => (bool)GetValue(IsNativeMapReadyProperty);
-        protected set => SetValue(IsNativeMapReadyProperty, value);
-    }
-
-    public static readonly BindableProperty IsNativeMapReadyProperty =
-        BindableProperty.Create(
-            nameof(IsNativeMapReady),
-            typeof(bool),
-            typeof(GoogleMap),
-            defaultBindingMode: BindingMode.OneWayToSource);
-    #endregion
+    #endregion]
 
     #region MapStyleJson
     public string MapStyleJson
@@ -1011,6 +996,21 @@ public class GoogleMap : View
             nameof(HandlePoiClick),
             typeof(bool),
             typeof(GoogleMap));
+    #endregion
+
+    #region InfoWindowTemplate
+    public DataTemplate InfoWindowTemplate
+    {
+        get => (DataTemplate)GetValue(InfoWindowTemplateProperty);
+        set => SetValue(InfoWindowTemplateProperty, value);
+    }
+
+    public static readonly BindableProperty InfoWindowTemplateProperty =
+        BindableProperty.Create(
+            nameof(InfoWindowTemplate),
+            typeof(DataTemplate),
+            typeof(GoogleMap)
+            );
     #endregion
 
     #region MyLocationButtonEnabled
