@@ -75,7 +75,7 @@ The full list of all properties and features you can find [here](https://github.
 
 ## API definition
 
-**!!! Important: If you cannot find documentation about some methods, event or properties here, then you can search some at offical Google Maps SDK web site.**
+**!!! Important: If you cannot find documentation about some methods, events or properties here, then you can search some at offical Google Maps SDK web site.**
 
 API of this library is devided into 9 logical groups: Map features, Camera, UI Settings, Pins, Circles, Polylines, Polygons, Tiles, Ground overlays. Each logic group is represented as separate manager and responsible only for that part of logic, and preregistered in the public static dictionary inside the handler:
 
@@ -150,14 +150,16 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 
 |Method|Bindable property|Arguments types|Return type|Comment|
 |-|-|-|-|-|
-|TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
+|TakeSnapshot|TakeSnapshotFunc| |Task&lt;Stream?&gt;|Takes snapshot of the map in current state. Returns stream of the taken snapshot.|
 |ResetMinMaxZoom|ResetMinMaxZoomAction| | |Resets min and max zoom properties. Applies only to Android.|
-|MoveCamera|MoveCameraAction|CameraPosition| |Instantly moves camera to the new position.|
-|AnimateCamera|AnimateCameraFunc|CameraPosition, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
-|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects coordinates on map to the coordinates on the screen.|
-|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on screen to the coordinates on the map.|
+|MoveCamera|MoveCameraAction|CameraUpdate| |Instantly moves camera to the new position.|
+|AnimateCamera|AnimateCameraFunc|CameraUpdate, int|Task|Moves camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
+|ProjectMapCoordsToScreenLocation|ProjectMapCoordsToScreenLocationFunc|Point|Point?|Projects map coordinates to the coordinates on the screen within map control.|
+|ProjectScreenLocationToMapCoords|ProjectScreenLocationToMapCoordsFunc|Point|Point?|Projects coordinates on the screen to map coordinates.|
 
 ### Bindable properties
+
+#### Read only properties
 
 There are some readonly properties, which are not visible in XAML editor, but you can bind them. One condition, they can be bound only with `Mode=OneWayToSource`, otherwise it will not work. This means that value can be passed only from map control to the viewmodel.
 Example of usage:
@@ -167,12 +169,22 @@ Example of usage:
 
 |Readonly property|Property type|Comment|
 |-|-|-|
-|MapCapabilities|MapCapabilities?|Allows to track the availability of each map capability.|
+|MapCapabilities|MapCapabilities|Allows to track the availability of each map capability.|
 |FocusedBuilding|IndoorBuilding|Represents a currently focused building by camera position. Can be null if there is no building focused at the moment.|
 |ActiveLevel|IndoorLevel|Represents an active level of a currently focused building by camera position. Can be null if there is no building focused at the moment.|
 |IsNativeMapReady|bool|Indicates whether native map is initialized, rendered and ready to use.|
 |CameraPosition|CameraPosition|Represents current position of the camera.|
-|ResetMinMaxZoomAction|Action|Can be used as action to reset min and max zoom properties.|
+|VisibleRegion|VisibleRegion|Represents the visible map region the last time camera was idle.|
+|ResetMinMaxZoomAction|Action|Can be bound and called from viewmodel to reset min and max zoom properties.|
+|TakeSnapshotFunc|Func&lt;Task&lt;Stream?&gt;&gt;|Can be bound and called from viewmodel to take snapshots of the current map state.|
+|AnimateCameraFunc|Func&lt;CameraUpdate, int, Task&gt;|Can be bound and called from viewmodel to move camera to the new position with animation. By default animation duration is 300 ms, but can be changed.|
+|MoveCameraAction|Action&lt;CameraUpdate, int&gt;|Can be bound and called from viewmodel to instantly move camera to the new position.|
+|ProjectMapCoordsToScreenLocationFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project map coordinates to coordinates on the screen whithin map control.|
+|ProjectScreenLocationToMapCoordsFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project coordinates on the screen to map coordinates.|
+
+#### Other properties
+
+
 
 ## Map objects
 
