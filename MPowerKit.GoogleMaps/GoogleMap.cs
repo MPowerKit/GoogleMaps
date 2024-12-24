@@ -72,16 +72,16 @@ public class GoogleMap : View
         ResetMinMaxZoomActionInternal?.Invoke();
     }
 
-    public virtual void MoveCamera(CameraUpdate cameraUpdate)
+    public virtual void MoveCamera(CameraUpdate newCameraPosition)
     {
-        MoveCameraActionInternal?.Invoke(cameraUpdate);
+        MoveCameraActionInternal?.Invoke(newCameraPosition);
     }
 
-    public virtual Task AnimateCamera(CameraUpdate cameraUpdate, int durationMils = 300)
+    public virtual Task AnimateCamera(CameraUpdate newCameraPosition, int durationMils = 300)
     {
         if (AnimateCameraFuncInternal is null) return Task.CompletedTask;
 
-        return AnimateCameraFuncInternal.Invoke(cameraUpdate, durationMils);
+        return AnimateCameraFuncInternal.Invoke(newCameraPosition, durationMils);
     }
 
     public virtual Point? ProjectMapCoordsToScreenLocation(Point latlng)
@@ -89,9 +89,9 @@ public class GoogleMap : View
         return ProjectMapCoordsToScreenLocationFuncInternal?.Invoke(latlng);
     }
 
-    public virtual Point? ProjectScreenLocationToMapCoords(Point point)
+    public virtual Point? ProjectScreenLocationToMapCoords(Point screenPoint)
     {
-        return ProjectScreenLocationToMapCoordsFuncInternal?.Invoke(point);
+        return ProjectScreenLocationToMapCoordsFuncInternal?.Invoke(screenPoint);
     }
 
     protected override void OnPropertyChanging([CallerMemberName] string? propertyName = null)
