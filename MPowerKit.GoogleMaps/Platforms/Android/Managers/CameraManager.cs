@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-using Android.Content;
+﻿using Android.Content;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 using NCameraPosition = Android.Gms.Maps.Model.CameraPosition;
@@ -169,13 +167,13 @@ public static class CameraExtensions
 {
     public static VCameraPosition ToCrossPlatform(this NCameraPosition position)
     {
-        return new()
-        {
-            Target = position.Target.ToCrossPlatformPoint(),
-            Zoom = position.Zoom,
-            Tilt = position.Tilt,
-            Bearing = position.Bearing
-        };
+        return new
+        (
+            position.Target.ToCrossPlatformPoint(),
+            position.Zoom,
+            position.Bearing,
+            position.Tilt
+        );
     }
 
     public static NCameraUpdate ToNative(this VCameraUpdate cameraUpdate, Context context)

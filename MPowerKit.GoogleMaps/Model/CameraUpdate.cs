@@ -1,57 +1,29 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-public abstract class CameraUpdate { }
+public abstract record CameraUpdate;
 
-public class ZoomInCameraUpdate : CameraUpdate { }
+public record ZoomInCameraUpdate : CameraUpdate;
 
-public class ZoomOutCameraUpdate : CameraUpdate { }
+public record ZoomOutCameraUpdate : CameraUpdate;
 
-public class ZoomToCameraUpdate : CameraUpdate
-{
-    public float Zoom { get; set; }
-}
+public record ZoomToCameraUpdate(float Zoom) : CameraUpdate;
 
-public class ZoomByCameraUpdate : CameraUpdate
-{
-    public float Amount { get; set; }
-}
+public record ZoomByCameraUpdate(float Amount) : CameraUpdate;
 
-public class ZoomByAndFocusCameraUpdate : ZoomByCameraUpdate
-{
-    public Point Focus { get; set; }
-}
+public record ZoomByAndFocusCameraUpdate(float Amount, Point Focus) : ZoomByCameraUpdate(Amount);
 
-public class ScrollByCameraUpdate : CameraUpdate
-{
-    public float Dx { get; set; }
-    public float Dy { get; set; }
-}
+public record ScrollByCameraUpdate(float Dx, float Dy) : CameraUpdate;
 
-public class NewCameraPositionCameraUpdate : CameraUpdate
-{
-    public required CameraPosition CameraPosition { get; set; }
-}
+public record NewCameraPositionCameraUpdate(CameraPosition CameraPosition) : CameraUpdate;
 
-public class NewLatLngCameraUpdate : CameraUpdate
-{
-    public Point LatLng { get; set; }
-}
+public record NewLatLngCameraUpdate(Point LatLng) : CameraUpdate;
 
-public class NewLatLngZoomCameraUpdate : NewLatLngCameraUpdate
-{
-    public float Zoom { get; set; }
-}
+public record NewLatLngZoomCameraUpdate(Point LatLng, float Zoom) : NewLatLngCameraUpdate(LatLng);
 
-public class NewLatLngBoundsCameraUpdate : CameraUpdate
-{
-    public LatLngBounds Bounds { get; set; }
-    public double Padding { get; set; }
-}
+public record NewLatLngBoundsCameraUpdate(LatLngBounds Bounds, double Padding) : CameraUpdate;
 
-public class NewLatLngBoundsSizeCameraUpdate : NewLatLngBoundsCameraUpdate
-{
-    public Size Size { get; set; }
-}
+public record NewLatLngBoundsSizeCameraUpdate(LatLngBounds Bounds, double Padding, Size Size)
+    : NewLatLngBoundsCameraUpdate(Bounds, Padding);
 
 public static class CameraUpdateFactory
 {
@@ -67,47 +39,47 @@ public static class CameraUpdateFactory
 
     public static CameraUpdate ZoomTo(float zoom)
     {
-        return new ZoomToCameraUpdate() { Zoom = zoom };
+        return new ZoomToCameraUpdate(zoom);
     }
 
     public static CameraUpdate ZoomBy(float zoomDelta)
     {
-        return new ZoomByCameraUpdate() { Amount = zoomDelta };
+        return new ZoomByCameraUpdate(zoomDelta);
     }
 
     public static CameraUpdate ZoomBy(float zoomDelta, Point focusPointOnScreen)
     {
-        return new ZoomByAndFocusCameraUpdate() { Amount = zoomDelta, Focus = focusPointOnScreen };
+        return new ZoomByAndFocusCameraUpdate(zoomDelta, focusPointOnScreen);
     }
 
     public static CameraUpdate ScrollBy(float dxPixels, float dyPixels)
     {
-        return new ScrollByCameraUpdate() { Dx = dxPixels, Dy = dyPixels };
+        return new ScrollByCameraUpdate(dxPixels, dyPixels);
     }
 
     public static CameraUpdate NewCameraPosition(CameraPosition cameraPosition)
     {
-        return new NewCameraPositionCameraUpdate() { CameraPosition = cameraPosition };
+        return new NewCameraPositionCameraUpdate(cameraPosition);
     }
 
     public static CameraUpdate NewLatLng(Point latLng)
     {
-        return new NewLatLngCameraUpdate() { LatLng = latLng };
+        return new NewLatLngCameraUpdate(latLng);
     }
 
     public static CameraUpdate NewLatLngZoom(Point latLng, float zoom)
     {
-        return new NewLatLngZoomCameraUpdate() { LatLng = latLng, Zoom = zoom };
+        return new NewLatLngZoomCameraUpdate(latLng, zoom);
     }
 
     public static CameraUpdate NewLatLngBounds(LatLngBounds bounds, double padding)
     {
-        return new NewLatLngBoundsCameraUpdate() { Bounds = bounds, Padding = padding };
+        return new NewLatLngBoundsCameraUpdate(bounds, padding);
     }
 
     public static CameraUpdate NewLatLngBounds(LatLngBounds bounds, double padding, Size size)
     {
-        return new NewLatLngBoundsSizeCameraUpdate() { Bounds = bounds, Padding = padding, Size = size };
+        return new NewLatLngBoundsSizeCameraUpdate(bounds, padding, size);
     }
 
     public static CameraUpdate FromCenterAndRadius(Point center, double radiusMeters)

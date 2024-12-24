@@ -2,10 +2,20 @@
 
 public class CameraPosition
 {
-    public Point Target { get; set; }
-    public float Zoom { get; set; }
-    public float Bearing { get; set; }
-    public float Tilt { get; set; }
+    public Point Target { get; private set; }
+    public float Zoom { get; private set; }
+    public float Bearing { get; private set; }
+    public float Tilt { get; private set; }
+
+    private CameraPosition() { }
+
+    public CameraPosition(Point target, float zoom, float bearing, float tilt)
+    {
+        Target = target;
+        Zoom = zoom;
+        Bearing = bearing;
+        Tilt = tilt;
+    }
 
     public override string ToString()
     {

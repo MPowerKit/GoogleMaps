@@ -107,9 +107,9 @@ public partial class CameraPageViewModel : ObservableObject
             nameof(CameraUpdateFactory.NewLatLng) => CameraUpdateFactory.NewLatLng(new(_rnd.Next(-90, 90), _rnd.Next(-180, 180))),
             nameof(CameraUpdateFactory.NewLatLngZoom) => CameraUpdateFactory.NewLatLngZoom(new(_rnd.Next(-90, 90), _rnd.Next(-180, 180)), _rnd.Next((int)MinZoom, (int)MaxZoom)),
             nameof(CameraUpdateFactory.NewLatLngBounds) =>
-                CameraUpdateFactory.NewLatLngBounds(new LatLngBounds(new(_rnd.Next(-90, 0), _rnd.Next(-180, 0)), new(_rnd.Next(0, 90), _rnd.Next(0, 180))), _rnd.Next(0, 100)),
+                CameraUpdateFactory.NewLatLngBounds(new(new(_rnd.Next(-90, 0), _rnd.Next(-180, 0)), new(_rnd.Next(0, 90), _rnd.Next(0, 180))), _rnd.Next(0, 100)),
             nameof(CameraUpdateFactory.NewLatLngBounds) + " with size" =>
-                CameraUpdateFactory.NewLatLngBounds(new LatLngBounds(new(_rnd.Next(-90, 0), _rnd.Next(-180, 0)), new(_rnd.Next(0, 90), _rnd.Next(0, 180))), _rnd.Next(0, 100), new(_rnd.Next(0, (int)MapWidth), _rnd.Next(0, (int)MapHeight))),
+                CameraUpdateFactory.NewLatLngBounds(new(new(_rnd.Next(-90, 0), _rnd.Next(-180, 0)), new(_rnd.Next(0, 90), _rnd.Next(0, 180))), _rnd.Next(0, 100), new(_rnd.Next(0, (int)MapWidth), _rnd.Next(0, (int)MapHeight))),
             nameof(CameraUpdateFactory.FromCenterAndRadius) => RandomizeCameraPosition()
         };
 

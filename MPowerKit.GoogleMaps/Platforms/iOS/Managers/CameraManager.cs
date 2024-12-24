@@ -140,13 +140,13 @@ public static class CameraExtensions
 {
     public static VCameraPosition ToCrossPlatform(this NCameraPosition position)
     {
-        return new()
-        {
-            Target = position.Target.ToCrossPlatformPoint(),
-            Zoom = position.Zoom,
-            Tilt = (float)position.ViewingAngle,
-            Bearing = (float)position.Bearing
-        };
+        return new
+        (
+            position.Target.ToCrossPlatformPoint(),
+            position.Zoom,
+            (float)position.Bearing,
+            (float)position.ViewingAngle
+        );
     }
     public static Google.Maps.CameraUpdate ToNative(this CameraUpdate cameraUpdate)
     {
