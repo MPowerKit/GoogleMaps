@@ -86,6 +86,10 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
         {
             OnFillChanged(vItem, nItem);
         }
+        else if (propertyName == PolygonAttached.HolesProperty.PropertyName)
+        {
+            OnHolesChanged(vItem, nItem);
+        }
     }
 
     protected virtual void OnIsEnabledChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -137,6 +141,12 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
             ?? Android.Graphics.Color.Black.ToArgb();
     }
 
+    protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
+    {
+        var holes = PolygonAttached.GetHoles(vPolygon);
+        nPolygon.SetHoles(holes?.Select(h => h?.Select(p => p.ToLatLng() ?? []).ToList()).ToList() ?? []);
+    }
+
     protected virtual void PlatformView_PolygonClick(object? sender, GMap.PolygonClickEventArgs e)
     {
         var polygon = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPolygon)!.Id == e.Polygon.Id);
@@ -163,6 +173,16 @@ public static class PolygonExtensions
         options.InvokeStrokeWidth(context.ToPixels(polygon.StrokeThickness));
         options.InvokeZIndex(polygon.ZIndex);
         options.Visible(polygon.IsVisible);
+
+        var holes = PolygonAttached.GetHoles(polygon);
+        if (holes is not null)
+        {
+            foreach (var hole in holes)
+            {
+                if (hole is null) continue;
+                options.Holes.Add(hole.Select(p => p.ToLatLng()).ToList());
+            }
+        }
 
         if (polygon.StrokeDashPattern.Length != 0)
             options.InvokeStrokePattern(polygon.StrokeDashPattern.Select(v => context.ToPixels(v)).ToArray().ToPatternItems());

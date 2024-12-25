@@ -81,6 +81,10 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
         {
             OnFillChanged(vItem, nItem);
         }
+        else if (propertyName == PolygonAttached.HolesProperty.PropertyName)
+        {
+            OnHolesChanged(vItem, nItem);
+        }
     }
 
     protected virtual void OnIsEnabledChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -118,6 +122,12 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
         nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
     }
 
+    protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
+    {
+        var holes = PolygonAttached.GetHoles(vPolygon);
+        nPolygon.Holes = holes?.Select(h => h?.ToPath() ?? new()).ToArray();
+    }
+
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var polygon = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
@@ -139,6 +149,8 @@ public static class PolygonExtensions
         native.Tappable = polygon.IsEnabled;
         native.StrokeColor = (polygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
         native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        var holes = PolygonAttached.GetHoles(polygon);
+        native.Holes = holes?.Select(h => h?.ToPath() ?? new()).ToArray();
 
         if (polygon.IsVisible)
         {
