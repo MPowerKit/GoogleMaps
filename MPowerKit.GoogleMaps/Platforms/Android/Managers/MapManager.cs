@@ -258,12 +258,12 @@ public static class MapExtensions
 
     public static IndoorBuilding ToCrossPlatform(this Android.Gms.Maps.Model.IndoorBuilding building)
     {
-        return new IndoorBuilding
-        {
-            DefaultLevelIndex = building.DefaultLevelIndex,
-            IsUnderground = building.IsUnderground,
-            Levels = building.Levels.Select(l => l.ToCrossPlatform()).ToList()
-        };
+        return new
+        (
+            building.DefaultLevelIndex,
+            building.IsUnderground,
+            building.Levels.Select(l => l.ToCrossPlatform()).ToList()
+        );
     }
 
     public static MapCapabilities ToCrossPlatform(this Android.Gms.Maps.Model.MapCapabilities capabilities)

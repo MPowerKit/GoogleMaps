@@ -11,6 +11,7 @@ public partial class MapFeaturesPageViewModel : ObservableObject
 {
     public MapFeaturesPageViewModel()
     {
+
     }
 
     [ObservableProperty]

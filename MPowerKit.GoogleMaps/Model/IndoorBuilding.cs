@@ -1,20 +1,15 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-public class IndoorBuilding
-{
-    public int DefaultLevelIndex { get; set; }
-    public bool IsUnderground { get; set; }
-    public required IList<IndoorLevel> Levels { get; set; }
-}
+public record IndoorBuilding(int DefaultLevelIndex, bool IsUnderground, IList<IndoorLevel> Levels);
 
-public class IndoorLevel
+public record IndoorLevel
 {
 #if IOS
-    public required Google.Maps.MapView NativeMap { get; set; }
+    public required Google.Maps.MapView NativeMap { get; init; }
 #endif
-    public required object NativeIndoorLevel { get; set; }
-    public required string Name { get; set; }
-    public required string ShortName { get; set; }
+    public required object NativeIndoorLevel { get; init; }
+    public required string Name { get; init; }
+    public required string ShortName { get; init; }
 
     public void Activate()
     {

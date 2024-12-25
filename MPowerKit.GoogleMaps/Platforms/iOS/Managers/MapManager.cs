@@ -280,12 +280,12 @@ public static class MapExtensions
 
     public static IndoorBuilding ToCrossPlatform(this Google.Maps.IndoorBuilding building, MapView map)
     {
-        return new IndoorBuilding
-        {
-            DefaultLevelIndex = (int)building.DefaultLevelIndex,
-            IsUnderground = building.Underground,
-            Levels = building.Levels.Select(l => l.ToCrossPlatform(map)).ToList()
-        };
+        return new
+        (
+            (int)building.DefaultLevelIndex,
+            building.Underground,
+            building.Levels.Select(l => l.ToCrossPlatform(map)).ToList()
+        );
     }
 
     public static MapCapabilities ToCrossPlatform(this MapCapabilityFlags capabilities)
