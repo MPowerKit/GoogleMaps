@@ -284,7 +284,7 @@ A structure that represents a latitude/longitude aligned rectangle.
 
 |Property|Type|Description|
 |-|-|-|
-|IsAdvancedMarkersAvailable|bool|`true` if advanced markers are available.|
+|AreAdvancedMarkersAvailable|bool|`true` if advanced markers are available.|
 |IsDataDrivenStylingAvailable|bool|`true` if data-driven styling is available.|
 
 #### PointOfInterest
@@ -331,6 +331,25 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 |NewLatLngBounds|LatLngBounds bounds, double padding, Size size|Returns a `CameraUpdate` that transforms the camera such that the specified latitude/longitude bounds are centered on screen within a bounding box of specified dimensions at the greatest possible zoom level. Applies only for Android.|
 |FromCenterAndRadius|Point center, double radiusMeters|Returns a `CameraUpdate` that transforms the camera such that the specified latitude/longitude point are centered on screen within a bounding box of specified radius.|
 
+#### IndoorBuilding
+
+`IndoorBuilding` is a record. Represents a building on the map that can be focused.
+
+|Property|Type|Description|
+|-|-|-|
+|DefaultLevelIndex|int|The index in the `Levels` list of the default level for this building.|
+|IsUnderground|bool|`true` if the building is entirely underground.|
+|Levels|IList&lt;IndoorLevel&gt;|Represents levels in the building.|
+
+#### IndoorLevel
+
+`IndoorLevel` is a record. Represents a level in a building.
+
+|Property|Type|Description|
+|-|-|-|
+|Name|string|Localized display name for the level, e.g.|
+|ShortName|string|Localized short display name for the level, e.g.|
+
 #### CameraMoveReason
 
 `CameraMoveReason` is an enum. It indicates the reason of camera movement.
@@ -355,13 +374,17 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 
 #### MapColorScheme
 
-`MapColorScheme` is an enum. Indicates what color mode should be used to show the map. Applies on for Android.
+`MapColorScheme` is an enum. Indicates what color mode should be used to show the map. Applies only for Android.
 
 |Value|Description|
 |-|-|
 |Light|Represents light mode.|
 |Dark|Represents dark mode.|
 |FolllowSystem|Represents color mode used by system.|
+
+#### Distance
+
+`Distance` is an utility static class. It provides utility methods to calculate distance between coordinates or converting other units to meters, and has other useful methods and constants. All methods that operate with distance return distance in meters.
 
 ### Map objects
 
