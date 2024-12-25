@@ -252,7 +252,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, MapView,
 
         if (template?.CreateContent() is not View view) return null;
 
-        view.BindingContext = pin.BindingContext;
+        view.BindingContext = pin.BindingContext ?? pin;
 
         var platformView = view.ToNative(Handler!.MauiContext!);
 

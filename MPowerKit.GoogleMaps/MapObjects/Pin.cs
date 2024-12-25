@@ -6,7 +6,7 @@ using NPin =
 #elif IOS
     Google.Maps.Marker;
 #else
-    object;
+    System.Object;
 #endif
 
 namespace MPowerKit.GoogleMaps;

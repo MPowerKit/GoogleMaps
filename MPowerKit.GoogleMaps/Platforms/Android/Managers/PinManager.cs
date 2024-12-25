@@ -304,7 +304,7 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 
         if (template?.CreateContent() is not View view) return null;
 
-        view.BindingContext = pin.BindingContext;
+        view.BindingContext = pin.BindingContext ?? pin;
 
         var platformView = view.ToNative(Map.Handler!.MauiContext!);
 
