@@ -389,3 +389,26 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 ### Map objects
 
 There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polyline`, `Polygon`, `TileOverlay`, `GroundOverlay`. To simplify implementation of the library for polylines and polygons were used already existing classes from `Microsoft.Maui.Controls.Shapes` namespace. `Circle` is derived from `Shape` class. `Pin`, `TileOverlay`, `GroundOverlay` are derived from `VisualElement` class.
+
+#### Pin
+
+`Pin` is a class inherited from `VisualElement`. It is an icon placed at a particular point on the map's surface. A pin icon is drawn oriented against the device's screen rather than the map's surface; i.e., it will not necessarily change orientation due to map rotations, tilting, or zooming.
+
+|Property|Type|Description|
+|-|-|-|
+|Position|Point|Represents the latitude/longitude position of pin on the map. Can be changed any time.|
+|AnchorX|double|Represents the X coordinate of the pin's anchor. Can be changed any time. Can take values 0.0-1.0. Default is 0.5|
+|AnchorY|double|Represents the Y coordinate of the pin's anchor. Can be changed any time. Can take values 0.0-1.0. Default is 1.0|
+|Opacity|double|Sets the opacity of the pin. Default is 1.0|
+|Title|string|A text string that's displayed in default info window when the user taps the pin. Can be changed any time.|
+|Snippet|string|Additional text that's displayed below the title. You can change this value at any time.|
+|Draggable|bool|Indicates whether the pin can be dragged. Can be changed any time. Deafult is `false`|
+|ShowInfoWindowOnPinSelection|bool|Indicates whether the pin's should be shown when pin selected. Default is `true`.|
+|CanBeSelected|bool|Indicates whether the pin can be selected. Default is `true`.|
+|InfoWindowAnchor|Point|Represents the point in the pin image at which to anchor the info window when it is displayed. Default is `new Point(0.5, 0.0)`.|
+|Rotation|double|Represents the rotation of the marker in degrees clockwise about the pin's anchor point. Default is 0.0|
+|IsFlat|bool|Indicates whether the pin should be flat against the map `true` or a billboard facing the camera `false`. Default is `false`.|
+|ZIndex|int|The draw order for the pins. The pins are drawn in order of the `ZIndex`, with the highest `ZIndex` pin drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the pin is visible. Default is `true`.|
+|IsEnabled|bool|Indicates whether the pin can be clicked on. If `false` `PinClicked` event will not be fired whe user clicks the pin, also it will not be selected. Default is `true`.|
+|Icon|ImageSource|The MAUI's `ImageSource` that can be used as an icon for pin. This means that you can use different sources, such as url, stream, file etc to set the icon. Also, you can use `ViewImageSource` to provide a custom view as pin icon. If the icon is left unset, a default icon will be displayed.|
