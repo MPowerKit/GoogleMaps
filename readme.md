@@ -21,8 +21,24 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [Other properties](#other-properties)
     - [Models](#models)
         - [Point](#point)
-        - [CameraMoveReason](#cameramovereason)
+        - [LatLngBounds](#latlngbounds)
+        - [VisibleRegion](#visibleregion)
+        - [MapCapabilities](#mapcapabilities)
+        - [PointOfInterest](#pointofinterest)
         - [CameraPosition](#cameraposition)
+        - [CameraUpdate](#cameraupdate)
+        - [CameraUpdateFactory](#cameraupdatefactory)
+        - [IndoorBuilding](#indoorbuilding)
+        - [IndoorLevel](#indoorlevel)
+        - [CameraMoveReason](#cameramovereason)
+        - [MapType](#maptype)
+        - [MapColorScheme](#mapcolorscheme)
+        - [ViewImageSource](#viewimagesource)
+        - [Distance](#distance)
+    - [Map objects](#map-objects)
+        - [Pin](#pin)
+        - [Polyline](#polyline)
+        - [Polygon](#polygon)
 
 ## Setup
 
@@ -343,7 +359,7 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 
 #### IndoorLevel
 
-`IndoorLevel` is a record. Represents a level in a building.
+`IndoorLevel` is a record. Represents a level in a building. It has only one method `Activate()`, when calling this method this building's level will be activated.
 
 |Property|Type|Description|
 |-|-|-|
@@ -382,6 +398,10 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 |Dark|Represents dark mode.|
 |FolllowSystem|Represents color mode used by system.|
 
+#### ViewImageSource
+
+`ViewImageSource` is a class derived from MAUI's `ImageSource`. It has only one property `public View? View { get; set; }`. This type of image source can be used to show any view as image. Can be used in XAML.
+
 #### Distance
 
 `Distance` is an utility static class. It provides utility methods to calculate distance between coordinates or converting other units to meters, and has other useful methods and constants. All methods that operate with distance return distance in meters.
@@ -392,23 +412,51 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 #### Pin
 
-`Pin` is a class inherited from `VisualElement`. It is an icon placed at a particular point on the map's surface. A pin icon is drawn oriented against the device's screen rather than the map's surface; i.e., it will not necessarily change orientation due to map rotations, tilting, or zooming.
+`Pin` is a class inherited from `VisualElement`. It is an icon placed at a particular point on the map's surface. A pin icon is drawn oriented against the device's screen rather than the map's surface; i.e., it will not necessarily change orientation due to map rotations, tilting, or zooming. Every property of the pin can be changed any time.
 
 |Property|Type|Description|
 |-|-|-|
-|Position|Point|Represents the latitude/longitude position of pin on the map. Can be changed any time.|
-|AnchorX|double|Represents the X coordinate of the pin's anchor. Can be changed any time. Can take values 0.0-1.0. Default is 0.5|
-|AnchorY|double|Represents the Y coordinate of the pin's anchor. Can be changed any time. Can take values 0.0-1.0. Default is 1.0|
+|Position|Point|Represents the latitude/longitude position of pin on the map|
+|AnchorX|double|Represents the X coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 0.5|
+|AnchorY|double|Represents the Y coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 1.0|
 |Opacity|double|Sets the opacity of the pin. Default is 1.0|
-|Title|string|A text string that's displayed in default info window when the user taps the pin. Can be changed any time.|
-|Snippet|string|Additional text that's displayed below the title. You can change this value at any time.|
-|Draggable|bool|Indicates whether the pin can be dragged. Can be changed any time. Deafult is `false`|
+|Title|string|A text string that's displayed in default info window when the user taps the pin.|
+|Snippet|string|Additional text that's displayed below the title.|
+|Draggable|bool|Indicates whether the pin can be dragged. Deafult is `false`|
 |ShowInfoWindowOnPinSelection|bool|Indicates whether the pin's should be shown when pin selected. Default is `true`.|
 |CanBeSelected|bool|Indicates whether the pin can be selected. Default is `true`.|
 |InfoWindowAnchor|Point|Represents the point in the pin image at which to anchor the info window when it is displayed. Default is `new Point(0.5, 0.0)`.|
 |Rotation|double|Represents the rotation of the marker in degrees clockwise about the pin's anchor point. Default is 0.0|
 |IsFlat|bool|Indicates whether the pin should be flat against the map `true` or a billboard facing the camera `false`. Default is `false`.|
-|ZIndex|int|The draw order for the pins. The pins are drawn in order of the `ZIndex`, with the highest `ZIndex` pin drawn on top. Default is 0.|
+|ZIndex|int|The draw order for the pins. Pins are drawn in order of the `ZIndex`, with the highest `ZIndex` pin drawn on top. Default is 0.|
 |IsVisible|bool|Indicates whether the pin is visible. Default is `true`.|
-|IsEnabled|bool|Indicates whether the pin can be clicked on. If `false` `PinClicked` event will not be fired whe user clicks the pin, also it will not be selected. Default is `true`.|
+|IsEnabled|bool|Indicates whether the pin can be clicked on. If `false` `PinClicked` event will not be fired when user clicks the pin, also it will not be selected. Default is `true`.|
 |Icon|ImageSource|The MAUI's `ImageSource` that can be used as an icon for pin. This means that you can use different sources, such as url, stream, file etc to set the icon. Also, you can use `ViewImageSource` to provide a custom view as pin icon. If the icon is left unset, a default icon will be displayed.|
+
+|Method|Description|
+|-|-|
+|ShowInfoWindow|Shows info window when calling. Info window will be shown only if `ShowInfoWindowOnPinSelection` is `true`.|
+|HideInfoWindow|Hides info window when calling.|
+
+#### Polyline
+
+`Polyline` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. It is a list of points, where line segments are drawn between consecutive points. Every property of the pin can be changed any time.
+
+|Property|Type|Description|
+|-|-|-|
+|Points|PointCollection|The vertices of the line. Line segments are drawn between consecutive points on the map. A polyline is not closed by default; to form a closed polyline, the start and end points must be the same. If you change the `PointCollection` adding or removing some points it will not update the polyline on the map. To change polyline form you need to reset this property by new `PointCollection`.|
+|Stroke|Brush|The color of the polyline represented as `Brush`. This means that you can use `SolidColorBrush` to paint polyline with a single color or use `LinearGradientBrush` with two colors to paint polyline with gradient (gradient will be applied from first point to the last point).|
+|StrokeThickness|double|The thickness of the polyline represented as screen pixels. Default is 0.|
+|StrokeLineJoin|PenLineJoin|The joint type for all vertices of the polyline except the start and end vertices. Default is `Miter`. Applies only for Android|
+|StrokeLineCap|PenLineCap|The cap at the end vertex of this polyline. Default is `Flat`. Applies only for Android.|
+|StrokeDashArray|DoubleCollection|Solid (default, represented by `null`) or a sequence of double values to be repeated along the line. Note: due to the iOS SDK implementation dash pattern's dashes and gaps lengths are represented in meters, but there is `PolylineAttached.iOSPixelDependentDashedPattern` attached property especially designed for this purpose to switch dash pattern to pixels and by default it will use pixels. Note: if you are using dash pattern with gradient paint, you may notice that on iOS it works different in comparison to Android.|
+|Opacity|double|Sets the opacity of the polyline. Default is 1.0|
+|ZIndex|int|The draw order for the polylines. Polylines are drawn in order of the `ZIndex`, with the highest `ZIndex` polyline drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the polyline is visible. Default is `true`.|
+|IsEnabled|bool|Indicates whether the polyline can be clicked on. If `false` `PolylineClicked` event will not be fired when user clicks the polyline. Default is `true`.|
+|PolylineAttached.iOSPixelDependentDashedPattern|bool|This is an attached property designed for `Polyline`. Indicates whether the polyline's dash pattern dashes and gaps lengths should depend on pixels or meters. Default is `true`.|
+|PolylineAttached.TextureStamp|string|Allows you to create a polyline using a repeated texture. This should be the `MauiImage` file.|
+
+#### Polygon
+
+`Polygon` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. A polygon on the earth's surface. A polygon can be convex or concave, it may span the 180 meridian and it can have holes that are not filled in.
