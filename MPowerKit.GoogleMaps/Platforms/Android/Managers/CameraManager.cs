@@ -88,7 +88,7 @@ public class CameraManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
     protected virtual void OnMaxZoomChanged(GoogleMap virtualView, GMap platformView)
     {
-        platformView.SetMaxZoomPreference(virtualView.MinZoom);
+        platformView.SetMaxZoomPreference(virtualView.MaxZoom);
     }
 
     protected virtual void OnRestrictPanningToAreaChanged(GoogleMap virtualView, GMap platformView)

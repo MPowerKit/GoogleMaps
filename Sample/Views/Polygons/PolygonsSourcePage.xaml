@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
              xmlns:vm="clr-namespace:Sample.ViewModels"
+             xmlns:collections="clr-namespace:System.Collections.Generic;assembly=mscorlib"
              x:Class="Sample.Views.PolygonsSourcePage"
              Title="PolygonsSource"
              x:DataType="vm:PolygonsSourcePageViewModel">
@@ -34,6 +35,16 @@
                                      Stroke="Orange" />
                         </DataTemplate>
                     </vm:PolygonTemplateSelector.OpaqueTemplate>
+                    <vm:PolygonTemplateSelector.HoledTemplate>
+                        <DataTemplate x:DataType="vm:PolygonDataObject">
+                            <Polygon Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"
+                                     ZIndex="{Binding ZIndex}"
+                                     StrokeThickness="7"
+                                     Fill="#88888888"
+                                     Stroke="Aqua"
+                                     gm:PolygonAttached.Holes="{Binding Holes}" />
+                        </DataTemplate>
+                    </vm:PolygonTemplateSelector.HoledTemplate>
                     <vm:PolygonTemplateSelector.DisabledTemplate>
                         <DataTemplate x:DataType="vm:PolygonDataObject">
                             <Polygon Points="{Binding Path, Converter={StaticResource LocationListToPointCollectionConverter}}"

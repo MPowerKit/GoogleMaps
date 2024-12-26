@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Controls.UserDialogs.Maui;
 
 using Microsoft.Maui.Controls.Shapes;
+using MPowerKit.GoogleMaps;
 
 namespace Sample.ViewModels;
 
@@ -194,5 +195,12 @@ public partial class PolygonsPageViewModel : ObservableObject
     private async Task PolygonClicked(Polygon polygon)
     {
         await UserDialogs.Instance.AlertAsync("Polygon was clicked");
+    }
+
+    [RelayCommand]
+    private void AddHole()
+    {
+        _polygon.Points = [new Point(0, 0), new Point(0, 20), new Point(20, 20), new Point(20, 0)];
+        PolygonAttached.SetHoles(_polygon, new List<IEnumerable<Point>>() { new List<Point>() { new Point(5, 5), new Point(5, 10), new Point(10, 10), new Point(10, 5) } });
     }
 }

@@ -49,15 +49,19 @@
                         VerticalOptions="Center" />
             </Grid>
 
-            <Grid ColumnDefinitions="*,*"
+            <Grid ColumnDefinitions="*,*,*"
                   ColumnSpacing="5">
                 <Button Command="{Binding RandomizePointsCommand}"
                         Text="Randomize points"
                         VerticalOptions="Center" />
+                <Button Command="{Binding AddHoleCommand}"
+                        Text="Add hole"
+                        VerticalOptions="Center"
+                        Grid.Column="1" />
                 <Button Command="{Binding ChangeJointTypeCommand}"
                         Text="Change joint type"
                         VerticalOptions="Center"
-                        Grid.Column="1"
+                        Grid.Column="2"
                         IsVisible="{OnPlatform iOS=False, Default=True}" />
             </Grid>
 

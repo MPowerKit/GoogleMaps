@@ -11,6 +11,7 @@ public class PolygonTemplateSelector : DataTemplateSelector
 {
     public DataTemplate TransparentTemplate { get; set; }
     public DataTemplate OpaqueTemplate { get; set; }
+    public DataTemplate HoledTemplate { get; set; }
     public DataTemplate DisabledTemplate { get; set; }
 
     protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
@@ -21,6 +22,7 @@ public class PolygonTemplateSelector : DataTemplateSelector
             {
                 PolygonType.Transparent => TransparentTemplate,
                 PolygonType.Opaque => OpaqueTemplate,
+                PolygonType.Holed => HoledTemplate,
                 PolygonType.Disabled => DisabledTemplate,
             };
         }
@@ -33,6 +35,7 @@ public enum PolygonType
 {
     Transparent,
     Opaque,
+    Holed,
     Disabled
 }
 
@@ -40,6 +43,9 @@ public partial class PolygonDataObject : ObservableObject
 {
     [ObservableProperty]
     private List<Sample.Models.Location> _path = [];
+
+    [ObservableProperty]
+    private IEnumerable<IEnumerable<Point>> _holes = [];
 
     [ObservableProperty]
     private PolygonType _type;
@@ -80,6 +86,18 @@ public partial class PolygonsSourcePageViewModel : ObservableObject
                 new Sample.Models.Location() { Latitude = -10, Longitude = 10 }
             ],
             Type = PolygonType.Opaque
+        });
+        items.Add(new()
+        {
+            Path =
+            [
+                new Sample.Models.Location() { Latitude = 0, Longitude = 0 },
+                new Sample.Models.Location() { Latitude = 0, Longitude = 15 },
+                new Sample.Models.Location() { Latitude = 15, Longitude = 15 },
+                new Sample.Models.Location() { Latitude = 15, Longitude = 0 }
+            ],
+            Holes = new List<IEnumerable<Point>>() { new List<Point>() { new Point(5, 5), new Point(5, 10), new Point(10, 10), new Point(10, 5) } },
+            Type = PolygonType.Holed
         });
         items.Add(new()
         {

@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using Android.Gms.Maps.Model;
+using Android.Runtime;
 
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Platform;
@@ -144,7 +145,7 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
     protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
         var holes = PolygonAttached.GetHoles(vPolygon);
-        nPolygon.SetHoles(holes?.Select(h => h?.Select(p => p.ToLatLng() ?? []).ToList()).ToList() ?? []);
+        nPolygon.SetHoles(holes?.Select(h => (h?.Select(p => p.ToLatLng()).ToJavaList() ?? []) as IList<LatLng>).ToJavaList() ?? []);
     }
 
     protected virtual void PlatformView_PolygonClick(object? sender, GMap.PolygonClickEventArgs e)
@@ -180,7 +181,7 @@ public static class PolygonExtensions
             foreach (var hole in holes)
             {
                 if (hole is null) continue;
-                options.Holes.Add(hole.Select(p => p.ToLatLng()).ToList());
+                options.Holes.Add(hole.Select(p => p.ToLatLng()).ToJavaList());
             }
         }
 
@@ -190,5 +191,16 @@ public static class PolygonExtensions
         options.InvokeStrokeJointType((int)polygon.StrokeLineJoin);
 
         return options;
+    }
+
+    public static JavaList<T> ToJavaList<T>(this IEnumerable<T> enumerable)
+    {
+        var array = new JavaList<T>();
+        foreach (var item in enumerable ?? [])
+        {
+            array.Add(item);
+        }
+
+        return array;
     }
 }
