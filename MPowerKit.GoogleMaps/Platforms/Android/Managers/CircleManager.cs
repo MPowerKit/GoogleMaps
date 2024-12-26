@@ -134,7 +134,7 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GoogleMap,
     protected virtual void OnFillChanged(VCircle vCircle, NCircle nCircle)
     {
         nCircle.FillColor = (vCircle.Fill as SolidColorBrush)?.Color.ToInt()
-            ?? Android.Graphics.Color.Black.ToArgb();
+            ?? Android.Graphics.Color.Transparent.ToArgb();
     }
 
     protected virtual void PlatformView_CircleClick(object? sender, GMap.CircleClickEventArgs e)
@@ -154,7 +154,7 @@ public static class CircleExtensions
         options.InvokeCenter(circle.Center.ToLatLng());
         options.InvokeRadius(circle.Radius);
         options.Clickable(circle.IsEnabled);
-        options.InvokeFillColor((circle.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
+        options.InvokeFillColor((circle.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Transparent.ToArgb());
         options.InvokeStrokeColor((circle.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
         options.InvokeStrokeWidth(context.ToPixels(circle.StrokeThickness));
         options.InvokeZIndex(circle.ZIndex);

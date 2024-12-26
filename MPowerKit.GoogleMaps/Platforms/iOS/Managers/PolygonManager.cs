@@ -119,7 +119,7 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
 
     protected virtual void OnFillChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
-        nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Clear;
     }
 
     protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -148,7 +148,7 @@ public static class PolygonExtensions
         native.StrokeWidth = (float)polygon.StrokeThickness;
         native.Tappable = polygon.IsEnabled;
         native.StrokeColor = (polygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
-        native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Clear;
         var holes = PolygonAttached.GetHoles(polygon);
         native.Holes = holes?.Select(h => h?.ToPath() ?? new()).ToArray();
 

@@ -139,7 +139,7 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
     protected virtual void OnFillChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
         nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToInt()
-            ?? Android.Graphics.Color.Black.ToArgb();
+            ?? Android.Graphics.Color.Transparent.ToArgb();
     }
 
     protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -169,7 +169,7 @@ public static class PolygonExtensions
 
         options.Clickable(polygon.IsEnabled);
 
-        options.InvokeFillColor((polygon.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
+        options.InvokeFillColor((polygon.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Transparent.ToArgb());
         options.InvokeStrokeColor((polygon.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
         options.InvokeStrokeWidth(context.ToPixels(polygon.StrokeThickness));
         options.InvokeZIndex(polygon.ZIndex);

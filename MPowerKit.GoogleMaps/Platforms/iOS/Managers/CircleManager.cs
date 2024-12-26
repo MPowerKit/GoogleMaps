@@ -126,7 +126,7 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GoogleMap,
     protected virtual void OnFillChanged(VCircle vCircle, NCircle nCircle)
     {
         nCircle.FillColor = (vCircle.Fill as SolidColorBrush)?.Color.ToPlatform()
-            ?? UIColor.Black;
+            ?? UIColor.Clear;
     }
 
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
@@ -147,7 +147,7 @@ public static class CircleExtensions
         native.Tappable = circle.IsEnabled;
         native.StrokeWidth = (float)circle.StrokeThickness;
         native.StrokeColor = (circle.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
-        native.FillColor = (circle.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        native.FillColor = (circle.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Clear;
         native.ZIndex = circle.ZIndex;
 
         if (circle.IsVisible)
