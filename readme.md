@@ -34,6 +34,7 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [MapType](#maptype)
         - [MapColorScheme](#mapcolorscheme)
         - [ViewImageSource](#viewimagesource)
+        - [NoTileImageSource](#notileimagesource)
         - [Distance](#distance)
     - [Map objects](#map-objects)
         - [Pin](#pin)
@@ -41,6 +42,8 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [Polygon](#polygon)
         - [Circle](#circle)
         - [GroundOverlay](#groundoverlay)
+        - [TileOverlay](#tileoverlay)
+            - [TileProvider](#tileprovider)
 
 ## Setup
 
@@ -404,6 +407,10 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 
 `ViewImageSource` is a class derived from MAUI's `ImageSource`. It has only one property `public View? View { get; set; }`. This type of image source can be used to show any view as image. Can be used in XAML.
 
+#### NoTileImageSource
+
+`NoTileImageSource` is a class derived from MAUI's `ImageSource`. It has only one static property `public static readonly ImageSource Instance = new NoTileImageSource();`. This type of image source should only be used to specify that there is no tile at specific coordinates and zoom level.
+
 #### Distance
 
 `Distance` is an utility static class. It provides utility methods to calculate distance between coordinates or converting other units to meters, and has other useful methods and constants. All methods that operate with distance return distance in meters.
@@ -511,3 +518,21 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |ZIndex|int|The draw order for the ground overlays. Ground overlay are drawn in order of the `ZIndex`, with the highest `ZIndex` ground overlay drawn on top. Default is 0.|
 |IsVisible|bool|Indicates whether the ground overlay is visible. Default is `true`.|
 |IsEnabled|bool|Indicates whether the ground overlay can be clicked on. If `false` `GroundOverlayClicked` event will not be fired when user clicks the ground overlay. Default is `true`.|
+
+#### TileOverlay
+
+`GroundOverlay` is a subclass of `VisualElement`. A Tile Overlay is a set of images which are displayed on top of the base map tiles. These tiles may be transparent, allowing you to add features to existing maps.
+
+|Property|Type|Description|
+|-|-|-|
+|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The TileProvider provides the images that are used in the tile overlay. You must specify the tile provider before tile is added to the map. The tile provider cannot be changed once it has been added; however, you can modify the behavior of the tile provider to return different images for specific coordinates. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
+|TileSize|int|Google Maps targets 256 dp (device-independent pixels) when displaying tiles. For high resolution devices, it is recommended that you return high dpi tiles (512x512 px). This is optional. Can be set only once. Default is 256.|
+|FadeIn|bool|Indicates whether the tiles should fade in when appeared. Default is `true`.|
+|Opacity|double|Sets the opacity of the tiles. Default is 1.0|
+|ZIndex|int|The draw order for the tiles. Tiles are drawn in order of the `ZIndex`, with the highest `ZIndex` tiles drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the tiles are visible. Default is `true`.|
+
+##### TileProvider
+
+`TileProvider` is a property of `TileOverlay`. Used to provide tile images based on coordinates, zoom level and tile size. 
+First parameter is a `Point` that represents tile coordinate (this is not Earth coordinate) at specific zoom level. Second parameter represents zoom level. Third parameter represents tile size. Return type is `ImageSource?`. You can return all types of image sources as tile images, such as stream, url, file etc. Also, you can return `ViewImageSource` to provide a custom view as tile image. If you return `null` this means that there is no image available at the moment, but can be available later. To specify that for specific coordinates and zoom there is should not be any tile, you must return `NoTileImageSource.Instance`.
