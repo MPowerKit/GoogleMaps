@@ -39,6 +39,8 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [Pin](#pin)
         - [Polyline](#polyline)
         - [Polygon](#polygon)
+        - [Circle](#circle)
+        - [GroundOverlay](#groundoverlay)
 
 ## Setup
 
@@ -412,14 +414,14 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 #### Pin
 
-`Pin` is a class inherited from `VisualElement`. It is an icon placed at a particular point on the map's surface. A pin icon is drawn oriented against the device's screen rather than the map's surface; i.e., it will not necessarily change orientation due to map rotations, tilting, or zooming. Every property of the pin can be changed any time.
+`Pin` is a subclass from `VisualElement`. It is an icon placed at a particular point on the map's surface. A pin icon is drawn oriented against the device's screen rather than the map's surface; i.e., it will not necessarily change orientation due to map rotations, tilting, or zooming. Every property of the pin can be changed any time.
 
 |Property|Type|Description|
 |-|-|-|
+|Icon|ImageSource|The MAUI's `ImageSource` that can be used as an icon for pin. This means that you can use different sources, such as url, stream, file etc to set the icon. Also, you can use `ViewImageSource` to provide a custom view as pin icon. If the icon is left unset, a default icon will be displayed.|
 |Position|Point|Represents the latitude/longitude position of pin on the map|
 |AnchorX|double|Represents the X coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 0.5|
 |AnchorY|double|Represents the Y coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 1.0|
-|Opacity|double|Sets the opacity of the pin. Default is 1.0|
 |Title|string|A text string that's displayed in default info window when the user taps the pin.|
 |Snippet|string|Additional text that's displayed below the title.|
 |Draggable|bool|Indicates whether the pin can be dragged. Deafult is `false`|
@@ -428,10 +430,10 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |InfoWindowAnchor|Point|Represents the point in the pin image at which to anchor the info window when it is displayed. Default is `new Point(0.5, 0.0)`.|
 |Rotation|double|Represents the rotation of the marker in degrees clockwise about the pin's anchor point. Default is 0.0|
 |IsFlat|bool|Indicates whether the pin should be flat against the map `true` or a billboard facing the camera `false`. Default is `false`.|
+|Opacity|double|Sets the opacity of the pin. Default is 1.0|
 |ZIndex|int|The draw order for the pins. Pins are drawn in order of the `ZIndex`, with the highest `ZIndex` pin drawn on top. Default is 0.|
 |IsVisible|bool|Indicates whether the pin is visible. Default is `true`.|
 |IsEnabled|bool|Indicates whether the pin can be clicked on. If `false` `PinClicked` event will not be fired when user clicks the pin, also it will not be selected. Default is `true`.|
-|Icon|ImageSource|The MAUI's `ImageSource` that can be used as an icon for pin. This means that you can use different sources, such as url, stream, file etc to set the icon. Also, you can use `ViewImageSource` to provide a custom view as pin icon. If the icon is left unset, a default icon will be displayed.|
 
 |Method|Description|
 |-|-|
@@ -440,14 +442,14 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 #### Polyline
 
-`Polyline` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. It is a list of points, where line segments are drawn between consecutive points. Every property of the pin can be changed any time.
+`Polyline` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. It is a list of points, where line segments are drawn between consecutive points. Every property of the polyline can be changed any time.
 
 |Property|Type|Description|
 |-|-|-|
 |Points|PointCollection|The vertices of the line. Line segments are drawn between consecutive points on the map. A polyline is not closed by default; to form a closed polyline, the start and end points must be the same. If you change the `PointCollection` adding or removing some points it will not update the polyline on the map. To change polyline form you need to reset this property by new `PointCollection`.|
-|Stroke|Brush|The color of the polyline represented as `Brush`. This means that you can use `SolidColorBrush` to paint polyline with a single color or use `LinearGradientBrush` with two colors to paint polyline with gradient (gradient will be applied from first point to the last point).|
+|Stroke|Brush|The color of the polyline represented as `Brush`. This means that you can use `SolidColorBrush` to paint polyline with a single color or use `LinearGradientBrush` with two colors to paint polyline with gradient (gradient will be applied from first point to the last point). Polyline will be black if this property not set. Default is `null`.|
 |StrokeThickness|double|The thickness of the polyline represented as screen pixels. Default is 0.|
-|StrokeLineJoin|PenLineJoin|The joint type for all vertices of the polyline except the start and end vertices. Default is `Miter`. Applies only for Android|
+|StrokeLineJoin|PenLineJoin|The joint type for all vertices of the polyline except the start and end vertices. Default is `Miter`. Applies only for Android.|
 |StrokeLineCap|PenLineCap|The cap at the end vertex of this polyline. Default is `Flat`. Applies only for Android.|
 |StrokeDashArray|DoubleCollection|Solid (default, represented by `null`) or a sequence of double values to be repeated along the line. Note: due to the iOS SDK implementation dash pattern's dashes and gaps lengths are represented in meters, but there is `PolylineAttached.iOSPixelDependentDashedPattern` attached property especially designed for this purpose to switch dash pattern to pixels and by default it will use pixels. Note: if you are using dash pattern with gradient paint, you may notice that on iOS it works different in comparison to Android.|
 |Opacity|double|Sets the opacity of the polyline. Default is 1.0|
@@ -455,8 +457,57 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |IsVisible|bool|Indicates whether the polyline is visible. Default is `true`.|
 |IsEnabled|bool|Indicates whether the polyline can be clicked on. If `false` `PolylineClicked` event will not be fired when user clicks the polyline. Default is `true`.|
 |PolylineAttached.iOSPixelDependentDashedPattern|bool|This is an attached property designed for `Polyline`. Indicates whether the polyline's dash pattern dashes and gaps lengths should depend on pixels or meters. Default is `true`.|
-|PolylineAttached.TextureStamp|string|Allows you to create a polyline using a repeated texture. This should be the `MauiImage` file.|
+|PolylineAttached.TextureStamp|string|This is an attached property designed for `Polyline`. Allows you to create a polyline using a repeated texture. This should be the `MauiImage` file.|
 
 #### Polygon
 
-`Polygon` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. A polygon on the earth's surface. A polygon can be convex or concave, it may span the 180 meridian and it can have holes that are not filled in.
+`Polygon` is a class taken from `Microsoft.Maui.Controls.Shapes` namespace just to simplify the framework and not to 'invent the bicycle'. A polygon on the earth's surface. A polygon can be convex or concave, it may span the 180 meridian and it can have holes that are not filled in. Every property of the polygon can be changed any time.
+
+|Property|Type|Description|
+|-|-|-|
+|Points|PointCollection|The list of vertices in clockwise or counterclockwise order. It is not necessary for the start and end points to coincide; if they do not, the polygon will be automatically closed. Line segments are drawn between consecutive points in the shorter of the two directions (east or west). If you change the `PointCollection` adding or removing some points it will not update the polygon on the map. To change polygon form you need to reset this property by new `PointCollection`.|
+|Stroke|Brush|The color of the polygon's outline represented as `Brush`. Unlike `Polyline` this cannot be gradient, so the only way is to assign a `SolidColorBrush`. Polygon's outline will be black if this property not set. Default is `null`.|
+|Fill|Brush|The fill color represented as `Brush`. This cannot be gradient, so the only way is to assign a `SolidColorBrush`. Polygon will be filled with transparent color if this property not set. Default is `null`.|
+|StrokeThickness|double|The thickness of the polygon's outline represented as screen pixels. Default is 0.|
+|StrokeLineJoin|PenLineJoin|The joint type defines the shape to be used when joining adjacent line segments at all vertices of the polygon's outline. Default is `Miter`. Applies only for Android.|
+|StrokeDashArray|DoubleCollection|Solid (default, represented by `null`) or a sequence of double values to be repeated along the border. Applies only for Android.|
+|Opacity|double|Sets the opacity of the polygon. Default is 1.0|
+|ZIndex|int|The draw order for the polygons. Polygons are drawn in order of the `ZIndex`, with the highest `ZIndex` polygon drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the polygon is visible. Default is `true`.|
+|IsEnabled|bool|Indicates whether the polygon can be clicked on. If `false` `PolygonClicked` event will not be fired when user clicks the polygon. Default is `true`.|
+|PolygonAttached.Holes|IEnumerable&lt;IEnumerable&lt;Point&gt;&gt;|This is an attached property designed for `Polygon`. A hole is a region inside the polygon that is not filled. A hole is specified in exactly the same way as the outline. A hole must be fully contained within the outline. Multiple holes can be specified, however overlapping holes are not supported.|
+
+#### Circle
+
+`Circle` is a subclass of `Shape`. A circle on the earth's surface (spherical cap). Every property of the circle can be changed any time.
+
+|Property|Type|Description|
+|-|-|-|
+|Center|Point|The center of the Circle is specified as a latitude/longitude point on the map.|
+|Radius|Double|he radius of the circle, specified in meters. It should be zero or greater. Default is 0.|
+|Stroke|Brush|The color of the circle's outline represented as `Brush`. This cannot be gradient, so the only way is to assign a `SolidColorBrush`. Circles's outline will be black if this property not set. Default is `null`.|
+|Fill|Brush|The fill color represented as `Brush`. This cannot be gradient, so the only way is to assign a `SolidColorBrush`. Circle will be filled with transparent color if this property not set. Default is `null`.|
+|StrokeThickness|double|The thickness of the circle's outline represented as screen pixels. Default is 0.|
+|Opacity|double|Sets the opacity of the circle. Default is 1.0|
+|ZIndex|int|The draw order for the circles. Circles are drawn in order of the `ZIndex`, with the highest `ZIndex` circle drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the circle is visible. Default is `true`.|
+|IsEnabled|bool|Indicates whether the circle can be clicked on. If `false` `CircleClicked` event will not be fired when user clicks the circle. Default is `true`.|
+
+#### GroundOverlay
+
+`GroundOverlay` is a subclass of `VisualElement`. A ground overlay is an image that is fixed to a map. Every property of the ground overlay can be changed any time.
+
+|Property|Type|Description|
+|-|-|-|
+|Image|ImageSource|The image to be used for this overlay. The image will be scaled to fit the position provided. You must specify an image before adding the ground overlay to the map. The MAUI's `ImageSource` that can be used as an image for overlay. This means that you can use different sources, such as url, stream, file etc to set the image. Also, you can use `ViewImageSource` to provide a custom view as overlay image. Default is `null`.|
+|OverlayBounds|LatLngBounds|The 2D bounds on the Earth in which image is drawn. Changing this value will adjust position accordingly in respect to the anchor. Default is `null`.|
+|Position|Point|The position of this overlay, or more specifically, the physical position of its anchor. If this is changed, bounds will be moved around the new position in respect to the anchor.|
+|WidthRequest|double|Width of the bounds in meters. Used in conjuction with `Position` property. Setting this property will adjust overlay bounds around the position in respect to the anchor. Applies only for Android.|
+|HeightRequest|double|Height of the bounds in meters. Used in conjuction with `Position` and `WidthRequest` properties. Using it without `WidthRequest` property will not have any effect. Setting this property will adjust overlay bounds around the position in respect to the anchor. Applies only for Android.|
+|AnchorX|double|The x coordinate of the anchor. The anchor specifies where this overlay is anchored to the Earth in relation to bounds. If this is modified on Android after adding overlay to the map will not have any effect. If this is modified on iOS, the position will be set to the corresponding new position within bounds. Default is 0.5|
+|AnchorY|double|The y coordinate of the anchor. The anchor specifies where this overlay is anchored to the Earth in relation to bounds. If this is modified on Android after adding overlay to the map will not have any effect. If this is modified on iOS, the position will be set to the corresponding new position within bounds. Default is 0.5|
+|Bearing|double|The amount in degrees that the image should be rotated in a clockwise direction. The center of the rotation will be the image's anchor. Default is 0.|
+|Opacity|double|Sets the opacity of the ground overlay. Default is 1.0|
+|ZIndex|int|The draw order for the ground overlays. Ground overlay are drawn in order of the `ZIndex`, with the highest `ZIndex` ground overlay drawn on top. Default is 0.|
+|IsVisible|bool|Indicates whether the ground overlay is visible. Default is `true`.|
+|IsEnabled|bool|Indicates whether the ground overlay can be clicked on. If `false` `GroundOverlayClicked` event will not be fired when user clicks the ground overlay. Default is `true`.|
