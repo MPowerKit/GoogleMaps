@@ -32,7 +32,7 @@ public class TileOverlaysTemplateSelector : DataTemplateSelector
 
 public partial class TileOverlayDataObject : ObservableObject
 {
-    public Func<Point, int, int, ImageSource?> GetTileFunc { get; set; }
+    public Func<Point, int, int, ImageSource?> TileProvider { get; set; }
     public TileOverlayType Type { get; set; }
 }
 
@@ -59,10 +59,10 @@ public partial class TileOverlaysSourcePageViewModel : ObservableObject
 
     private void SetupItems()
     {
-        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetUrlTiles, Type = TileOverlayType.Url });
-        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetFileTiles, Type = TileOverlayType.File });
-        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetStreamTiles, Type = TileOverlayType.Stream });
-        Items.Add(new TileOverlayDataObject() { GetTileFunc = GetViewTiles, Type = TileOverlayType.View });
+        Items.Add(new TileOverlayDataObject() { TileProvider = GetUrlTiles, Type = TileOverlayType.Url });
+        Items.Add(new TileOverlayDataObject() { TileProvider = GetFileTiles, Type = TileOverlayType.File });
+        Items.Add(new TileOverlayDataObject() { TileProvider = GetStreamTiles, Type = TileOverlayType.Stream });
+        Items.Add(new TileOverlayDataObject() { TileProvider = GetViewTiles, Type = TileOverlayType.View });
     }
 
     private ImageSource? GetUrlTiles(Point coord, int zoom, int tileSize)

@@ -90,19 +90,19 @@ public static class TileOverlayExtensions
 
     public static NTileOverlay ToTileLayer(this VTileOverlay tileOverlay, IMauiContext context)
     {
-        return new CommonTileProvider(tileOverlay.GetTileFunc, tileOverlay.TileSize, context);
+        return new CommonTileProvider(tileOverlay.TileProvider, tileOverlay.TileSize, context);
     }
 }
 
 public class CommonTileProvider : NTileOverlay
 {
-    private readonly Func<Point, int, int, ImageSource?> _getTileFunc;
+    private readonly Func<Point, int, int, ImageSource?> _provider;
     private readonly int _tileSize;
     private readonly IMauiContext _mauiContext;
 
-    public CommonTileProvider(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
+    public CommonTileProvider(Func<Point, int, int, ImageSource?> provider, int tileSize, IMauiContext mauiContext)
     {
-        _getTileFunc = getTileFunc;
+        _provider = provider;
         _tileSize = tileSize;
         _mauiContext = mauiContext;
     }
@@ -111,7 +111,7 @@ public class CommonTileProvider : NTileOverlay
     {
         var image = await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            var source = _getTileFunc?.Invoke(new(x, y), (int)zoom, _tileSize);
+            var source = _provider?.Invoke(new(x, y), (int)zoom, _tileSize);
 
             if (source is null) return null;
             if (source is NoTileImageSource) return Constants.TileLayerNoTile;

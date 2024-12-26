@@ -91,26 +91,26 @@ public static class TileOverlayExtensions
 
     public static ITileProvider ToTileProvider(this VTileOverlay tileOverlay, IMauiContext context)
     {
-        return new CommonTileProvider(tileOverlay.GetTileFunc, tileOverlay.TileSize, context);
+        return new CommonTileProvider(tileOverlay.TileProvider, tileOverlay.TileSize, context);
     }
 }
 
 public class CommonTileProvider : Java.Lang.Object, ITileProvider
 {
-    private readonly Func<Point, int, int, ImageSource?> _getTileFunc;
+    private readonly Func<Point, int, int, ImageSource?> _provider;
     private readonly int _tileSize;
     private readonly IMauiContext _mauiContext;
 
-    public CommonTileProvider(Func<Point, int, int, ImageSource?> getTileFunc, int tileSize, IMauiContext mauiContext)
+    public CommonTileProvider(Func<Point, int, int, ImageSource?> provider, int tileSize, IMauiContext mauiContext)
     {
-        _getTileFunc = getTileFunc;
+        _provider = provider;
         _tileSize = tileSize;
         _mauiContext = mauiContext;
     }
 
     public Tile? GetTile(int x, int y, int zoom)
     {
-        var source = _getTileFunc?.Invoke(new(x, y), zoom, _tileSize);
+        var source = _provider?.Invoke(new(x, y), zoom, _tileSize);
 
         if (source is null) return null;
         if (source is NoTileImageSource) return TileProvider.NoTile;

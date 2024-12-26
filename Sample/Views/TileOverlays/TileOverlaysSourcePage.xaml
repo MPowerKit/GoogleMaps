@@ -18,25 +18,25 @@
                 <vm:TileOverlaysTemplateSelector>
                     <vm:TileOverlaysTemplateSelector.UrlTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay GetTileFunc="{Binding GetTileFunc}"
+                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
                                             Opacity="0.8" />
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.UrlTemplate>
                     <vm:TileOverlaysTemplateSelector.FileTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay GetTileFunc="{Binding GetTileFunc}"
+                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
                                             Opacity="0.1" />
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.FileTemplate>
                     <vm:TileOverlaysTemplateSelector.StreamTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay GetTileFunc="{Binding GetTileFunc}"
+                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
                                             Opacity="0.4" />
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.StreamTemplate>
                     <vm:TileOverlaysTemplateSelector.ViewTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay GetTileFunc="{Binding GetTileFunc}"
+                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
                                             FadeIn="False" />
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.ViewTemplate>

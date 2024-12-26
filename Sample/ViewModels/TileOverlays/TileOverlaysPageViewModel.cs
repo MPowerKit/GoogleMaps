@@ -75,7 +75,7 @@ public partial class TileOverlaysPageViewModel : ObservableObject
             "Some Fun" => GetSomeFunTiles
         };
 
-        var tile = new TileOverlay { GetTileFunc = func };
+        var tile = new TileOverlay { TileProvider = func };
 
         tile.SetBinding(TileOverlay.OpacityProperty, new Binding(nameof(Opacity), source: this));
         tile.SetBinding(TileOverlay.IsVisibleProperty, new Binding(nameof(IsVisible), source: this));

@@ -43,16 +43,16 @@ public class TileOverlay : VisualElement
             defaultBindingMode: BindingMode.OneTime);
     #endregion
 
-    #region GetTileFunc
-    public Func<Point, int, int, ImageSource?> GetTileFunc
+    #region TileProvider
+    public Func<Point, int, int, ImageSource?> TileProvider
     {
-        get { return (Func<Point, int, int, ImageSource?>)GetValue(GetTileFuncProperty); }
-        set { SetValue(GetTileFuncProperty, value); }
+        get { return (Func<Point, int, int, ImageSource?>)GetValue(TileProviderProperty); }
+        set { SetValue(TileProviderProperty, value); }
     }
 
-    public static readonly BindableProperty GetTileFuncProperty =
+    public static readonly BindableProperty TileProviderProperty =
         BindableProperty.Create(
-            nameof(GetTileFunc),
+            nameof(TileProvider),
             typeof(Func<Point, int, int, ImageSource?>),
             typeof(TileOverlay),
             defaultBindingMode: BindingMode.OneTime);
