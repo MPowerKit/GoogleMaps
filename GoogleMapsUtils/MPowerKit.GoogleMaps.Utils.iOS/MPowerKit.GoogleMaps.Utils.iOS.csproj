@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net8.0-ios</TargetFrameworks>
+		<IsBindingProject>true</IsBindingProject>
+		<NoBindingEmbedding>true</NoBindingEmbedding>
+		<BindingPlatform>$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))</BindingPlatform>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AdamE.Google.iOS.Maps" Version="9.2.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ObjcBindingApiDefinition Include="ApiDefinition.cs" />
+		<ObjcBindingCoreSource Include="StructsAndEnums.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<NativeReference Include="..\GoogleMapsUtils.xcframework">
+			<Kind>Framework</Kind>
+			<SmartLink>True</SmartLink>
+			<ForceLoad>False</ForceLoad>
+			<LinkerFlags>-ObjC</LinkerFlags>
+		</NativeReference>
+	</ItemGroup>
+	
+</Project>

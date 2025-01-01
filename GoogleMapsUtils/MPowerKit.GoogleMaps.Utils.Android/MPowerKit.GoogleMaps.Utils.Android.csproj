@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-android</TargetFramework>
+		<SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="119.0.0.2" />
+		<PackageReference Include="XamPrototype.Android.MavenBinding.Tasks" Version="0.0.11" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AndroidMavenLibrary Include="com.google.maps.android:android-maps-utils" Version="3.9.0" />
+	</ItemGroup>
+</Project>

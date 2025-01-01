@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <!-- Normalize the namespace for .NET -->
+    <attr path="/api/package[@name='com.google.maps.android']" name="managedName">Android.Gms.Maps.Utils</attr>
+    <attr path="/api/package[@name='com.google.maps.android.ui']" name="managedName">Android.Gms.Maps.Utils.UI</attr>
+    <attr path="/api/package[@name='com.google.maps.android.data']" name="managedName">Android.Gms.Maps.Utils.Data</attr>
+    <attr path="/api/package[@name='com.google.maps.android.data.kml']" name="managedName">Android.Gms.Maps.Utils.Data.Kml</attr>
+    <attr path="/api/package[@name='com.google.maps.android.quadtree']" name="managedName">Android.Gms.Maps.Utils.Quadtree</attr>
+    <attr path="/api/package[@name='com.google.maps.android.geometry']" name="managedName">Android.Gms.Maps.Utils.Geometry</attr>
+    <attr path="/api/package[@name='com.google.maps.android.heatmaps']" name="managedName">Android.Gms.Maps.Utils.HeatMaps</attr>
+    <attr path="/api/package[@name='com.google.maps.android.projection']" name="managedName">Android.Gms.Maps.Utils.Projection</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering']" name="managedName">Android.Gms.Maps.Utils.Clustering</attr>
+    <attr path="/api/package[@name='com.google.maps.android.collections']" name="managedName">Android.Gms.Maps.Utils.Collections</attr>
+    <attr path="/api/package[@name='com.google.maps.android.data.geojson']" name="managedName">Android.Gms.Maps.Utils.Data.GeoJson</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.view']" name="managedName">Android.Gms.Maps.Utils.Clustering.View</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']" name="managedName">Android.Gms.Maps.Utils.Clustering.Algorithm</attr>
+
+    <!-- Error CS0507: 'KmlLayer.HasContainers': cannot change access modifiers when overriding 'protected' inherited member 'Layer.HasContainers' (CS0507) -->
+    <attr path="/api/package[@name='com.google.maps.android.data']/class[@name='Layer']/method[@name='hasContainers' and count(parameter)=0]"
+          name="visibility">public</attr>
+    <!-- Error CS0507: 'KmlLayer.Containers': cannot change access modifiers when overriding 'protected' inherited member 'Layer.Containers' (CS0507) -->
+    <attr path="/api/package[@name='com.google.maps.android.data']/class[@name='Layer']/method[@name='getContainers' and count(parameter)=0]"
+          name="visibility">public</attr>
+    <!-- Error CS0507: 'KmlLayer.GroundOverlays': cannot change access modifiers when overriding 'protected' inherited member 'Layer.GroundOverlays' (CS0507) -->
+    <attr path="/api/package[@name='com.google.maps.android.data']/class[@name='Layer']/method[@name='getGroundOverlays' and count(parameter)=0]"
+          name="visibility">public</attr>
+
+    <!-- Error CS0534: 'ClassName' does not implement inherited abstract member 'ClassName.AddItem(Object)' (CS0534)-->
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/interface[@name='Algorithm']/method[@name='addItem' and count(parameter)=1 and parameter[1][@type='T']]/parameter[1]"
+          name="type">Java.Lang.Object</attr>    
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='GridBasedAlgorithm']/method[@name='addItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='ScreenBasedAlgorithmAdapter']/method[@name='addItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='PreCachingAlgorithmDecorator']/method[@name='addItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='NonHierarchicalDistanceBasedAlgorithm']/method[@name='addItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+
+    <!-- Error CS0534: 'ClassName' does not implement inherited abstract member 'ClassName.RemoveItem(Object)' (CS0534)-->
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/interface[@name='Algorithm']/method[@name='removeItem' and count(parameter)=1 and parameter[1][@type='T']]/parameter[1]"
+          name="type">Java.Lang.Object</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='GridBasedAlgorithm']/method[@name='removeItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='ScreenBasedAlgorithmAdapter']/method[@name='removeItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='PreCachingAlgorithmDecorator']/method[@name='removeItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='NonHierarchicalDistanceBasedAlgorithm']/method[@name='removeItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+
+    <!-- Error CS0534: 'ClassName' does not implement inherited abstract member 'ClassName.UpdateItem(Object)' (CS0534)-->
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/interface[@name='Algorithm']/method[@name='updateItem' and count(parameter)=1 and parameter[1][@type='T']]/parameter[1]"
+          name="type">Java.Lang.Object</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='GridBasedAlgorithm']/method[@name='updateItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='ScreenBasedAlgorithmAdapter']/method[@name='updateItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='PreCachingAlgorithmDecorator']/method[@name='updateItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+    <attr path="/api/package[@name='com.google.maps.android.clustering.algo']/class[@name='NonHierarchicalDistanceBasedAlgorithm']/method[@name='updateItem' and count(parameter)=1 and parameter[1][@type='T']]"
+          name="managedOverride">override</attr>
+
+    <!-- Error missing classes and methods -->
+    <attr path="/api/package[@name='com.google.maps.android.collections']/class[@name='MapObjectManager']"
+          name="visibility">protected</attr>
+    <attr path="/api/package[@name='com.google.maps.android.collections']/class[@name='MapObjectManager.Collection']"
+          name="visibility">protected</attr>
+</metadata>

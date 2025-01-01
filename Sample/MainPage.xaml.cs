@@ -9,11 +9,6 @@ public partial class MainPage
         InitializeComponent();
     }
 
-    //private void Gmap_NativeMapReady()
-    //{
-    //    gmap.MoveCamera(CameraUpdateFactory.FromCenterAndRadius(new(50, 50), Distance.FromKMeters(500)));
-    //}
-
     private void Button_Clicked(System.Object sender, System.EventArgs e)
     {
         this.Navigation.PushAsync(new NavigationPage(new PinsTabbedPage()));

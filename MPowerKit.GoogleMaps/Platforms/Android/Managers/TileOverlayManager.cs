@@ -27,7 +27,7 @@ public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOver
 
     protected override NTileOverlay AddItemToPlatformView(VTileOverlay vItem)
     {
-        return PlatformView!.AddTileOverlay(vItem.ToNative(Handler!.MauiContext!));
+        return PlatformView!.AddTileOverlay(ToOptions(vItem, Handler!.MauiContext!));
     }
 
     protected override void ItemPropertyChanged(VTileOverlay vItem, NTileOverlay nItem, string? propertyName)
@@ -71,11 +71,8 @@ public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOver
     {
         nTileOverlay.FadeIn = vTileOverlay.FadeIn;
     }
-}
 
-public static class TileOverlayExtensions
-{
-    public static TileOverlayOptions ToNative(this VTileOverlay tileOverlay, IMauiContext context)
+    protected virtual TileOverlayOptions ToOptions(VTileOverlay tileOverlay, IMauiContext context)
     {
         var options = new TileOverlayOptions();
 
@@ -84,12 +81,12 @@ public static class TileOverlayExtensions
         options.InvokeTransparency(1f - (float)tileOverlay.Opacity);
         options.InvokeFadeIn(tileOverlay.FadeIn);
 
-        options.InvokeTileProvider(tileOverlay.ToTileProvider(context));
+        options.InvokeTileProvider(ToTileProvider(tileOverlay, context));
 
         return options;
     }
 
-    public static ITileProvider ToTileProvider(this VTileOverlay tileOverlay, IMauiContext context)
+    protected virtual ITileProvider ToTileProvider(VTileOverlay tileOverlay, IMauiContext context)
     {
         return new CommonTileProvider(tileOverlay.TileProvider, tileOverlay.TileSize, context);
     }

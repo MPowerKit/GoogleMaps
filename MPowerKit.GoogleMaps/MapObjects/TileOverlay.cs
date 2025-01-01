@@ -1,4 +1,6 @@
-﻿namespace MPowerKit.GoogleMaps;
+﻿using System.Runtime.CompilerServices;
+
+namespace MPowerKit.GoogleMaps;
 
 public class TileOverlay : VisualElement
 {
@@ -10,6 +12,16 @@ public class TileOverlay : VisualElement
 #elif IOS
         (native as Google.Maps.TileLayer)?.ClearTileCache();
 #endif
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if (propertyName == TileSizeProperty.PropertyName)
+        {
+            ClearTileCache();
+        }
     }
 
     #region FadeIn
@@ -39,8 +51,7 @@ public class TileOverlay : VisualElement
             nameof(TileSize),
             typeof(int),
             typeof(TileOverlay),
-            256,
-            defaultBindingMode: BindingMode.OneTime);
+            256);
     #endregion
 
     #region TileProvider

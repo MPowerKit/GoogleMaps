@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<enum-method-mappings>
+    <!-- Error CS0738: 'Point' does not implement interface member 'IGeometry.GeometryObject'. 'Point.GeometryObject' cannot implement 'IGeometry.GeometryObject' because it does not have the matching return type of 'Object'. -->
+    <mapping jni-class="com/google/maps/android/data/Point">
+        <method jni-name="getGeometryObject" parameter="return" clr-enum-type="Java.Lang.Object"/>
+    </mapping>
+    <!-- Error CS0738: 'LineString' does not implement interface member 'IGeometry.GeometryObject'. 'LineString.GeometryObject' cannot implement 'IGeometry.GeometryObject' because it does not have the matching return type of 'Object'. -->
+    <mapping jni-class="com/google/maps/android/data/LineString">
+        <method jni-name="getGeometryObject" parameter="return" clr-enum-type="Java.Lang.Object"/>
+    </mapping>
+    <!-- Error CS0738: 'KmlPolygon' does not implement interface member 'IGeometry.GeometryObject'. 'KmlPolygon.GeometryObject' cannot implement 'IGeometry.GeometryObject' because it does not have the matching return type of 'Object'. -->
+    <mapping jni-class="com/google/maps/android/data/kml/KmlPolygon">
+        <method jni-name="getGeometryObject" parameter="return" clr-enum-type="Java.Lang.Object"/>
+    </mapping>
+    <!-- Error CS0738: 'MultiGeometry' does not implement interface member 'IGeometry.GeometryObject'. 'MultiGeometry.GeometryObject' cannot implement 'IGeometry.GeometryObject' because it does not have the matching return type of 'Object'. -->
+    <mapping jni-class="com/google/maps/android/data/MultiGeometry">
+        <method jni-name="getGeometryObject" parameter="return" clr-enum-type="Java.Lang.Object"/>
+    </mapping>
+    <!-- Error CS0738: 'GeoJsonPolygon' does not implement interface member 'IGeometry.GeometryObject'. 'GeoJsonPolygon.GeometryObject' cannot implement 'IGeometry.GeometryObject' because it does not have the matching return type of 'Object'. -->
+    <mapping jni-class="com/google/maps/android/data/geojson/GeoJsonPolygon">
+        <method jni-name="getGeometryObject" parameter="return" clr-enum-type="Java.Lang.Object"/>
+    </mapping>
+</enum-method-mappings>
