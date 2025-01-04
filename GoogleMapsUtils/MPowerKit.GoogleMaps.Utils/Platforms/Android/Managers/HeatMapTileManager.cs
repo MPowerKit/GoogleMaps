@@ -30,15 +30,11 @@ public class HeatMapTileManager : TileOverlayManager
         }
         else if (propertyName == HeatMapTileOverlay.RadiusProperty.PropertyName)
         {
-            OnZIndexChanged(vItem, nItem);
-        }
-        else if (propertyName == HeatMapTileOverlay.IntensityProperty.PropertyName)
-        {
-            OnOpacityChanged(vItem, nItem);
+            OnRadiusChanged(heatMapTile, nItem);
         }
         else if (propertyName == HeatMapTileOverlay.GradientProperty.PropertyName)
         {
-            OnFadeInChanged(vItem, nItem);
+            OnGradientChanged(heatMapTile, nItem);
         }
     }
 
@@ -52,12 +48,6 @@ public class HeatMapTileManager : TileOverlayManager
     {
         var tileProvider = HeatMapTileOverlayAttached.GetNativeTileProvider(vItem) as HeatmapTileProvider;
         tileProvider!.SetRadius(vItem.Radius);
-    }
-
-    protected virtual void OnIntensityChanged(HeatMapTileOverlay vItem, NTileOverlay nItem)
-    {
-        var tileProvider = HeatMapTileOverlayAttached.GetNativeTileProvider(vItem) as HeatmapTileProvider;
-        tileProvider!.SetMaxIntensity(vItem.Intensity);
     }
 
     protected virtual void OnGradientChanged(HeatMapTileOverlay vItem, NTileOverlay nItem)
@@ -78,7 +68,6 @@ public class HeatMapTileManager : TileOverlayManager
         }
 
         builder.WeightedData(heatMapTile.Data.ToNative());
-        builder.MaxIntensity(heatMapTile.Intensity);
         builder.Radius(heatMapTile.Radius);
 
         return builder.Build()!;

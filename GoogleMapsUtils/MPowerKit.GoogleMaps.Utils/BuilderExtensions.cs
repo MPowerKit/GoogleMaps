@@ -15,7 +15,7 @@ public static class BuilderExtensions
 #endif
         );
 
-#if ANDROID
+#if ANDROID || IOS
         GoogleMapHandler.ManagerMapper[nameof(TileOverlayManager)] = () => new HeatMapTileManager();
 #endif
         return builder;

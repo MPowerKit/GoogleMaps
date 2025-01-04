@@ -14,16 +14,6 @@ public class TileOverlay : VisualElement
 #endif
     }
 
-    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        base.OnPropertyChanged(propertyName);
-
-        if (propertyName == TileSizeProperty.PropertyName)
-        {
-            ClearTileCache();
-        }
-    }
-
     #region FadeIn
     public bool FadeIn
     {

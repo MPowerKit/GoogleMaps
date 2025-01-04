@@ -36,20 +36,6 @@ public class HeatMapTileOverlay : TileOverlay
             20);
     #endregion
 
-    #region Intensity
-    public double Intensity
-    {
-        get { return (double)GetValue(IntensityProperty); }
-        set { SetValue(IntensityProperty, value); }
-    }
-
-    public static readonly BindableProperty IntensityProperty =
-        BindableProperty.Create(
-            nameof(Intensity),
-            typeof(double),
-            typeof(HeatMapTileOverlay));
-    #endregion
-
     #region Gradient
     public Gradient Gradient
     {
