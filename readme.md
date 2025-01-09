@@ -533,13 +533,13 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 #### TileOverlay
 
-`GroundOverlay` is a subclass of `VisualElement`. A Tile Overlay is a set of images which are displayed on top of the base map tiles. These tiles may be transparent, allowing you to add features to existing maps.
+`TileOverlay` is a subclass of `VisualElement`. A Tile Overlay is a set of images which are displayed on top of the base map tiles. These tiles may be transparent, allowing you to add features to existing maps.
 
 |Property|Type|Description|
 |-|-|-|
-|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The `TileProvider` provides the images that are used in the tile overlay. You must specify the tile provider before tile is added to the map. The tile provider cannot be changed once it has been added; however, you can modify the behavior of the tile provider to return different images for specific coordinates. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
+|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The `TileProvider` provides the images that are used in the tile overlay. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
 |TileTemplate|DataTemplate|`TileTemplate` can be used instead of `TileProvider` and has higher prioriy than `TileProvider`, what does this means: firstly `TileTemplate` property will be checked, and if it null then `TileProvider` property. This property supports `DataTemplateSelector`. Template always accepts `TileData` object as `x:DataType` for `BindingContext` and always should be of type `ImageSource`. For more look into Sample project.|
-|TileSize|int|Google Maps targets 256 dp (device-independent pixels) when displaying tiles. For high resolution devices, it is recommended that you return high dpi tiles (512x512 px). This is optional. Can be set only once. Default is 256.|
+|TileSize|int|Google Maps targets 256 dp (device-independent pixels) when displaying tiles. For high resolution devices, it is recommended that you return high dpi tiles (512x512 px). This is optional. Default is 256.|
 |FadeIn|bool|Indicates whether the tiles should fade in when appeared. Default is `true`.|
 |Opacity|double|Sets the opacity of the tiles. Default is 1.0|
 |ZIndex|int|The draw order for the tiles. Tiles are drawn in order of the `ZIndex`, with the highest `ZIndex` tiles drawn on top. Default is 0.|
@@ -556,7 +556,6 @@ First parameter is a `Point` that represents tile coordinate (this is not Earth 
 For example:
 ```xaml
 <gm:GoogleMap TileOverlaysSource="{Binding Items}"
-              CameraPosition="{Binding CameraPosition, Mode=OneWayToSource}"
               Grid.Row="1" >
     <gm:GoogleMap.TileOverlayItemTemplate>
         <DataTemplate x:DataType="vm:TileOverlayDataObject">
