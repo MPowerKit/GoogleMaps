@@ -89,20 +89,22 @@ public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOver
 
     protected virtual NTileOverlay ToTileProvider(VTileOverlay tileOverlay, IMauiContext context)
     {
-        return new CommonTileProvider(tileOverlay.TileProvider, tileOverlay.TileSize, context);
+        return new CommonTileProvider(tileOverlay, tileOverlay.TileSize, VirtualView!, context);
     }
 }
 
 public class CommonTileProvider : NTileOverlay
 {
-    private readonly Func<Point, int, int, ImageSource?> _provider;
+    private readonly VTileOverlay _tileOverlay;
     private readonly int _tileSize;
+    private readonly GoogleMap _map;
     private readonly IMauiContext _mauiContext;
 
-    public CommonTileProvider(Func<Point, int, int, ImageSource?> provider, int tileSize, IMauiContext mauiContext)
+    public CommonTileProvider(VTileOverlay tileOverlay, int tileSize, GoogleMap map, IMauiContext mauiContext)
     {
-        _provider = provider;
+        _tileOverlay = tileOverlay;
         _tileSize = tileSize;
+        _map = map;
         _mauiContext = mauiContext;
     }
 
@@ -110,9 +112,26 @@ public class CommonTileProvider : NTileOverlay
     {
         var image = await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            var source = _provider?.Invoke(new(x, y), (int)zoom, _tileSize);
+            TileData data = new()
+            {
+                Point = new(x, y),
+                Zoom = (int)zoom,
+                TileSize = _tileSize
+            };
+            var template = _tileOverlay.TileTemplate;
+
+            while (template is DataTemplateSelector selector)
+            {
+                template = selector.SelectTemplate(data, _map);
+            }
+
+            var source = template?.CreateContent() as ImageSource
+                ?? _tileOverlay.TileProvider?.Invoke(new(x, y), (int)zoom, _tileSize);
 
             if (source is null) return null;
+
+            source.BindingContext = data;
+
             if (source is NoTileImageSource) return Constants.TileLayerNoTile;
 
             try

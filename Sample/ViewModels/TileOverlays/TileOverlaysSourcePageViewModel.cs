@@ -32,7 +32,6 @@ public class TileOverlaysTemplateSelector : DataTemplateSelector
 
 public partial class TileOverlayDataObject : ObservableObject
 {
-    public Func<Point, int, int, ImageSource?> TileProvider { get; set; }
     public TileOverlayType Type { get; set; }
 }
 
@@ -59,84 +58,9 @@ public partial class TileOverlaysSourcePageViewModel : ObservableObject
 
     private void SetupItems()
     {
-        Items.Add(new TileOverlayDataObject() { TileProvider = GetUrlTiles, Type = TileOverlayType.Url });
-        Items.Add(new TileOverlayDataObject() { TileProvider = GetFileTiles, Type = TileOverlayType.File });
-        Items.Add(new TileOverlayDataObject() { TileProvider = GetStreamTiles, Type = TileOverlayType.Stream });
-        Items.Add(new TileOverlayDataObject() { TileProvider = GetViewTiles, Type = TileOverlayType.View });
-    }
-
-    private ImageSource? GetUrlTiles(Point coord, int zoom, int tileSize)
-    {
-        if (CameraPosition.Zoom is not >= 2 or not <= 21)
-        {
-            // This means that there is no tile at current location
-            return NoTileImageSource.Instance;
-        }
-
-        return ImageSource.FromUri(new Uri($"https://mt1.google.com/vt/lyrs=s&x={coord.X}&y={coord.Y}&z={zoom}")) as UriImageSource;
-    }
-
-    private ImageSource? GetFileTiles(Point coord, int zoom, int tileSize)
-    {
-        if (CameraPosition.Zoom is not >= 2 or not <= 21)
-        {
-            // This means that there is no tile at current location
-            return NoTileImageSource.Instance;
-        }
-
-        return ImageSource.FromFile("tile.png") as FileImageSource;
-    }
-
-    private ImageSource? GetStreamTiles(Point coord, int zoom, int tileSize)
-    {
-        if (CameraPosition.Zoom is not >= 2 or not <= 21)
-        {
-            // This means that there is no tile at current location
-            return NoTileImageSource.Instance;
-        }
-
-        return ImageSource.FromStream(ct => FileSystem.Current.OpenAppPackageFileAsync("bot.png")) as StreamImageSource;
-    }
-
-    private ImageSource? GetViewTiles(Point coord, int zoom, int tileSize)
-    {
-        if (CameraPosition.Zoom is not >= 2 or not <= 21)
-        {
-            // This means that there is no tile at current location
-            return NoTileImageSource.Instance;
-        }
-
-        View? view = null;
-        try
-        {
-            view = new Border()
-            {
-                WidthRequest = tileSize,
-                HeightRequest = tileSize,
-                Stroke = Colors.Red,
-                StrokeThickness = 4d,
-                Content = new Label()
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    HorizontalOptions = LayoutOptions.Center,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    TextColor = Colors.Black,
-                    FontSize = 20d,
-                    FontAttributes = FontAttributes.Bold,
-                    Text = $"Point={coord}, Zoom={zoom}"
-                }
-            };
-
-            return (ViewImageSource)view;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-
-        // Providing a null tile result will tell the Map
-        // that data is currently unavailable
-        // but that it may be available in the future
-        return null;
+        Items.Add(new TileOverlayDataObject() { Type = TileOverlayType.Url });
+        Items.Add(new TileOverlayDataObject() { Type = TileOverlayType.File });
+        Items.Add(new TileOverlayDataObject() { Type = TileOverlayType.Stream });
+        Items.Add(new TileOverlayDataObject() { Type = TileOverlayType.View });
     }
 }

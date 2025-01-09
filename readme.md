@@ -34,6 +34,7 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [MapType](#maptype)
         - [MapColorScheme](#mapcolorscheme)
         - [ViewImageSource](#viewimagesource)
+        - [TileData](#tiledata)
         - [NoTileImageSource](#notileimagesource)
         - [Distance](#distance)
     - [Map objects](#map-objects)
@@ -44,6 +45,7 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [GroundOverlay](#groundoverlay)
         - [TileOverlay](#tileoverlay)
             - [TileProvider](#tileprovider)
+            - [TileTemplate](#tiletemplate)
 
 ## Setup
 
@@ -117,17 +119,17 @@ The full list of all properties and features you can find [here](https://github.
 API of this library is devided into 9 logical groups: Map features, Camera, UI Settings, Pins, Circles, Polylines, Polygons, Tiles, Ground overlays. Each logic group is represented as separate manager and responsible only for that part of logic, and preregistered in the public static dictionary inside the handler:
 
 ```csharp
-public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, NativeMapView, GoogleMapHandler>>> ManagerMapper = new()
+public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>>> ManagerMapper { get; } = new()
 {
-    { nameof(MapManager), () => new MapManager() },
-    { nameof(CameraManager), () => new CameraManager() },
-    { nameof(UiSettingsManager), () => new UiSettingsManager() },
-    { nameof(PolylineManager), () => new PolylineManager() },
-    { nameof(PolygonManager), () => new PolygonManager() },
-    { nameof(CircleManager), () => new CircleManager() },
-    { nameof(TileOverlayManager), () => new TileOverlayManager() },
-    { nameof(GroundOverlayManager), () => new GroundOverlayManager() },
-    { nameof(PinManager), () => new PinManager() },
+    { GoogleMap.MapManagerName, () => new MapManager() },
+    { GoogleMap.CameraManagerName, () => new CameraManager() },
+    { GoogleMap.UiSettingsManagerName, () => new UiSettingsManager() },
+    { GoogleMap.PolylineManagerName, () => new PolylineManager() },
+    { GoogleMap.PolygonManagerName, () => new PolygonManager() },
+    { GoogleMap.CircleManagerName, () => new CircleManager() },
+    { GoogleMap.TileOverlayManagerName, () => new TileOverlayManager() },
+    { GoogleMap.GroundOverlayManagerName, () => new GroundOverlayManager() },
+    { GoogleMap.PinManagerName, () => new PinManager<GoogleMap, GMap, GoogleMapHandler>() },
 };
 ```
 
@@ -137,13 +139,13 @@ This approach is very flexible and gives you possibility to operate with differe
 For example: if you want to remove some logic, you just need to remove registration from `ManagerMapper` dictionary, as next:
 
 ```csharp
-GoogleMapHandler.ManagerMapper.Remove(nameof(GroundOverlayManager));
+GoogleMapHandler.ManagerMapper.Remove(GoogleMap.GroundOverlayManagerName);
 ```
 
 If you want to change implementation, you can do next:
 
 ```csharp
-GoogleMapHandler.ManagerMapper[nameof(Pins)] = () => new YourPinManager();
+GoogleMapHandler.ManagerMapper[GoogleMap.PinManagerName] = () => new YourPinManager();
 ```
 
 If you want to add absolutely new logic to your map, you can do next:
@@ -407,6 +409,16 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 
 `ViewImageSource` is a class derived from MAUI's `ImageSource`. It has only one property `public View? View { get; set; }`. This type of image source can be used to show any view as image. Can be used in XAML.
 
+#### TileData
+
+`TileData` is a type which contains info about tile to generate proper image for this data. Used as `BindingContext` inside `TileTempalte` of `TileOverlay`.
+
+|Property|Type|Description|
+|-|-|-|
+|Point|Point|The point on the map with x/y coordinates to build the tile at specific zoom level.|
+|Zoom|int|Zoom level of the map to build the tile.|
+|TileSize|int|The size of tile in pixels. Default is 256.|
+
 #### NoTileImageSource
 
 `NoTileImageSource` is a class derived from MAUI's `ImageSource`. It has only one static property `public static readonly ImageSource Instance = new NoTileImageSource();`. This type of image source should only be used to specify that there is no tile at specific coordinates and zoom level.
@@ -525,7 +537,8 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 |Property|Type|Description|
 |-|-|-|
-|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The TileProvider provides the images that are used in the tile overlay. You must specify the tile provider before tile is added to the map. The tile provider cannot be changed once it has been added; however, you can modify the behavior of the tile provider to return different images for specific coordinates. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
+|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The `TileProvider` provides the images that are used in the tile overlay. You must specify the tile provider before tile is added to the map. The tile provider cannot be changed once it has been added; however, you can modify the behavior of the tile provider to return different images for specific coordinates. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
+|TileTemplate|DataTemplate|`TileTemplate` can be used instead of `TileProvider` and has higher prioriy than `TileProvider`, what does this means: firstly `TileTemplate` property will be checked, and if it null then `TileProvider` property. This property supports `DataTemplateSelector`. Template always accepts `TileData` object as `x:DataType` for `BindingContext` and always should be of type `ImageSource`. For more look into Sample project.|
 |TileSize|int|Google Maps targets 256 dp (device-independent pixels) when displaying tiles. For high resolution devices, it is recommended that you return high dpi tiles (512x512 px). This is optional. Can be set only once. Default is 256.|
 |FadeIn|bool|Indicates whether the tiles should fade in when appeared. Default is `true`.|
 |Opacity|double|Sets the opacity of the tiles. Default is 1.0|
@@ -536,3 +549,33 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 `TileProvider` is a property of `TileOverlay`. Used to provide tile images based on coordinates, zoom level and tile size. 
 First parameter is a `Point` that represents tile coordinate (this is not Earth coordinate) at specific zoom level. Second parameter represents zoom level. Third parameter represents tile size. Return type is `ImageSource?`. You can return all types of image sources as tile images, such as stream, url, file etc. Also, you can return `ViewImageSource` to provide a custom view as tile image. If you return `null` this means that there is no image available at the moment, but can be available later. To specify that for specific coordinates and zoom should not be any tile there, you must return `NoTileImageSource.Instance`.
+
+##### TileTemplate
+`TileTemplate` used to provide `ImageSource`s for tiles in a way of templating via XAML, this can be very useful if you are trying to build completely MVVM app.
+
+For example:
+```xaml
+<gm:GoogleMap TileOverlaysSource="{Binding Items}"
+              CameraPosition="{Binding CameraPosition, Mode=OneWayToSource}"
+              Grid.Row="1" >
+    <gm:GoogleMap.TileOverlayItemTemplate>
+        <DataTemplate x:DataType="vm:TileOverlayDataObject">
+            <gm:TileOverlay Opacity="0.8">
+                <gm:TileOverlay.TileTemplate>
+                    <DataTemplate x:DataType="gm:TileData">
+                        <UriImageSource>
+                            <UriImageSource.Uri>
+                                <MultiBinding StringFormat="https://mt1.google.com/vt/lyrs=s&amp;x={0}&amp;y={1}&amp;z={2}">
+                                    <Binding Path="Point.X" />
+                                    <Binding Path="Point.Y" />
+                                    <Binding Path="Zoom" />
+                                </MultiBinding>
+                            </UriImageSource.Uri>
+                        </UriImageSource>
+                    </DataTemplate>
+                </gm:TileOverlay.TileTemplate>
+            </gm:TileOverlay>
+        </DataTemplate>
+    </gm:GoogleMap.TileOverlayItemTemplate>
+</gm:GoogleMap>
+```

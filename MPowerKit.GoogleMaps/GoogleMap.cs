@@ -11,6 +11,16 @@ namespace MPowerKit.GoogleMaps;
 
 public class GoogleMap : View
 {
+    public const string PinManagerName = nameof(PinManagerName);
+    public const string CircleManagerName = nameof(CircleManagerName);
+    public const string PolylineManagerName = nameof(PolylineManagerName);
+    public const string PolygonManagerName = nameof(PolygonManagerName);
+    public const string TileOverlayManagerName = nameof(TileOverlayManagerName);
+    public const string GroundOverlayManagerName = nameof(GroundOverlayManagerName);
+    public const string CameraManagerName = nameof(CameraManagerName);
+    public const string UiSettingsManagerName = nameof(UiSettingsManagerName);
+    public const string MapManagerName = nameof(MapManagerName);
+
     public event Action<Polygon>? PolygonClick;
     public event Action<Polyline>? PolylineClick;
     public event Action<Circle>? CircleClick;
@@ -48,6 +58,10 @@ public class GoogleMap : View
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Func<Task<Stream?>>? TakeSnapshotFuncInternal;
 
+    protected List<Element> AllChildren { get; } = [];
+
+    public virtual IEnumerable<View> MapObjects => new ReadOnlyCollection<View>(AllChildren.OfType<View>().ToList());
+
     protected Pin PrevSelectedPin { get; set; }
 
     public GoogleMap()
@@ -58,6 +72,20 @@ public class GoogleMap : View
         AnimateCameraFunc = AnimateCamera;
         ResetMinMaxZoomAction = ResetMinMaxZoom;
         TakeSnapshotFunc = TakeSnapshot;
+    }
+
+    protected override void OnChildAdded(Element child)
+    {
+        base.OnChildAdded(child);
+
+        AllChildren.Add(child);
+    }
+
+    protected override void OnChildRemoved(Element child, int oldLogicalIndex)
+    {
+        AllChildren.Remove(child);
+
+        base.OnChildRemoved(child, oldLogicalIndex);
     }
 
     public virtual async Task<Stream?> TakeSnapshot()
@@ -230,7 +258,7 @@ public class GoogleMap : View
             collectionChanged.CollectionChanged += Source_CollectionChanged<T>;
         }
 
-        var mapObjects = new ObservableCollection<T>();
+        ObservableCollection<T> mapObjects = [];
 
         SetValue(property, mapObjects);
 

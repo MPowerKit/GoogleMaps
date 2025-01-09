@@ -126,6 +126,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TVMap, TNMap, THand
 
             RemoveItemFromPlatformView(native);
 
+            VirtualView!.RemoveLogicalChild(item);
             Items.Remove(item);
         }
     }
@@ -162,6 +163,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TVMap, TNMap, THand
             item.PropertyChanging += Item_PropertyChanging;
             item.PropertyChanged += Item_PropertyChanged;
             Items.Add(item);
+            VirtualView!.AddLogicalChild(item);
         }
     }
 

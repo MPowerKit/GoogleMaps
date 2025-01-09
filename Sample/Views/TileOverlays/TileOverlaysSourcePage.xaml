@@ -18,26 +18,77 @@
                 <vm:TileOverlaysTemplateSelector>
                     <vm:TileOverlaysTemplateSelector.UrlTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
-                                            Opacity="0.8" />
+                            <gm:TileOverlay Opacity="0.8">
+                                <gm:TileOverlay.TileTemplate>
+                                    <DataTemplate x:DataType="gm:TileData">
+                                        <UriImageSource>
+                                            <UriImageSource.Uri>
+                                                <MultiBinding StringFormat="https://mt1.google.com/vt/lyrs=s&amp;x={0}&amp;y={1}&amp;z={2}">
+                                                    <Binding Path="Point.X" />
+                                                    <Binding Path="Point.Y" />
+                                                    <Binding Path="Zoom" />
+                                                </MultiBinding>
+                                            </UriImageSource.Uri>
+                                        </UriImageSource>
+                                    </DataTemplate>
+                                </gm:TileOverlay.TileTemplate>
+                            </gm:TileOverlay>
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.UrlTemplate>
                     <vm:TileOverlaysTemplateSelector.FileTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
-                                            Opacity="0.1" />
+                            <gm:TileOverlay Opacity="0.1" >
+                                <gm:TileOverlay.TileTemplate>
+                                    <DataTemplate x:DataType="gm:TileData">
+                                        <FileImageSource File="tile.png" />
+                                    </DataTemplate>
+                                </gm:TileOverlay.TileTemplate>
+                            </gm:TileOverlay>
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.FileTemplate>
                     <vm:TileOverlaysTemplateSelector.StreamTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
-                                            Opacity="0.4" />
+                            <gm:TileOverlay Opacity="0.4" >
+                                <gm:TileOverlay.TileTemplate>
+                                    <DataTemplate x:DataType="gm:TileData">
+                                        <StreamImageSource Stream="{Binding Converter={StaticResource TileDataToStreamConverter}}" />
+                                    </DataTemplate>
+                                </gm:TileOverlay.TileTemplate>
+                            </gm:TileOverlay>
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.StreamTemplate>
                     <vm:TileOverlaysTemplateSelector.ViewTemplate>
                         <DataTemplate x:DataType="vm:TileOverlayDataObject">
-                            <gm:TileOverlay TileProvider="{Binding TileProvider}"
-                                            FadeIn="False" />
+                            <gm:TileOverlay FadeIn="False">
+                                <gm:TileOverlay.TileTemplate>
+                                    <DataTemplate x:DataType="gm:TileData">
+                                        <gm:ViewImageSource>
+                                            <Border StrokeShape="RoundRectangle, 10"
+                                                    WidthRequest="{Binding TileSize}"
+                                                    HeightRequest="{Binding TileSize}"
+                                                    Stroke="Red"
+                                                    StrokeThickness="4">
+                                                <Label VerticalOptions="Center"
+                                                       HorizontalOptions="Center"
+                                                       HorizontalTextAlignment="Center"
+                                                       LineBreakMode="WordWrap"
+                                                       TextColor="Black"
+                                                       FontSize="20"
+                                                       FontAttributes="Bold">
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <Span Text="Point=" />
+                                                            <Span Text="{Binding Point}" />
+                                                            <Span Text=", Zoom=" />
+                                                            <Span Text="{Binding Zoom}" />
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+                                            </Border>
+                                        </gm:ViewImageSource>
+                                    </DataTemplate>
+                                </gm:TileOverlay.TileTemplate>
+                            </gm:TileOverlay>
                         </DataTemplate>
                     </vm:TileOverlaysTemplateSelector.ViewTemplate>
                 </vm:TileOverlaysTemplateSelector>

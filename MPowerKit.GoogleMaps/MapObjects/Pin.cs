@@ -63,10 +63,9 @@ public class Pin : VisualElement
     {
         base.OnBindingContextChanged();
 
-        if (Icon is ViewImageSource viewSource && !viewSource.IsEmpty
-            && viewSource.View.BindingContext is null)
+        if (Icon is not null && Icon.BindingContext is null)
         {
-            viewSource.View.BindingContext = this.BindingContext;
+            Icon.BindingContext = this.BindingContext;
         }
     }
 
@@ -75,10 +74,9 @@ public class Pin : VisualElement
         base.OnPropertyChanged(propertyName);
 
         if (propertyName == IconProperty.PropertyName
-            && Icon is ViewImageSource viewSource && !viewSource.IsEmpty
-            && viewSource.View.BindingContext is null)
+            && Icon is not null && Icon.BindingContext is null)
         {
-            viewSource.View.BindingContext = this.BindingContext;
+            Icon.BindingContext = this.BindingContext;
         }
     }
 

@@ -14,10 +14,9 @@ public class GroundOverlay : VisualElement
     {
         base.OnBindingContextChanged();
 
-        if (Image is ViewImageSource viewSource && !viewSource.IsEmpty
-            && viewSource.View.BindingContext is null)
+        if (Image is not null && Image.BindingContext is null)
         {
-            viewSource.View.BindingContext = this.BindingContext;
+            Image.BindingContext = this.BindingContext;
         }
     }
 
@@ -26,10 +25,9 @@ public class GroundOverlay : VisualElement
         base.OnPropertyChanged(propertyName);
 
         if (propertyName == ImageProperty.PropertyName
-            && Image is ViewImageSource viewSource && !viewSource.IsEmpty
-            && viewSource.View.BindingContext is null)
+            && Image is not null && Image.BindingContext is null)
         {
-            viewSource.View.BindingContext = this.BindingContext;
+            Image.BindingContext = this.BindingContext;
         }
     }
 

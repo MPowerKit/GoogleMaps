@@ -6,23 +6,26 @@ using VPin = MPowerKit.GoogleMaps.Pin;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, GoogleMapHandler>
+public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN, TH>
+    where TV : GoogleMap
+    where TN : GMap
+    where TH : GoogleMapHandler
 {
-    protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void Init(TV virtualView, TN platformView, TH handler)
     {
         base.Init(virtualView, platformView, handler);
 
         OnInfoWindowTemplateChanged(virtualView, platformView);
     }
 
-    protected override void Reset(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void Reset(TV virtualView, TN platformView, TH handler)
     {
         platformView.SetInfoWindowAdapter(null);
 
         base.Reset(virtualView, platformView, handler);
     }
 
-    protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void SubscribeToEvents(TV virtualView, TN platformView, TH handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
 
@@ -35,7 +38,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, Go
         platformView.InfoWindowClose += PlatformView_InfoWindowClose;
     }
 
-    protected override void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
+    protected override void UnsubscribeFromEvents(TV virtualView, TN platformView, TH handler)
     {
         platformView.MarkerClick -= PlatformView_PinClick;
         platformView.MarkerDragStart -= PlatformView_MarkerDragStart;
@@ -53,7 +56,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, Go
         return GoogleMap.PinsProperty.PropertyName;
     }
 
-    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, GMap platformView, string? propertyName)
+    protected override void VirtualViewPropertyChanged(TV virtualView, TN platformView, string? propertyName)
     {
         base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
@@ -210,10 +213,10 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, Go
         }
     }
 
-    protected virtual void OnInfoWindowTemplateChanged(GoogleMap virtualView, GMap platformView)
+    protected virtual void OnInfoWindowTemplateChanged(TV virtualView, TN platformView)
     {
         platformView.SetInfoWindowAdapter(virtualView.InfoWindowTemplate is not null
-            ? new InfoWindowAdapter(virtualView) : null);
+            ? new InfoWindowAdapter<TV>(virtualView) : null);
     }
 
     protected virtual void PlatformView_PinClick(object? sender, GMap.MarkerClickEventArgs e)
@@ -277,11 +280,12 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GoogleMap, GMap, Go
     }
 }
 
-public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
+public class InfoWindowAdapter<TV> : Java.Lang.Object, GMap.IInfoWindowAdapter
+    where TV : GoogleMap
 {
-    protected GoogleMap Map { get; }
+    protected TV Map { get; }
 
-    public InfoWindowAdapter(GoogleMap map)
+    public InfoWindowAdapter(TV map)
     {
         Map = map;
     }
@@ -299,7 +303,7 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 
         while (template is DataTemplateSelector selector)
         {
-            template = selector.SelectTemplate(pin.BindingContext, null);
+            template = selector.SelectTemplate(pin.BindingContext, Map);
         }
 
         if (template?.CreateContent() is not View view) return null;

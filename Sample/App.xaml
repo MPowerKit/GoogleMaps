@@ -13,6 +13,7 @@
             <converters:LocationToPointConverter x:Key="LocationToPointConverter" />
             <converters:LocationToViewImageSourceConverter x:Key="LocationToViewImageSourceConverter" />
             <converters:LocationListToPointCollectionConverter x:Key="LocationListToPointCollectionConverter" />
+            <converters:TileDataToStreamConverter x:Key="TileDataToStreamConverter" />
             <converters:ObjectToBooleanConverter x:Key="ObjectToBooleanConverter" />
             <converters:ObjectToBooleanConverter x:Key="ObjectToBooleanInvertedConverter"
                                                  IsInverted="True" />

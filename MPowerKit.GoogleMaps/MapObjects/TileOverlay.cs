@@ -14,6 +14,18 @@ public class TileOverlay : VisualElement
 #endif
     }
 
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if (propertyName == TileSizeProperty.PropertyName
+            || propertyName == TileTemplateProperty.PropertyName
+            || propertyName == TileProviderProperty.PropertyName)
+        {
+            ClearTileCache();
+        }
+    }
+
     #region FadeIn
     public bool FadeIn
     {
@@ -55,7 +67,20 @@ public class TileOverlay : VisualElement
         BindableProperty.Create(
             nameof(TileProvider),
             typeof(Func<Point, int, int, ImageSource?>),
-            typeof(TileOverlay),
-            defaultBindingMode: BindingMode.OneTime);
+            typeof(TileOverlay));
+    #endregion
+
+    #region TileTemplate
+    public DataTemplate TileTemplate
+    {
+        get { return (DataTemplate)GetValue(TileTemplateProperty); }
+        set { SetValue(TileTemplateProperty, value); }
+    }
+
+    public static readonly BindableProperty TileTemplateProperty =
+        BindableProperty.Create(
+            nameof(TileTemplate),
+            typeof(DataTemplate),
+            typeof(TileOverlay));
     #endregion
 }

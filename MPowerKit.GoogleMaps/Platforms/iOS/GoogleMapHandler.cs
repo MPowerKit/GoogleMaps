@@ -16,17 +16,17 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     };
 
-    public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>>> ManagerMapper = new()
+    public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>>> ManagerMapper { get; } = new()
     {
-        { nameof(MapManager), () => new MapManager() },
-        { nameof(CameraManager), () => new CameraManager() },
-        { nameof(UiSettingsManager), () => new UiSettingsManager() },
-        { nameof(PolylineManager), () => new PolylineManager() },
-        { nameof(PolygonManager), () => new PolygonManager() },
-        { nameof(CircleManager), () => new CircleManager() },
-        { nameof(TileOverlayManager), () => new TileOverlayManager() },
-        { nameof(GroundOverlayManager), () => new GroundOverlayManager() },
-        { nameof(PinManager), () => new PinManager() },
+        { GoogleMap.MapManagerName, () => new MapManager() },
+        { GoogleMap.CameraManagerName, () => new CameraManager() },
+        { GoogleMap.UiSettingsManagerName, () => new UiSettingsManager() },
+        { GoogleMap.PolylineManagerName, () => new PolylineManager() },
+        { GoogleMap.PolygonManagerName, () => new PolygonManager() },
+        { GoogleMap.CircleManagerName, () => new CircleManager() },
+        { GoogleMap.TileOverlayManagerName, () => new TileOverlayManager() },
+        { GoogleMap.GroundOverlayManagerName, () => new GroundOverlayManager() },
+        { GoogleMap.PinManagerName, () => new PinManager<GoogleMap, MapView, GoogleMapHandler>() },
     };
 
     public GoogleMapHandler() : base(GoogleMapHandlerMapper, GoogleMapHandlerCommandMapper)
