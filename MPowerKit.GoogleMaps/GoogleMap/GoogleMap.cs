@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace MPowerKit.GoogleMaps;
@@ -7,6 +6,8 @@ namespace MPowerKit.GoogleMaps;
 public partial class GoogleMap : View
 {
     public event Action? NativeMapReady;
+
+    public string MapId { get; init; }
 
     public GoogleMap()
     {

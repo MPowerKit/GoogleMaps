@@ -47,7 +47,9 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     protected override MapView CreatePlatformView()
     {
-        return new MapView(new MapViewOptions() { Camera = new Google.Maps.CameraPosition(0f, 0f, 3f) });
+        var options = new MapViewOptions() { Camera = new Google.Maps.CameraPosition(0f, 0f, 3f) };
+        if (!string.IsNullOrWhiteSpace(VirtualView.MapId)) options.MapId = new MapId(VirtualView.MapId);
+        return new MapView(options);
     }
 
     protected override void ConnectHandler(MapView platformView)

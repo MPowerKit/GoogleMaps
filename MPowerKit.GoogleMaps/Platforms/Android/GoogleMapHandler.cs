@@ -58,6 +58,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         Lifecycle = MauiContext!.Services.GetRequiredService<IMapsLifecycle>();
 
         var options = new GoogleMapOptions();
+        if (!string.IsNullOrWhiteSpace(VirtualView.MapId)) options.InvokeMapId(VirtualView.MapId);
         options.InvokeCamera(Android.Gms.Maps.Model.CameraPosition.FromLatLngZoom(new(0d, 0d), 3f));
         var mapView = new MapView(Context, options);
 
