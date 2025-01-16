@@ -10,8 +10,11 @@ using VCircle = MPowerKit.GoogleMaps.Circle;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GoogleMap, MapView, GoogleMapHandler>
+public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, MapView>
 {
+    protected override IEnumerable<VCircle> VirtualViewItems => VirtualView!.Circles;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.CirclesProperty.PropertyName;
+
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
@@ -24,16 +27,6 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GoogleMap,
         platformView.OverlayTapped -= PlatformView_OverlayTapped;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.CirclesProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VCircle> GetVirtualViewItems()
-    {
-        return VirtualView!.Circles;
     }
 
     protected override void RemoveItemFromPlatformView(NCircle? nItem)

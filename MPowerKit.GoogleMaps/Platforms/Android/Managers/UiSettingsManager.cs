@@ -2,7 +2,7 @@
 
 namespace MPowerKit.GoogleMaps;
 
-public class UiSettingsManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class UiSettingsManager : MapFeatureManager<GMap>
 {
     protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {

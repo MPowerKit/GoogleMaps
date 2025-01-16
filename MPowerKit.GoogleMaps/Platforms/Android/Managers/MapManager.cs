@@ -4,7 +4,7 @@ using GMap = Android.Gms.Maps.GoogleMap;
 
 namespace MPowerKit.GoogleMaps;
 
-public class MapManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class MapManager : MapFeatureManager<GMap>
 {
     protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {

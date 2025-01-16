@@ -12,8 +12,11 @@ using VPolyline = Microsoft.Maui.Controls.Shapes.Polyline;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GoogleMap, MapView, GoogleMapHandler>
+public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, MapView>
 {
+    protected override IEnumerable<VPolyline> VirtualViewItems => VirtualView!.Polylines;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.PolylinesProperty.PropertyName;
+
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
@@ -28,16 +31,6 @@ public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, Goog
         platformView.CameraPositionChanged -= PlatformView_CameraPositionChanged;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.PolylinesProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VPolyline> GetVirtualViewItems()
-    {
-        return VirtualView!.Polylines;
     }
 
     protected override void RemoveItemFromPlatformView(NPolyline? nItem)
@@ -201,7 +194,7 @@ public static class PolylineExtensions
                     ? colorStyle
                     : clearStyle);
             }
-            var metersPerPixel = pixelDependentDashedPattern ? Distance.MetersPerDevicePixel((polyline.Points[0].X + polyline.Points[^1].X) / 2.0, map.Camera.Zoom) : 1d;
+            var metersPerPixel = pixelDependentDashedPattern ? Distance.MetersPerDevicePixel((polyline.Points[0].X + polyline.Points[^1].X) / 2d, map.Camera.Zoom) : 1d;
             spans = GeometryUtils.StyleSpans(path, styles.ToArray(), pattern.Select(v => new NSNumber(v * metersPerPixel)).ToArray(), LengthKind.Rhumb);
         }
         else

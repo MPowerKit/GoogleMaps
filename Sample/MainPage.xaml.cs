@@ -58,4 +58,14 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new GroundOverlaysTabbedPage()));
     }
+
+    private void Button_Clicked_10(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new HeatMapTabbedPage()));
+    }
+
+    private void Button_Clicked_11(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new ClustersTabbedPage()));
+    }
 }

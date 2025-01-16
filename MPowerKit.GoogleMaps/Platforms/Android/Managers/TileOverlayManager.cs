@@ -7,17 +7,10 @@ using VTileOverlay = MPowerKit.GoogleMaps.TileOverlay;
 
 namespace MPowerKit.GoogleMaps;
 
-public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOverlay, GoogleMap, GMap, GoogleMapHandler>
+public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOverlay, GMap>
 {
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.TileOverlaysProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VTileOverlay> GetVirtualViewItems()
-    {
-        return VirtualView!.TileOverlays;
-    }
+    protected override IEnumerable<VTileOverlay> VirtualViewItems => VirtualView!.TileOverlays;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.TileOverlaysProperty.PropertyName;
 
     protected override void RemoveItemFromPlatformView(NTileOverlay? nItem)
     {

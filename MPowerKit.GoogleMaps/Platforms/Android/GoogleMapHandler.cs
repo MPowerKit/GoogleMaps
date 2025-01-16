@@ -21,7 +21,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     };
 
-    public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>>> ManagerMapper { get; } = new()
+    public static Dictionary<string, Func<IMapFeatureManager<GMap>>> ManagerMapper { get; } = new()
     {
         { GoogleMap.MapManagerName, () => new MapManager() },
         { GoogleMap.CameraManagerName, () => new CameraManager() },
@@ -29,9 +29,9 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         { GoogleMap.PolylineManagerName, () => new PolylineManager() },
         { GoogleMap.PolygonManagerName, () => new PolygonManager() },
         { GoogleMap.CircleManagerName, () => new CircleManager() },
-        { GoogleMap.TileOverlayManagerName, () => new TileOverlayManager() },
+        { GoogleMap.TileOverlayManagerName, () => new HeatMapTileManager() },
         { GoogleMap.GroundOverlayManagerName, () => new GroundOverlayManager() },
-        { GoogleMap.PinManagerName, () => new PinManager<GoogleMap, GMap, GoogleMapHandler>() },
+        { GoogleMap.PinManagerName, () => new ClusterManager() },
     };
 
     public GoogleMapHandler() : base(GoogleMapHandlerMapper, GoogleMapHandlerCommandMapper)
@@ -51,7 +51,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
     protected IMapsLifecycle? Lifecycle { get; set; }
     protected GMap? NativeMap { get; set; }
 
-    protected Dictionary<string, IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>> Managers { get; set; } = [];
+    protected Dictionary<string, IMapFeatureManager<GMap>> Managers { get; set; } = [];
 
     protected override MapView CreatePlatformView()
     {

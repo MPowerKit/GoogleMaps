@@ -16,7 +16,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     };
 
-    public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>>> ManagerMapper { get; } = new()
+    public static Dictionary<string, Func<IMapFeatureManager<MapView>>> ManagerMapper { get; } = new()
     {
         { GoogleMap.MapManagerName, () => new MapManager() },
         { GoogleMap.CameraManagerName, () => new CameraManager() },
@@ -24,9 +24,9 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         { GoogleMap.PolylineManagerName, () => new PolylineManager() },
         { GoogleMap.PolygonManagerName, () => new PolygonManager() },
         { GoogleMap.CircleManagerName, () => new CircleManager() },
-        { GoogleMap.TileOverlayManagerName, () => new TileOverlayManager() },
+        { GoogleMap.TileOverlayManagerName, () => new HeatMapTileManager() },
         { GoogleMap.GroundOverlayManagerName, () => new GroundOverlayManager() },
-        { GoogleMap.PinManagerName, () => new PinManager<GoogleMap, MapView, GoogleMapHandler>() },
+        { GoogleMap.PinManagerName, () => new ClusterManager() },
     };
 
     public GoogleMapHandler() : base(GoogleMapHandlerMapper, GoogleMapHandlerCommandMapper)
@@ -43,7 +43,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
     {
     }
 
-    protected Dictionary<string, IMapFeatureManager<GoogleMap, MapView, GoogleMapHandler>> Managers { get; set; } = [];
+    protected Dictionary<string, IMapFeatureManager<MapView>> Managers { get; set; } = [];
 
     protected override MapView CreatePlatformView()
     {

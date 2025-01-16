@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.HeatMapSourcePage"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             Title="Heat Map Source"
+             x:DataType="vm:HeatMapSourcePageViewModel">
+    <ContentPage.BindingContext>
+        <vm:HeatMapSourcePageViewModel />
+    </ContentPage.BindingContext>
+
+    <gm:GoogleMap TileOverlaysSource="{Binding Items}">
+        <gm:GoogleMap.TileOverlayItemTemplate>
+            <vm:HeatMapTileTemplateSelector>
+                <vm:HeatMapTileTemplateSelector.OpaqueTemplate>
+                    <DataTemplate x:DataType="vm:HeatMapData">
+                        <gm:HeatMapTileOverlay Data="{Binding Coords, Converter={StaticResource CoordsToWeightedLatLngListConverter}}"
+                                               Opacity="1"
+                                               Radius="{Binding Radius}" />
+                    </DataTemplate>
+                </vm:HeatMapTileTemplateSelector.OpaqueTemplate>
+                <vm:HeatMapTileTemplateSelector.TransparentTemplate>
+                    <DataTemplate x:DataType="vm:HeatMapData">
+                        <gm:HeatMapTileOverlay Data="{Binding Coords, Converter={StaticResource CoordsToWeightedLatLngListConverter}}"
+                                               Opacity="0.5"
+                                               MaxIntensity="{Binding Intensity}"
+                                               Gradient="{Binding Gradient}" />
+                    </DataTemplate>
+                </vm:HeatMapTileTemplateSelector.TransparentTemplate>
+            </vm:HeatMapTileTemplateSelector>
+        </gm:GoogleMap.TileOverlayItemTemplate>
+    </gm:GoogleMap>
+</ContentPage>

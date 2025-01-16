@@ -11,8 +11,11 @@ using VPolygon = Microsoft.Maui.Controls.Shapes.Polygon;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleMap, GMap, GoogleMapHandler>
+public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GMap>
 {
+    protected override IEnumerable<VPolygon> VirtualViewItems => VirtualView!.Polygons;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.PolygonsProperty.PropertyName;
+
     protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
@@ -25,16 +28,6 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GoogleM
         platformView.PolygonClick -= PlatformView_PolygonClick;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.PolygonsProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VPolygon> GetVirtualViewItems()
-    {
-        return VirtualView!.Polygons;
     }
 
     protected override void RemoveItemFromPlatformView(NPolygon? nItem)

@@ -32,6 +32,10 @@
                     Clicked="Button_Clicked_8" />
             <Button Text="Ground Overlays"
                     Clicked="Button_Clicked_9" />
+            <Button Text="Heat map"
+                    Clicked="Button_Clicked_10" />
+            <Button Text="Clusters"
+                    Clicked="Button_Clicked_11" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

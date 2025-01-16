@@ -6,26 +6,26 @@ using VPin = MPowerKit.GoogleMaps.Pin;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN, TH>
-    where TV : GoogleMap
-    where TN : GMap
-    where TH : GoogleMapHandler
+public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 {
-    protected override void Init(TV virtualView, TN platformView, TH handler)
+    protected override IEnumerable<VPin> VirtualViewItems => VirtualView!.Pins;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.PinsProperty.PropertyName;
+
+    protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         base.Init(virtualView, platformView, handler);
 
         OnInfoWindowTemplateChanged(virtualView, platformView);
     }
 
-    protected override void Reset(TV virtualView, TN platformView, TH handler)
+    protected override void Reset(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         platformView.SetInfoWindowAdapter(null);
 
         base.Reset(virtualView, platformView, handler);
     }
 
-    protected override void SubscribeToEvents(TV virtualView, TN platformView, TH handler)
+    protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
 
@@ -38,7 +38,7 @@ public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN,
         platformView.InfoWindowClose += PlatformView_InfoWindowClose;
     }
 
-    protected override void UnsubscribeFromEvents(TV virtualView, TN platformView, TH handler)
+    protected override void UnsubscribeFromEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         platformView.MarkerClick -= PlatformView_PinClick;
         platformView.MarkerDragStart -= PlatformView_MarkerDragStart;
@@ -51,12 +51,7 @@ public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN,
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
     }
 
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.PinsProperty.PropertyName;
-    }
-
-    protected override void VirtualViewPropertyChanged(TV virtualView, TN platformView, string? propertyName)
+    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, GMap platformView, string? propertyName)
     {
         base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
@@ -64,11 +59,6 @@ public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN,
         {
             OnInfoWindowTemplateChanged(virtualView, platformView);
         }
-    }
-
-    protected override IEnumerable<VPin> GetVirtualViewItems()
-    {
-        return VirtualView!.Pins;
     }
 
     protected override void RemoveItemFromPlatformView(NPin? nItem)
@@ -213,10 +203,10 @@ public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN,
         }
     }
 
-    protected virtual void OnInfoWindowTemplateChanged(TV virtualView, TN platformView)
+    protected virtual void OnInfoWindowTemplateChanged(GoogleMap virtualView, GMap platformView)
     {
         platformView.SetInfoWindowAdapter(virtualView.InfoWindowTemplate is not null
-            ? new InfoWindowAdapter<TV>(virtualView) : null);
+            ? new InfoWindowAdapter(virtualView, () => Items) : null);
     }
 
     protected virtual void PlatformView_PinClick(object? sender, GMap.MarkerClickEventArgs e)
@@ -280,14 +270,15 @@ public class PinManager<TV, TN, TH> : ItemsMapFeatureManager<VPin, NPin, TV, TN,
     }
 }
 
-public class InfoWindowAdapter<TV> : Java.Lang.Object, GMap.IInfoWindowAdapter
-    where TV : GoogleMap
+public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
 {
-    protected TV Map { get; }
+    protected Func<IEnumerable<VPin>> GetPins { get; }
+    protected GoogleMap Map { get; }
 
-    public InfoWindowAdapter(TV map)
+    public InfoWindowAdapter(GoogleMap map, Func<IEnumerable<VPin>> getPins)
     {
         Map = map;
+        GetPins = getPins;
     }
 
     public virtual Android.Views.View? GetInfoContents(NPin marker)
@@ -297,7 +288,7 @@ public class InfoWindowAdapter<TV> : Java.Lang.Object, GMap.IInfoWindowAdapter
 
     public virtual Android.Views.View? GetInfoWindow(NPin marker)
     {
-        var pin = Map.Pins.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == marker.Id);
+        var pin = GetPins().Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == marker.Id);
 
         var template = Map.InfoWindowTemplate;
 

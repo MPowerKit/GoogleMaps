@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.HeatMapPage"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             Title="Heat Map"
+             x:DataType="vm:HeatMapPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:HeatMapPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout>
+                    <Label Text="{Binding Radius, StringFormat='Radius {0:F0}'}" />
+                    <Slider Value="{Binding Radius, Mode=TwoWay}"
+                            Minimum="10"
+                            Maximum="{OnPlatform Android=100, iOS=200}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="{Binding Opacity, StringFormat='Opacity {0:F2}'}" />
+                    <Slider Value="{Binding Opacity, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="1" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Grid.Column="2">
+                    <CheckBox IsChecked="{Binding CustomGradient, Mode=TwoWay}" />
+                    <Label Text="Use custom gradient"
+                           Grid.Column="1" />
+                </Grid>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*">
+                <VerticalStackLayout>
+                    <Label Text="{Binding MaxIntensity, StringFormat='Max intensity {0:F0}'}" />
+                    <Slider Value="{Binding MaxIntensity, Mode=TwoWay}"
+                            Minimum="0"
+                            Maximum="10" />
+                </VerticalStackLayout>
+
+                <Button Command="{Binding RandomizeDataCommand}"
+                        Text="Randomize data"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="2"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <gm:GoogleMap TileOverlays="{Binding Tiles}"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>

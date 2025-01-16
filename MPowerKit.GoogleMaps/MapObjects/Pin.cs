@@ -25,16 +25,17 @@ public class Pin : VisualElement
     {
         if (!ShowInfoWindowOnPinSelection) return;
 
-        InfoWindowShown = true;
+        if (NativeObjectAttachedProperty.GetNativeObject(this) is not NPin native) return;
 
-        var native = NativeObjectAttachedProperty.GetNativeObject(this) as NPin;
 #if ANDROID
-        native?.ShowInfoWindow();
+        InfoWindowShown = true;
+        native.ShowInfoWindow();
 #endif
 
 #if IOS
-        if (native?.Map is not null)
+        if (native.Map is not null)
         {
+            InfoWindowShown = true;
             native.Map.SelectedMarker = native;
         }
 #endif

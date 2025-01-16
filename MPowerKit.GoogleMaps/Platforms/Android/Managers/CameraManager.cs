@@ -8,7 +8,7 @@ using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CameraManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler>
+public class CameraManager : MapFeatureManager<GMap>
 {
     protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
@@ -29,7 +29,7 @@ public class CameraManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler
             return;
         }
 
-        virtualView.SendCameraChange(platformView.CameraPosition.ToCrossPlatform(), false);
+        virtualView.SendCameraChanged(platformView.CameraPosition.ToCrossPlatform(), false);
         virtualView.SendCameraIdle(platformView.Projection.VisibleRegion.ToCrossPlatform(), false);
     }
 
@@ -118,7 +118,7 @@ public class CameraManager : MapFeatureManager<GoogleMap, GMap, GoogleMapHandler
 
     protected virtual void PlatformView_CameraChange(object? sender, GMap.CameraChangeEventArgs e)
     {
-        VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
+        VirtualView!.SendCameraChanged(e.Position.ToCrossPlatform());
     }
 
     protected virtual void ResetMinMaxZoom()

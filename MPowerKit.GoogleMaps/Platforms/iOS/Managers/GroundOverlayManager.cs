@@ -5,8 +5,11 @@ using VGroundOverlay = MPowerKit.GoogleMaps.GroundOverlay;
 
 namespace MPowerKit.GoogleMaps;
 
-public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGroundOverlay, GoogleMap, MapView, GoogleMapHandler>
+public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGroundOverlay, MapView>
 {
+    protected override IEnumerable<VGroundOverlay> VirtualViewItems => VirtualView!.GroundOverlays;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.GroundOverlaysProperty.PropertyName;
+
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
@@ -19,16 +22,6 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
         platformView.OverlayTapped -= PlatformView_OverlayTapped;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.GroundOverlaysProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VGroundOverlay> GetVirtualViewItems()
-    {
-        return VirtualView!.GroundOverlays;
     }
 
     protected override void RemoveItemFromPlatformView(NGroundOverlay? nItem)

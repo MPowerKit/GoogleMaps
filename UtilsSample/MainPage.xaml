@@ -6,8 +6,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="30,0"
                              Spacing="10">
-            <Button Text="Heat map"
-                    Clicked="Button_Clicked" />
         </VerticalStackLayout>
     </ScrollView>
 

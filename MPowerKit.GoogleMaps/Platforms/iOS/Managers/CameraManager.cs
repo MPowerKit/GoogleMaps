@@ -7,7 +7,7 @@ using VCameraPosition = MPowerKit.GoogleMaps.CameraPosition;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CameraManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class CameraManager : MapFeatureManager<MapView>
 {
     protected override void Init(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {
@@ -27,7 +27,7 @@ public class CameraManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHand
             return;
         }
 
-        virtualView.SendCameraChange(platformView.Camera.ToCrossPlatform(), false);
+        virtualView.SendCameraChanged(platformView.Camera.ToCrossPlatform(), false);
         virtualView.SendCameraIdle(platformView.Projection.VisibleRegion.ToCrossPlatform(), false);
     }
 
@@ -82,13 +82,13 @@ public class CameraManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHand
 
     protected virtual void PlatformView_CameraPositionChanged(object? sender, GMSCameraEventArgs e)
     {
-        VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
+        VirtualView!.SendCameraChanged(e.Position.ToCrossPlatform());
         VirtualView!.SendCameraMove();
     }
 
     protected virtual void PlatformView_CameraPositionIdle(object? sender, GMSCameraEventArgs e)
     {
-        VirtualView!.SendCameraChange(e.Position.ToCrossPlatform());
+        VirtualView!.SendCameraChanged(e.Position.ToCrossPlatform());
         VirtualView!.SendCameraIdle(PlatformView!.Projection.VisibleRegion.ToCrossPlatform());
     }
 

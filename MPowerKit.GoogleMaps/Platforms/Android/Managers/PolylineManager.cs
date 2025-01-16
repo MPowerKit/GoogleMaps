@@ -10,8 +10,11 @@ using VPolyline = Microsoft.Maui.Controls.Shapes.Polyline;
 
 namespace MPowerKit.GoogleMaps;
 
-public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GoogleMap, GMap, GoogleMapHandler>
+public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GMap>
 {
+    protected override IEnumerable<VPolyline> VirtualViewItems => VirtualView!.Polylines;
+    protected override string VirtualViewItemsPropertyName => GoogleMap.PolylinesProperty.PropertyName;
+
     protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
     {
         base.SubscribeToEvents(virtualView, platformView, handler);
@@ -24,16 +27,6 @@ public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, Goog
         platformView.PolylineClick -= PlatformView_PolylineClick;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override string GetVirtualViewItemsPropertyName()
-    {
-        return GoogleMap.PolylinesProperty.PropertyName;
-    }
-
-    protected override IEnumerable<VPolyline> GetVirtualViewItems()
-    {
-        return VirtualView!.Polylines;
     }
 
     protected override void RemoveItemFromPlatformView(NPolyline? nItem)

@@ -6,7 +6,7 @@ using Path = System.IO.Path;
 
 namespace MPowerKit.GoogleMaps;
 
-public class MapManager : MapFeatureManager<GoogleMap, MapView, GoogleMapHandler>
+public class MapManager : MapFeatureManager<MapView>
 {
     protected override void Init(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
     {

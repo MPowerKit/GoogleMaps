@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.ClustersPage"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             Title="Clusters"
+             x:DataType="vm:ClustersPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:ClustersPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <gm:GoogleMap Pins="{Binding Pins}"
+                      UseBucketsForClusters="False"
+                      ClusterAlgorithm="NonHierarchicalView"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>

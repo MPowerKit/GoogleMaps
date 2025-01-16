@@ -78,6 +78,9 @@ public static class BuilderExtensions
             {
                 services.AddService<IViewImageSource, ViewImageSourceService>();
                 services.AddService<ViewImageSource, ViewImageSourceService>();
+
+                services.AddService<IHeatMapImageSource, HeatMapImageSourceService>();
+                services.AddService<HeatMapImageSource, HeatMapImageSourceService>();
             });
 #endif
 
