@@ -4,6 +4,8 @@ namespace MPowerKit.GoogleMaps;
 
 public class HeatMapTileOverlay : TileOverlay
 {
+    protected virtual HeatmapTileProvider Provider { get; set; }
+
     public HeatMapTileOverlay()
     {
         Opacity = 0.7;
@@ -14,10 +16,24 @@ public class HeatMapTileOverlay : TileOverlay
     {
         base.OnPropertyChanged(propertyName);
 
-        if (propertyName == DataProperty.PropertyName
-            || propertyName == RadiusProperty.PropertyName
-            || propertyName == GradientProperty.PropertyName)
+        if (propertyName == DataProperty.PropertyName && Data is not null)
         {
+            Provider?.SetWeightedData(Data);
+            ClearTileCache();
+        }
+        else if (propertyName == GradientProperty.PropertyName)
+        {
+            Provider?.SetGradient(Gradient);
+            ClearTileCache();
+        }
+        else if (propertyName == RadiusProperty.PropertyName)
+        {
+            Provider?.SetRadius(Radius);
+            ClearTileCache();
+        }
+        else if (propertyName == MaxIntensityProperty.PropertyName)
+        {
+            Provider?.SetMaxIntensity(MaxIntensity);
             ClearTileCache();
         }
     }
@@ -88,7 +104,7 @@ public class HeatMapTileOverlay : TileOverlay
 
     private ImageSource? GetHeatMapTile(Point point, int zoom, int tileSize)
     {
-        return new HeatmapTileProvider(Data, Gradient, Radius, MaxIntensity).GetTile((int)point.X, (int)point.Y, zoom);
+        return (Provider ??= new HeatmapTileProvider(Data, Gradient, Radius, MaxIntensity)).GetTile((int)point.X, (int)point.Y, zoom);
     }
 
     #endregion
@@ -98,7 +114,12 @@ public class HeatmapTileProvider
 {
     public const int DefaultRadius = 20;
     public const float DefaultOpacity = 0.7f;
-    public const int TileDimension = 512;
+    public const int TileDimension =
+#if ANDROID
+        512;
+#else
+        256;
+#endif
     public const int ScreenSize = 1280;
     public static int DefaultMinZoom { get; set; } = 2;
     public static int DefaultMaxZoom { get; set; } = 22;
@@ -129,7 +150,6 @@ public class HeatmapTileProvider
     private Gradient _gradient;
     private int[]? _colorMap;
     private float[] _kernel;
-    private readonly float _opacity = 1f;
     private float[]? _maxIntensity;
     private float _customMaxIntensity;
 
@@ -143,35 +163,6 @@ public class HeatmapTileProvider
         _kernel = GenerateKernel(_radius, _radius / 3f);
         SetGradient(_gradient);
         SetWeightedData(_data);
-    }
-
-    public void SetWeightedData(IEnumerable<WeightedLatLng> data)
-    {
-        if (data?.Count() is null or 0)
-        {
-            throw new ArgumentException("No input points.");
-        }
-
-        _data = data as WeightedLatLng[] ?? data.ToArray();
-        _bounds = GetBounds(_data);
-        _tree = new(_bounds);
-
-        for (var i = 0; i < _data.Length; i++)
-        {
-            _tree.Add(_data[i]);
-        }
-
-        _maxIntensity = GetMaxIntensities(_radius);
-    }
-
-    public void SetData(IEnumerable<Point> data)
-    {
-        SetWeightedData(WrapData(data));
-    }
-
-    private static IEnumerable<WeightedLatLng> WrapData(IEnumerable<Point> data)
-    {
-        return data.Select(l => new WeightedLatLng(l));
     }
 
     public ImageSource GetTile(int x, int y, int zoom)
@@ -245,10 +236,39 @@ public class HeatmapTileProvider
         return new HeatMapImageSource() { Pixels = colors, Size = size };
     }
 
+    public void SetWeightedData(IEnumerable<WeightedLatLng> data)
+    {
+        if (data?.Count() is null or 0)
+        {
+            throw new ArgumentException("No input points.");
+        }
+
+        _data = data as WeightedLatLng[] ?? data.ToArray();
+        _bounds = GetBounds(_data);
+        _tree = new(_bounds);
+
+        for (var i = 0; i < _data.Length; i++)
+        {
+            _tree.Add(_data[i]);
+        }
+
+        _maxIntensity = GetMaxIntensities(_radius);
+    }
+
+    public void SetData(IEnumerable<Point> data)
+    {
+        SetWeightedData(WrapData(data));
+    }
+
+    private static IEnumerable<WeightedLatLng> WrapData(IEnumerable<Point> data)
+    {
+        return data.Select(l => new WeightedLatLng(l));
+    }
+
     public void SetGradient(Gradient gradient)
     {
-        _gradient = gradient;
-        _colorMap = gradient.GenerateColorMap(_opacity);
+        _gradient = gradient ?? DefaultGradient;
+        _colorMap = _gradient.GenerateColorMap();
     }
 
     public void SetRadius(int radius)
@@ -263,7 +283,7 @@ public class HeatmapTileProvider
     public void SetMaxIntensity(float intensity)
     {
         _customMaxIntensity = intensity;
-        SetWeightedData(_data);
+        _maxIntensity = GetMaxIntensities(_radius);
     }
 
     private float[] GetMaxIntensities(int radius)
@@ -330,7 +350,7 @@ public class HeatmapTileProvider
 
         var intermediate = new float[dimOld, dimOld];
 
-        Parallel.For(0, dimOld, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, x =>
+        for (int x = 0; x < dimOld; x++)
         {
             var xpRadius = x + radius;
             var xmRadius = x - radius;
@@ -347,11 +367,11 @@ public class HeatmapTileProvider
                     intermediate[x2, y] += val * kernel[x2 - xmRadius];
                 }
             }
-        });
+        }
 
         var outputGrid = new float[dim, dim];
 
-        Parallel.For(lowerLimit, upperLimit + 1, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, x =>
+        for (int x = lowerLimit; x <= upperLimit; x++)
         {
             var xmRadius = x - radius;
 
@@ -369,7 +389,7 @@ public class HeatmapTileProvider
                     outputGrid[xmRadius, y2 - radius] += val * kernel[y2 - ymRadius];
                 }
             }
-        });
+        }
 
         return outputGrid;
     }
@@ -383,7 +403,7 @@ public class HeatmapTileProvider
 
         var transparent = Colors.Transparent.ToInt();
 
-        Parallel.For(0, dim, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, i =>
+        for (int i = 0; i < dim; i++)
         {
             var idim = i * dim;
 
@@ -397,7 +417,7 @@ public class HeatmapTileProvider
                     ? (col < colorMap.Length ? colorMap[col] : maxColor)
                     : transparent;
             }
-        });
+        }
 
         return (colors, dim);
     }

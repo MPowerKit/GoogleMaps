@@ -71,14 +71,16 @@ public class Gradient
         return colorIntervals;
     }
 
+    protected int[]? ColorMap;
+    protected virtual bool ShouldGenerateColorMap => ColorMap is null;
+
     /// <summary>
     /// Generates the color map to use with a provided gradient.
     /// </summary>
-    /// <param name="opacity">Overall opacity of the entire image: every individual alpha value will be multiplied by this opacity.</param>
     /// <returns>The generated color map based on the gradient.</returns>
-    public virtual int[] GenerateColorMap(float opacity)
+    public virtual int[] GenerateColorMap()
     {
-        opacity = Math.Clamp(opacity, 0f, 1f);
+        if (!ShouldGenerateColorMap) return ColorMap!;
 
         var colorIntervals = GenerateColorIntervals();
         Span<int> colorMap = stackalloc int[ColorMapSize];
@@ -97,15 +99,9 @@ public class Gradient
             colorMap[i] = ColorExtensions.HsvColorsInterpolation(interval.Color1, interval.Color2, ratio);
         }
 
-        if (opacity < 1f)
-        {
-            for (var i = 0; i < ColorMapSize; i++)
-            {
-                colorMap[i] = colorMap[i].ColorWithMultipliedAlphas(opacity);
-            }
-        }
+        ColorMap = colorMap.ToArray();
 
-        return colorMap.ToArray();
+        return ColorMap;
     }
 }
 
