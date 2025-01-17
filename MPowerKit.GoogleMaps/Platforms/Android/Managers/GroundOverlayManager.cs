@@ -1,4 +1,5 @@
-﻿using Android.Gms.Maps.Model;
+﻿using System.Net.NetworkInformation;
+using Android.Gms.Maps.Model;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 using NGroundOverlay = Android.Gms.Maps.Model.GroundOverlay;
@@ -172,7 +173,8 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
 
     protected virtual void PlatformView_GroundOverlayClick(object? sender, GMap.GroundOverlayClickEventArgs e)
     {
-        var groundOverlay = Items.Single(go => (NativeObjectAttachedProperty.GetNativeObject(go) as NGroundOverlay)!.Id == e.GroundOverlay.Id);
+        var groundOverlay = Items.SingleOrDefault(go => (NativeObjectAttachedProperty.GetNativeObject(go) as NGroundOverlay)!.Id == e.GroundOverlay.Id);
+        if (groundOverlay is null) return;
 
         VirtualView!.SendGroundOverlayClick(groundOverlay);
     }

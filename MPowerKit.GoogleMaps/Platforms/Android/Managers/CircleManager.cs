@@ -132,7 +132,8 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GMap>
 
     protected virtual void PlatformView_CircleClick(object? sender, GMap.CircleClickEventArgs e)
     {
-        var circle = Items.Single(c => (NativeObjectAttachedProperty.GetNativeObject(c) as NCircle)!.Id == e.Circle.Id);
+        var circle = Items.SingleOrDefault(c => (NativeObjectAttachedProperty.GetNativeObject(c) as NCircle)!.Id == e.Circle.Id);
+        if (circle is null) return;
 
         VirtualView!.SendCircleClick(circle);
     }

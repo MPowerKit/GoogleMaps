@@ -125,7 +125,6 @@ public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, MapView>
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var circle = Items.SingleOrDefault(c => NativeObjectAttachedProperty.GetNativeObject(c) == e.Overlay);
-
         if (circle is null) return;
 
         VirtualView!.SendCircleClick(circle);

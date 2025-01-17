@@ -143,7 +143,8 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GMap>
 
     protected virtual void PlatformView_PolygonClick(object? sender, GMap.PolygonClickEventArgs e)
     {
-        var polygon = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPolygon)!.Id == e.Polygon.Id);
+        var polygon = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPolygon)!.Id == e.Polygon.Id);
+        if (polygon is null) return;
 
         VirtualView!.SendPolygonClick(polygon);
     }

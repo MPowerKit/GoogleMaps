@@ -149,7 +149,6 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var groundOverlay = Items.SingleOrDefault(go => NativeObjectAttachedProperty.GetNativeObject(go) == e.Overlay);
-
         if (groundOverlay is null) return;
 
         VirtualView!.SendGroundOverlayClick(groundOverlay);

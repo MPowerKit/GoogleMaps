@@ -124,7 +124,6 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, MapView
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var polygon = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
-
         if (polygon is null) return;
 
         VirtualView!.SendPolygonClick(polygon);

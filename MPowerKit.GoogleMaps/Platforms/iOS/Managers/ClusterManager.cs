@@ -137,7 +137,8 @@ public class ClusterManager : PinManager
 
     protected override bool PlatformView_PinTapped(MapView map, NPin native)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == native);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == native);
+        if (pin is null) return true;
 
         if (pin is not Cluster cluster)
         {
@@ -151,7 +152,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoTapped(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {
@@ -164,7 +166,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoLongPressed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {
@@ -177,7 +180,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {

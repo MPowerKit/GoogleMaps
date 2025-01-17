@@ -117,7 +117,8 @@ public class ClusterManager : PinManager
     {
         e.Handled = true;
 
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {
@@ -132,7 +133,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoWindowClick(object? sender, GMap.InfoWindowClickEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {
@@ -145,7 +147,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoWindowLongClick(object? sender, GMap.InfoWindowLongClickEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {
@@ -158,7 +161,8 @@ public class ClusterManager : PinManager
 
     protected override void PlatformView_InfoWindowClose(object? sender, GMap.InfoWindowCloseEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         if (pin is not Cluster cluster)
         {

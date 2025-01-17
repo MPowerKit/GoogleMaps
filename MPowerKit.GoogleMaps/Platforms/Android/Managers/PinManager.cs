@@ -213,16 +213,16 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
     {
         e.Handled = true;
 
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
-
-        if (!pin.IsEnabled) return;
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin?.IsEnabled is not true) return;
 
         VirtualView!.SendPinClick(pin);
     }
 
     protected virtual void PlatformView_MarkerDragStart(object? sender, GMap.MarkerDragStartEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -231,7 +231,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 
     protected virtual void PlatformView_MarkerDrag(object? sender, GMap.MarkerDragEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -240,7 +241,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 
     protected virtual void PlatformView_MarkerDragEnd(object? sender, GMap.MarkerDragEndEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -249,14 +251,16 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 
     protected virtual void PlatformView_InfoWindowClick(object? sender, GMap.InfoWindowClickEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         VirtualView!.SendInfoWindowClick(pin);
     }
 
     protected virtual void PlatformView_InfoWindowLongClick(object? sender, GMap.InfoWindowLongClickEventArgs e)
     {
-        var pin = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        var pin = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == e.Marker.Id);
+        if (pin is null) return;
 
         VirtualView!.SendInfoWindowLongClick(pin);
     }

@@ -137,7 +137,6 @@ public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, MapV
     protected virtual void PlatformView_OverlayTapped(object? sender, GMSOverlayEventEventArgs e)
     {
         var polyline = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Overlay);
-
         if (polyline is null) return;
 
         VirtualView!.SendPolylineClick(polyline);

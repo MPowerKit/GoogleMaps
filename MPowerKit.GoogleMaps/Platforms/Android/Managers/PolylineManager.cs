@@ -142,7 +142,8 @@ public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GMap
 
     protected virtual void PlatformView_PolylineClick(object? sender, GMap.PolylineClickEventArgs e)
     {
-        var polyline = Items.Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPolyline)!.Id == e.Polyline.Id);
+        var polyline = Items.SingleOrDefault(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPolyline)!.Id == e.Polyline.Id);
+        if (polyline is null) return;
 
         VirtualView!.SendPolylineClick(polyline);
     }

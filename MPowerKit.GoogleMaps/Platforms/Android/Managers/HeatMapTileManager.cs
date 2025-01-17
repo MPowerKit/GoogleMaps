@@ -27,17 +27,22 @@ public class HeatMapTileProvider : Java.Lang.Object, ITileProvider
 
     public Tile? GetTile(int x, int y, int zoom)
     {
-        var source = _provider?.Invoke(new(x, y), zoom, _tileSize);
-
-        if (source is NoTileImageSource) return TileProvider.NoTile;
-
-        if (source is HeatMapImageSource heatMapSource)
+        var res = Task.Run(() =>
         {
-            using var bitmap = HeatMapImageSourceService.GetBitmapFromPixels(heatMapSource.Pixels, heatMapSource.Size);
+            var source = _provider?.Invoke(new(x, y), zoom, _tileSize);
 
-            return new Tile(_tileSize, _tileSize, bitmap.ToArray());
-        }
+            if (source is NoTileImageSource) return TileProvider.NoTile;
 
-        return null;
+            if (source is HeatMapImageSource heatMapSource)
+            {
+                using var bitmap = HeatMapImageSourceService.GetBitmapFromPixels(heatMapSource.Pixels, heatMapSource.Size);
+
+                return new Tile(_tileSize, _tileSize, bitmap.ToArray());
+            }
+
+            return null;
+        }).Result;
+
+        return res;
     }
 }

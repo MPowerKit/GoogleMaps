@@ -254,7 +254,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
 
     protected virtual bool PlatformView_PinTapped(MapView map, NPin native)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == native);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == native);
+        if (pin?.IsEnabled is not true) return true;
 
         VirtualView!.SendPinClick(pin);
 
@@ -263,7 +264,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
 
     protected virtual void PlatformView_DraggingMarkerStarted(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -272,7 +274,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
 
     protected virtual void PlatformView_DraggingMarker(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -281,7 +284,8 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
 
     protected virtual void PlatformView_DraggingMarkerEnded(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         pin.Position = e.Marker.Position.ToCrossPlatformPoint();
 
@@ -290,23 +294,24 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
 
     protected virtual void PlatformView_InfoTapped(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         VirtualView!.SendInfoWindowClick(pin);
     }
 
     protected virtual void PlatformView_InfoLongPressed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin is null) return;
 
         VirtualView!.SendInfoWindowLongClick(pin);
     }
 
     protected virtual void PlatformView_InfoClosed(object? sender, GMSMarkerEventEventArgs e)
     {
-        var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
-
-        if (!pin.InfoWindowShown) return;
+        var pin = Items.SingleOrDefault(p => NativeObjectAttachedProperty.GetNativeObject(p) == e.Marker);
+        if (pin?.InfoWindowShown is not true) return;
 
         VirtualView!.SendInfoWindowClosed(pin);
     }
