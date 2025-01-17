@@ -12,11 +12,57 @@
 
     <Grid RowDefinitions="Auto,*">
         <VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="5">
+                <VerticalStackLayout>
+                    <Label Text="Selected Algorithm" />
+                    <Label Text="{Binding SelectedAlgorithm}"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Button Command="{Binding ChangeAlgorithmCommand}"
+                        Text="Change cluster algorithm"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="1" />
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Grid.Column="2">
+                    <CheckBox x:Name="buckets" />
+                    <Label Text="Use buckets for clusters"
+                           Grid.Column="1" />
+                </Grid>
+            </Grid>
+
+            <!--<Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="5">
+                <Button Command="{Binding RandomizePinsCommand}"
+                        Text="Randomize pins"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap" />
+
+                <Button Command="{Binding ChangeClusterAlgorithmCommand}"
+                        Text="Change cluster algorithm"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap" />
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Grid.Column="2">
+                    <CheckBox x:Name="buckets" />
+                    <Label Text="Use buckets for clusters"
+                           Grid.Column="1" />
+                </Grid>
+            </Grid>-->
         </VerticalStackLayout>
 
         <gm:GoogleMap Pins="{Binding Pins}"
-                      UseBucketsForClusters="False"
-                      ClusterAlgorithm="NonHierarchicalView"
+                      UseBucketsForClusters="{Binding IsChecked, Source={x:Reference buckets}, Mode=TwoWay}"
+                      ClusterAlgorithm="{Binding SelectedAlgorithm}"
+                      ClusterClickedCommand="{Binding ClusterClickedCommand}"
+                      ClusterInfoWindowClickedCommand="{Binding ClusterInfoWindowClickedCommand}"
+                      ClusterInfoWindowLongClickedCommand="{Binding ClusterInfoWindowLongClickedCommand}"
+                      ClusterInfoWindowClosedCommand="{Binding ClusterInfoWindowClosedCommand}"
                       Grid.Row="1" />
     </Grid>
 </ContentPage>

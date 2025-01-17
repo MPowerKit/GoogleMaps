@@ -28,8 +28,14 @@ public partial class GoogleMap
         this.PropertyChanged += GoogleMap_Clusters_PropertyChanged;
         this.SizeChanged += GoogleMap_Clusters_SizeChanged;
         this.CameraIdle += GoogleMap_Clusters_CameraIdle;
+        this.BindingContextChanged += GoogleMap_Clusters_BindingContextChanged;
 
         OnClusterAlgorithmChanged();
+    }
+
+    protected virtual void GoogleMap_Clusters_BindingContextChanged(object? sender, EventArgs e)
+    {
+        OnClusterAnimationChanged();
     }
 
     protected virtual void GoogleMap_Clusters_CameraIdle(VisibleRegion obj)
@@ -52,7 +58,7 @@ public partial class GoogleMap
         }
     }
 
-    private void GoogleMap_Clusters_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
+    protected virtual void GoogleMap_Clusters_PropertyChanging(object sender, Microsoft.Maui.Controls.PropertyChangingEventArgs e)
     {
         if (e.PropertyName == ClusterAlgorithmProperty.PropertyName)
         {
@@ -64,7 +70,7 @@ public partial class GoogleMap
         }
     }
 
-    private void GoogleMap_Clusters_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    protected virtual void GoogleMap_Clusters_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == ClusterAlgorithmProperty.PropertyName)
         {
@@ -74,6 +80,30 @@ public partial class GoogleMap
         {
             OnClustersPinsChanged();
         }
+        else if (e.PropertyName == UseBucketsForClustersProperty.PropertyName)
+        {
+            OnUseBucketsChanged();
+        }
+        else if (e.PropertyName == ClusterAnimationProperty.PropertyName)
+        {
+            OnClusterAnimationChanged();
+        }
+    }
+
+    protected virtual void OnClusterAnimationChanged()
+    {
+        if (ClusterAnimation is BindableObject bindable && bindable.BindingContext is null)
+        {
+            bindable.BindingContext = this.BindingContext;
+        }
+    }
+
+    protected virtual void OnUseBucketsChanged()
+    {
+        if (ClusterAlgorithm is ClusterAlgorithm.None) return;
+
+        ClustersIconCache.Clear();
+        InflateClustersMarkers(Clusters);
     }
 
     protected virtual void OnClusterAlgorithmChanging()
@@ -99,6 +129,8 @@ public partial class GoogleMap
             _ => null
         };
 
+        PreviousCameraPosition = CameraPosition;
+
         Recluster();
     }
 
@@ -117,29 +149,33 @@ public partial class GoogleMap
             collectionChanged.CollectionChanged += Clusters_Pins_CollectionChanged;
         }
 
+        if (ClusterAlgorithm is ClusterAlgorithm.None) return;
+
         Recluster();
     }
 
     protected virtual void Clusters_Pins_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (ClusterAlgorithm is ClusterAlgorithm.None) return;
+
         Recluster();
     }
 
     protected virtual void ReclusterIfNeeded()
     {
-        if (ScreenBasedAlgorithm is null || CameraPosition is null) return;
+        if (ClusterAlgorithm is ClusterAlgorithm.None || CameraPosition is null) return;
 
         var newPosition = CameraPosition;
 
         // delegate clustering to the algorithm
-        if (ScreenBasedAlgorithm.ShouldReclusterOnMapMovement)
+        if (ScreenBasedAlgorithm!.ShouldReclusterOnMapMovement)
         {
             Recluster();
         }
         // Don't re-compute clusters if the map has just been panned/tilted/rotated.
         else if (PreviousCameraPosition?.Zoom != newPosition.Zoom)
         {
-            PreviousCameraPosition = newPosition;
+            //PreviousCameraPosition = newPosition;
             Recluster();
         }
     }
@@ -148,6 +184,8 @@ public partial class GoogleMap
     {
         if (PrevAlgorithm is not ClusterAlgorithm.None && ClusterAlgorithm is ClusterAlgorithm.None)
         {
+            PrevAlgorithm = ClusterAlgorithm.None;
+            OnPropertyChanging(PinsProperty.PropertyName);
             OnPropertyChanged(PinsProperty.PropertyName);
             return;
         }
@@ -360,7 +398,7 @@ public partial class GoogleMap
 
         ClusterClick?.Invoke(cluster);
 
-        var parameter = cluster.BindingContext ?? cluster;
+        var parameter = cluster;
 
         if (ClusterClickedCommand?.CanExecute(parameter) is true)
             ClusterClickedCommand.Execute(parameter);
@@ -371,7 +409,7 @@ public partial class GoogleMap
     {
         ClusterInfoWindowClick?.Invoke(cluster);
 
-        var parameter = cluster.BindingContext ?? cluster;
+        var parameter = cluster;
 
         if (ClusterInfoWindowClickedCommand?.CanExecute(parameter) is true)
             ClusterInfoWindowClickedCommand.Execute(parameter);
@@ -382,7 +420,7 @@ public partial class GoogleMap
     {
         ClusterInfoWindowLongClick?.Invoke(cluster);
 
-        var parameter = cluster.BindingContext ?? cluster;
+        var parameter = cluster;
 
         if (ClusterInfoWindowLongClickedCommand?.CanExecute(parameter) is true)
             ClusterInfoWindowLongClickedCommand.Execute(parameter);
@@ -393,7 +431,7 @@ public partial class GoogleMap
     {
         ClusterInfoWindowClosed?.Invoke(cluster);
 
-        var parameter = cluster.BindingContext ?? cluster;
+        var parameter = cluster;
 
         if (ClusterInfoWindowClosedCommand?.CanExecute(parameter) is true)
             ClusterInfoWindowClosedCommand.Execute(parameter);
@@ -459,7 +497,7 @@ public partial class GoogleMap
             nameof(ClusterAlgorithm),
             typeof(ClusterAlgorithm),
             typeof(GoogleMap),
-            ClusterAlgorithm.NonHierarchicalView
+            ClusterAlgorithm.None
             );
     #endregion
 
