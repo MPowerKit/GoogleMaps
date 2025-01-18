@@ -35,25 +35,75 @@
                 </Grid>
             </Grid>
 
-            <!--<Grid ColumnDefinitions="*,*,*"
-                  ColumnSpacing="5">
-                <Button Command="{Binding RandomizePinsCommand}"
-                        Text="Randomize pins"
-                        VerticalOptions="Center"
-                        LineBreakMode="WordWrap" />
-
-                <Button Command="{Binding ChangeClusterAlgorithmCommand}"
-                        Text="Change cluster algorithm"
-                        VerticalOptions="Center"
-                        LineBreakMode="WordWrap" />
-
-                <Grid ColumnDefinitions="Auto,*"
-                      Grid.Column="2">
-                    <CheckBox x:Name="buckets" />
-                    <Label Text="Use buckets for clusters"
+            <Grid ColumnDefinitions="*,*,*">
+                <Grid ColumnDefinitions="Auto,*">
+                    <CheckBox x:Name="iconTemplate" />
+                    <Label Text="Custom cluster icon template"
                            Grid.Column="1" />
                 </Grid>
-            </Grid>-->
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Grid.Column="1">
+                    <CheckBox x:Name="infoWindowTemplate" />
+                    <Label Text="Custom cluster info window template"
+                           Grid.Column="1" />
+                </Grid>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="5">
+                <Grid ColumnDefinitions="Auto,*">
+                    <CheckBox x:Name="animate" />
+                    <Label Text="Animate clusters"
+                           Grid.Column="1" />
+                </Grid>
+
+                <VerticalStackLayout Grid.Column="1"
+                                     IsVisible="{Binding IsChecked, Source={x:Reference animate}}">
+                    <Label Text="{Binding DurationInMs, StringFormat='DurationIn {0:F0} ms'}" />
+                    <Slider Value="{Binding DurationInMs, Mode=TwoWay}"
+                            Minimum="300"
+                            Maximum="3000" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2"
+                                     IsVisible="{Binding IsChecked, Source={x:Reference animate}}">
+                    <Label Text="{Binding DurationOutMs, StringFormat='DurationOut {0:F0} ms'}" />
+                    <Slider Value="{Binding DurationOutMs, Mode=TwoWay}"
+                            Minimum="300"
+                            Maximum="3000" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="5"
+                  IsVisible="{Binding IsChecked, Source={x:Reference animate}}">
+                <VerticalStackLayout>
+                    <Label Text="Selected EasingIn" />
+                    <Label Text="{Binding EasingInStr}"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Button Command="{Binding ChangeEasingInCommand}"
+                        Text="Change EasingIn"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="1" />
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Label Text="Selected EasingOut" />
+                    <Label Text="{Binding EasingOutStr}"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Button Command="{Binding ChangeEasingOutCommand}"
+                        Text="Change EasingOut"
+                        VerticalOptions="Center"
+                        LineBreakMode="WordWrap"
+                        Grid.Column="3" />
+            </Grid>
         </VerticalStackLayout>
 
         <gm:GoogleMap Pins="{Binding Pins}"
@@ -63,6 +113,74 @@
                       ClusterInfoWindowClickedCommand="{Binding ClusterInfoWindowClickedCommand}"
                       ClusterInfoWindowLongClickedCommand="{Binding ClusterInfoWindowLongClickedCommand}"
                       ClusterInfoWindowClosedCommand="{Binding ClusterInfoWindowClosedCommand}"
-                      Grid.Row="1" />
+                      Grid.Row="1" >
+            <gm:GoogleMap.Triggers>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference animate}}"
+                             Value="False">
+                    <Setter Property="ClusterAnimation"
+                            Value="{x:Null}" />
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference animate}}"
+                             Value="True">
+                    <Setter Property="ClusterAnimation">
+                        <Setter.Value>
+                            <gm:ClusterAnimation DurationIn="{Binding DurationIn}"
+                                                 DurationOut="{Binding DurationOut}"
+                                                 EasingIn="{Binding EasingIn}"
+                                                 EasingOut="{Binding EasingOut}" />
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference iconTemplate}}"
+                             Value="False">
+                    <Setter Property="ClusterIconTemplate"
+                            Value="{x:Null}" />
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference iconTemplate}}"
+                             Value="True">
+                    <Setter Property="ClusterIconTemplate">
+                        <Setter.Value>
+                            <DataTemplate x:DataType="gm:Cluster">
+                                <UriImageSource Uri="{Binding Size, StringFormat='https://picsum.photos/{0}/{0}'}" />
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference infoWindowTemplate}}"
+                             Value="False">
+                    <Setter Property="ClusterInfoWindowTemplate"
+                            Value="{x:Null}" />
+                </DataTrigger>
+                <DataTrigger TargetType="gm:GoogleMap"
+                             Binding="{Binding IsChecked, Source={x:Reference infoWindowTemplate}}"
+                             Value="True">
+                    <Setter Property="ClusterInfoWindowTemplate">
+                        <Setter.Value>
+                            <DataTemplate x:DataType="gm:Cluster">
+                                <Border BackgroundColor="Orange"
+                                        Stroke="Green"
+                                        StrokeThickness="5"
+                                        StrokeShape="RoundRectangle, 15"
+                                        Padding="15">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding Size}"
+                                               FontSize="22"
+                                               FontAttributes="Bold"
+                                               TextColor="Black" />
+                                        <Label Text="{Binding Position}"
+                                               TextColor="Purple" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </gm:GoogleMap.Triggers>
+        </gm:GoogleMap>
     </Grid>
 </ContentPage>

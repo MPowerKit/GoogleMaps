@@ -84,6 +84,10 @@ public partial class GoogleMap
         {
             OnUseBucketsChanged();
         }
+        else if (e.PropertyName == ClusterIconTemplateProperty.PropertyName)
+        {
+            OnClusterIconTemplateChanged();
+        }
         else if (e.PropertyName == ClusterAnimationProperty.PropertyName)
         {
             OnClusterAnimationChanged();
@@ -96,6 +100,11 @@ public partial class GoogleMap
         {
             bindable.BindingContext = this.BindingContext;
         }
+    }
+
+    protected virtual void OnClusterIconTemplateChanged()
+    {
+        OnUseBucketsChanged();
     }
 
     protected virtual void OnUseBucketsChanged()
@@ -362,6 +371,7 @@ public partial class GoogleMap
             var template = iconTemplate;
             if (token.IsCancellationRequested) return;
 
+            cluster.BindingContext = cluster;
             cluster.Title = $"Cluster size {cluster.Size}";
             cluster.Snippet = $"Cluster center Lat={cluster.Position.X}, Lon={cluster.Position.Y}";
 
