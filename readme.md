@@ -6,9 +6,11 @@
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/alexdobrynin)
 
-This library is designed for the .NET MAUI. The main control of this library `GoogleMap` implements every single feature that Google Maps SDK for Android and iOS provides. Every feature of the SDK is represented as `BindableProperty`, so you can build very flexible solutions that require usage of Google Maps.
+This library is designed for the .NET MAUI. The main control of this library `GoogleMap` implements every single feature that Google Maps SDK for [Android](https://developers.google.com/maps/documentation/android-sdk/overview) and [iOS](https://developers.google.com/maps/documentation/ios-sdk/overview) provides. Every feature of the SDK is represented as `BindableProperty`, so you can build very flexible solutions that require usage of Google Maps.
 
-## Table Of Contents
+Also, this library supports features from the [Google Maps Utils SDK](https://developers.google.com/maps/documentation/android-sdk/utility), but does not bring extra native dependencies. All code from Utils SDK is ported from Java to C#/.NET and completely cross-platform.
+
+## Table Of Contents of public API's
 
 - [Setup](#setup)
 - [Usage](#usage)
@@ -22,9 +24,12 @@ This library is designed for the .NET MAUI. The main control of this library `Go
     - [Models](#models)
         - [Point](#point)
         - [LatLngBounds](#latlngbounds)
+        - [WeightedLatLng](#weightedlatlng)
         - [VisibleRegion](#visibleregion)
         - [MapCapabilities](#mapcapabilities)
         - [PointOfInterest](#pointofinterest)
+        - [Graident](#gradient)
+        - [ClusterAnimation](#clusteranimation)
         - [CameraPosition](#cameraposition)
         - [CameraUpdate](#cameraupdate)
         - [CameraUpdateFactory](#cameraupdatefactory)
@@ -33,12 +38,14 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [CameraMoveReason](#cameramovereason)
         - [MapType](#maptype)
         - [MapColorScheme](#mapcolorscheme)
+        - [ClusterAlgorithm](#clusteralgorithm)
         - [ViewImageSource](#viewimagesource)
         - [TileData](#tiledata)
         - [NoTileImageSource](#notileimagesource)
         - [Distance](#distance)
     - [Map objects](#map-objects)
         - [Pin](#pin)
+        - [Cluster](#cluster)
         - [Polyline](#polyline)
         - [Polygon](#polygon)
         - [Circle](#circle)
@@ -46,6 +53,7 @@ This library is designed for the .NET MAUI. The main control of this library `Go
         - [TileOverlay](#tileoverlay)
             - [TileProvider](#tileprovider)
             - [TileTemplate](#tiletemplate)
+        - [HeatMapTileOverlay](#heatmaptileoverlay)
 
 ## Setup
 
@@ -119,7 +127,7 @@ The full list of all properties and features you can find [here](https://github.
 API of this library is devided into 9 logical groups: Map features, Camera, UI Settings, Pins, Circles, Polylines, Polygons, Tiles, Ground overlays. Each logic group is represented as separate manager and responsible only for that part of logic, and preregistered in the public static dictionary inside the handler:
 
 ```csharp
-public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, GMap, GoogleMapHandler>>> ManagerMapper { get; } = new()
+public static Dictionary<string, Func<IMapFeatureManager<GMap>>> ManagerMapper { get; } = new()
 {
     { GoogleMap.MapManagerName, () => new MapManager() },
     { GoogleMap.CameraManagerName, () => new CameraManager() },
@@ -127,9 +135,9 @@ public static Dictionary<string, Func<IMapFeatureManager<GoogleMap, GMap, Google
     { GoogleMap.PolylineManagerName, () => new PolylineManager() },
     { GoogleMap.PolygonManagerName, () => new PolygonManager() },
     { GoogleMap.CircleManagerName, () => new CircleManager() },
-    { GoogleMap.TileOverlayManagerName, () => new TileOverlayManager() },
+    { GoogleMap.TileOverlayManagerName, () => new HeatMapTileManager() },
     { GoogleMap.GroundOverlayManagerName, () => new GroundOverlayManager() },
-    { GoogleMap.PinManagerName, () => new PinManager<GoogleMap, GMap, GoogleMapHandler>() },
+    { GoogleMap.PinManagerName, () => new ClusterManager() },
 };
 ```
 
@@ -153,7 +161,7 @@ If you want to add absolutely new logic to your map, you can do next:
 ```csharp
 GoogleMapHandler.ManagerMapper["YourManagerUniqueName"] = () => new YourNewLogicManager();
 ```
-and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, NativeMapView, GoogleMapHandler>)`
+and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<NativeMapView>)`
 
 **Note: You can do it in your `MauiProgram.cs` or in any other place in your code. But you should understand, that this changes can be applied to the map only before navigating to the page with map.**
 
@@ -177,13 +185,17 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<GoogleMap, N
 |PolylineClick|PolylineClickedCommand|Polyline/object|Raised, when user clicks on the polyline. The argument type of the command depends on how polyline was added to the map.|
 |CircleClick|CircleClickedCommand|Circle/object|Raised, when user clicks on the circle. The argument type of the command depends on how circle was added to the map.|
 |GroundOverlayClick|GroundOverlayClickedCommand|GroundOverlay/object|Raised, when user clicks on the ground overlay. The argument type of the command depends on how ground overlay was added to the map.|
-|PinClick|PinClickedCommand|Pin/object|Raised, when user clicks on the pin. The argument type of the command depends on how pin was added to the map. the `SelectedPin` property is set to the new value, but only if this pin `CanBeSelected`.|
+|PinClick|PinClickedCommand|Pin/object|Raised, when user clicks on the pin. The argument type of the command depends on how pin was added to the map. The `SelectedPin` property is set to the new value, but only if this pin `CanBeSelected`.|
 |PinDragStart|PinDragStartedCommand|Pin/object|Raised, when user starting drag the pin. The argument type of the command depends on how pin was added to the map.|
 |PinDragging|PinDraggingCommand|Pin/object|Raised, when user is dragging the pin. The argument type of the command depends on how pin was added to the map.|
 |PinDragEnd|PinDragEndedCommand|Pin/object|Raised, when pin dragging is ended. The argument type of the command depends on how pin was added to the map.|
 |InfoWindowClick|InfoWindowClickedCommand|Pin/object|Raised, when user clicks on pin's info window. The argument type of the command depends on how pin was added to the map.|
 |InfoWindowLongClick|InfoWindowLongClickedCommand|Pin/object|Raised, when user does long press on pin's info window. The argument type of the command depends on how pin was added to the map.|
 |InfoWindowClosed|InfoWindowClosedCommand|Pin/object|Raised, when pin's info window was closed. The argument type of the command depends on how pin was added to the map.|
+|ClusterClick|ClusterClickedCommand|Cluster|Raised, when user clicks on the cluster. The argument type can only be `Cluster`.|
+|ClusterInfoWindowClick|ClusterInfoWindowClickedCommand|Cluster|Raised, when user clicks on cluster's info window. The argument type can only be `Cluster`.|
+|ClusterInfoWindowLongClick|ClusterInfoWindowLongClickedCommand|Cluster|Raised, when user does long press on cluster's info window. The argument type can only be `Cluster`.|
+|ClusterInfoWindowClosed|ClusterInfoWindowClosedCommand|Cluster|Raised, when cluster's info window was closed. The argument type can only be `Cluster`.|
 
 ### Public methods, actions, funcs
 
@@ -220,6 +232,7 @@ Example of usage:
 |MoveCameraAction|Action&lt;CameraUpdate, int&gt;|Can be bound and called from viewmodel to instantly move camera to the new position. Never `null`.|
 |ProjectMapCoordsToScreenLocationFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project map coordinates to coordinates on the screen whithin map control. Never `null`.|
 |ProjectScreenLocationToMapCoordsFunc|Func&lt;Point,Point?&gt;|Can be bound and called from viewmodel to project coordinates on the screen to map coordinates. Never `null`.|
+|Clusters|IEnumerable&lt;Cluster&gt;|Represents a collection of clusters if there are some pins on the map and `ClusterAlgorithm` is not `None`. The entire collection is changed each time pins being reclustered. SHould not be changed outside the map control. Default is `null`.|
 
 #### Properties related to objects on the map
 
@@ -245,7 +258,13 @@ Example of usage:
 |PinItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for pins.|
 |SelectedPin|Pin|Represents selected pin at the moment. `null` if there is no selected pin at the moment.|
 |SelectedPinData|object|This is a `BindingContext` of currently selected pin. `null` if there is no selected pin at the moment.|
-|InfoWindowTemplate|DataTemplate|Setting this property will instruct map to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
+|InfoWindowTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
+|MinClusterSize|int|Minimal size of a cluster. By default is 4.|
+|UseBucketsForClusters|bool|Indicates whether buckets should be used for clusters, such as 10+, 50+ etc. Applicable only if `ClusterIconTemplate` is `null`. By default is `false`.|
+|ClusterAlgorithm|ClusterAlgorithm|Setting this property to the value different from `None` will instruct to use clusterization algorithms. If `None` - clusterization disabled. By default is `None`.|
+|ClusterAnimation|IClusterAnimation|Setting this property will instruct to use animated clusters when zooming in/out. If `null` - animation disabled. By default is `new ClusterAnimation()`.|
+|ClusterIconTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as cluster icon. Supports `DataTemplateSelector`. The template should always be of type `ImageSource`. The `BindingContext` of this template will be the cluster itself. When `null`, the default cluster icon will be shown. By default is `null`.|
+|ClusterInfoWindowTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as 'Info Window' of the cluster. Supports `DataTemplateSelector`. The `BindingContext` of this template will be the cluster itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
 
 #### Other properties
 
@@ -289,6 +308,15 @@ A structure that represents a latitude/longitude aligned rectangle.
 |SouthWest|Point|Southwest corner of the bound.|
 |NorthEast|Point|Northeast corner of the bound.|
 
+#### WeightedLatLng
+
+A structure that represents a latitude/longitude coordinate with weight of this coordinate. Used as point of a heat map dataset.
+
+|Property|Type|Description|
+|-|-|-|
+|Point|Point|Lat/Lon coordinate.|
+|Intensity|float|Weight of the coordinate. Default is 1f.|
+
 #### VisibleRegion
 
 `VisibleRegion` is a struct. Contains the four points defining the four-sided polygon that is visible in a map's camera. This polygon can be a trapezoid instead of a rectangle, because a camera can have tilt. If the camera is directly over the center of the camera, the shape is rectangular, but if the camera is tilted, the shape will appear to be a trapezoid whose smallest side is closest to the point of view.
@@ -319,6 +347,22 @@ A structure that represents a latitude/longitude aligned rectangle.
 |Position|Point|The position of the POI.|
 |PlaceId|string|The placeId of the POI.|
 |Name|string|The name of the POI.|
+
+#### Gradient
+
+`Gradient` is a class to generate a color map from a given array of colors and the fractions that the colors represent by interpolating between their HSV values. This color map is to be used in the `HeatMapTileOverlay`.
+Can be created only using a constructor. Constructor has 3 parameters: array of colors, array of fractions for colors (these two arrays have to be same length), and color map size to be generated by `Gradient`.
+
+#### ClusterAnimation
+
+`ClusterAnimation` is a subclass from BindableObject. Used to customize the behavior of clusters to be animated.
+
+|Bindable property|Type|Description|
+|-|-|-|
+|EasingIn|Easing|The easing function which is used when animating clusters which are collected together. Default is `SinIn`|
+|EasingOut|Easing|The easing function which is used when animating clusters which are being scattered. Default is `SinOut`|
+|DurationIn|TimeSpan|The duration of the `EasingIn` animation. Deafult is 300 ms.|
+|DurationOut|TimeSpan|The duration of the `EasingOut` animation. Deafult is 300 ms.|
 
 #### CameraPosition
 
@@ -405,6 +449,19 @@ A class containing methods for creating `CameraUpdate` objects that change a map
 |Dark|Represents dark mode.|
 |FolllowSystem|Represents color mode used by system.|
 
+#### CluserAlgorithm
+
+`CluserAlgorithm` is an enum. Represents an clusterization algorithm is currently used.
+
+|Value|Description|
+|-|-|
+|None|Indicates that clusterization should be disabled.|
+|Grid|Groups markers into a grid for clustering. This algorithm organizes items into a two-dimensional grid, facilitating the formation of clusters based on proximity within each grid cell. The grid size determines the spatial granularity of clustering, and clusters are created by aggregating items within the same grid cell.|
+|NonHierarchicalDistance|A simple clustering algorithm with O(nlog n) performance. Resulting clusters are not hierarchical.|
+|NonHierarchicalView|Algorithm that can be used for managing large numbers of items (>1000 markers). This algorithm works the same way as `NonHierarchicalDistance` but works, only in visible area.|
+|GridPreCaching|The same as `Grid` algorithm, but optimistically fetch clusters for adjacent zoom levels, caching them as necessary.|
+|NonHierarchicalDistancePreCaching|The same as `NonHierarchicalDistance` algorithm, but optimistically fetch clusters for adjacent zoom levels, caching them as necessary.|
+
 #### ViewImageSource
 
 `ViewImageSource` is a class derived from MAUI's `ImageSource`. It has only one property `public View? View { get; set; }`. This type of image source can be used to show any view as image. Can be used in XAML.
@@ -458,6 +515,13 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |-|-|
 |ShowInfoWindow|Shows info window when calling. Info window will be shown only if `ShowInfoWindowOnPinSelection` is `true`.|
 |HideInfoWindow|Hides info window when calling.|
+
+#### Cluster
+
+`Cluster` is a subclass from `Pin`. Cluster represents a set of pins which are grouped by maximum distance between them. The center of a cluster is a center of grouped pins in this cluster.
+`Cluster` has only tow readonly properties: `Size` and `Items`. `Size` returns count of `Items`. `Items` is set of pins that are clustered.
+
+**Note: You should not create clusters manually. Is is made by the framework. Change `ClusterAlgorithm` property so clusterization work.**
 
 #### Polyline
 
@@ -537,8 +601,8 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 
 |Property|Type|Description|
 |-|-|-|
-|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The `TileProvider` provides the images that are used in the tile overlay. If the tiles provided by the tile provider change, you must call clearTileCache() afterwards to ensure that the previous tiles are no longer rendered.|
-|TileTemplate|DataTemplate|`TileTemplate` can be used instead of `TileProvider` and has higher prioriy than `TileProvider`, what does this means: firstly `TileTemplate` property will be checked, and if it null then `TileProvider` property. This property supports `DataTemplateSelector`. Template always accepts `TileData` object as `x:DataType` for `BindingContext` and always should be of type `ImageSource`. For more look into Sample project.|
+|TileProvider|Func&lt;Point, int, int, ImageSource?&gt;|The `TileProvider` provides the images that are used in the tile overlay.|
+|TileTemplate|DataTemplate|`TileTemplate` can be used instead of `TileProvider` and has higher prioriy than `TileProvider`, this means: firstly `TileTemplate` property will be checked, and if it null then `TileProvider` property. This property supports `DataTemplateSelector`. Template always accepts `TileData` object as `x:DataType` for `BindingContext` and always should be of type `ImageSource`. For more look into Sample project.|
 |TileSize|int|Google Maps targets 256 dp (device-independent pixels) when displaying tiles. For high resolution devices, it is recommended that you return high dpi tiles (512x512 px). This is optional. Default is 256.|
 |FadeIn|bool|Indicates whether the tiles should fade in when appeared. Default is `true`.|
 |Opacity|double|Sets the opacity of the tiles. Default is 1.0|
@@ -578,3 +642,18 @@ For example:
     </gm:GoogleMap.TileOverlayItemTemplate>
 </gm:GoogleMap>
 ```
+
+#### HeatMapTileOverlay
+
+`HeatMapTileOverlay` is a subclass of `TileOverlay`. Represents a heat map layer. Should be used only for heat maps.
+
+**Note: You should not change or use `TileProvider` property for this type of tiles.**
+**Note: Default `Opacity` is 0.7 for this type of tiles. Can be changed.**
+**Note: `TileTemplate` and `TileSize` proeprties are ignored.**
+
+|Property|Type|Description|
+|-|-|-|
+|Data|IEnumerable&lt;WeightedLatLng&gt;|Represents dataset (coordinates and intensities) heat map should be generated for. Must be set before adding this tile overlay to the map. Default is `null`.|
+|Gradient|Gradient|Represents custom gradient colors for heat map. Default is `null`, this means that default gradient will be used.|
+|Radius|int|Radius of each point of the dataset. Default is 20 for Android and 50 for iOS, minimum 10 for both, maximum 100 for Android and 200 for iOS.|
+|MaxIntensity|float|Intensity of each point of the dataset. Default is 0f, should take only positive numbers.|

@@ -1,7 +1,5 @@
 ﻿namespace MPowerKit.GoogleMaps;
 
-//public record struct WeightedLatLng(Point LatLng, float Intensity = 1f);
-
 public readonly struct WeightedLatLng : IPointItem
 {
     private static readonly SphericalMercatorProjection Projection = new(HeatmapTileProvider.WorldWidth);

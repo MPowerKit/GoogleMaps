@@ -27,10 +27,16 @@ public partial class GoogleMap
         this.PropertyChanging += GoogleMap_Clusters_PropertyChanging;
         this.PropertyChanged += GoogleMap_Clusters_PropertyChanged;
         this.SizeChanged += GoogleMap_Clusters_SizeChanged;
+        this.CameraMoveStart += GoogleMap_Clusters_CameraMoveStart;
         this.CameraIdle += GoogleMap_Clusters_CameraIdle;
         this.BindingContextChanged += GoogleMap_Clusters_BindingContextChanged;
 
         OnClusterAlgorithmChanged();
+    }
+
+    protected virtual void GoogleMap_Clusters_CameraMoveStart(CameraMoveReason obj)
+    {
+        PreviousCameraPosition = CameraPosition;
     }
 
     protected virtual void GoogleMap_Clusters_BindingContextChanged(object? sender, EventArgs e)
@@ -245,7 +251,6 @@ public partial class GoogleMap
             || PreviousCameraPosition is null
             || newPosition.Zoom == PreviousCameraPosition.Zoom)
         {
-            PreviousCameraPosition = newPosition;
             Clusters = newClusters;
             return;
         }
@@ -253,8 +258,6 @@ public partial class GoogleMap
         var direction = newPosition.Zoom > PreviousCameraPosition.Zoom;
         var visibleBounds = VisibleRegion.Bounds;
         SphericalMercatorProjection projection = new(256d * Math.Pow(2d, Math.Min(newPosition.Zoom, PreviousCameraPosition.Zoom)));
-
-        PreviousCameraPosition = newPosition;
 
         ClusterAnimator animator = new(this, ClusterAnimation);
 
