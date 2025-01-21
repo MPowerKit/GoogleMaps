@@ -27,7 +27,16 @@ public class HeatMapTileProvider : Java.Lang.Object, ITileProvider
 
     public Tile? GetTile(int x, int y, int zoom)
     {
-        var source = _provider?.Invoke(new(x, y), zoom, _tileSize);
+        ImageSource? source;
+        try
+        {
+            source = _provider?.Invoke(new(x, y), zoom, _tileSize);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return null;
+        }
 
         if (source is NoTileImageSource) return TileProvider.NoTile;
 

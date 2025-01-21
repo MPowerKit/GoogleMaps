@@ -35,7 +35,16 @@ public class HeatMapTileProvider : SyncTileLayer
 
     public override UIImage? Tile(nuint x, nuint y, nuint zoom)
     {
-        var source = _provider?.Invoke(new(x, y), (int)zoom, _tileSize);
+        ImageSource? source;
+        try
+        {
+            source = _provider?.Invoke(new(x, y), (int)zoom, _tileSize);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return null;
+        }
 
         if (source is NoTileImageSource)
         {
