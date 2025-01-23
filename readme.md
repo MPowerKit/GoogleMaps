@@ -308,6 +308,8 @@ A structure that represents a latitude/longitude aligned rectangle.
 |SouthWest|Point|Southwest corner of the bound.|
 |NorthEast|Point|Northeast corner of the bound.|
 
+It also has `Builder`, that accepts lat/lng points and builds `LatLngBounds` based on provided coordinates to fit all the points in the smallest box as possible.
+
 #### WeightedLatLng
 
 A structure that represents a latitude/longitude coordinate with weight of this coordinate. Used as point of a heat map dataset.
@@ -522,6 +524,7 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 `Cluster` has only tow readonly properties: `Size` and `Items`. `Size` returns count of `Items`. `Items` is set of pins that are clustered.
 
 **Note: You should not create clusters manually. Is is made by the framework. Change `ClusterAlgorithm` property so clusterization work.**
+**Note: By default all clusters are not clickable. to change this you need to change `IsEnabled` property of `Cluater` to `true`. You can find how to do it in the Sample.**
 
 #### Polyline
 
