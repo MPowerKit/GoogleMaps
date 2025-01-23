@@ -218,4 +218,19 @@ public class Pin : VisualElement
             typeof(Pin)
             );
     #endregion
+
+    #region DefaultIconColor
+    public Color DefaultIconColor
+    {
+        get { return (Color)GetValue(DefaultIconColorProperty); }
+        set { SetValue(DefaultIconColorProperty, value); }
+    }
+
+    public static readonly BindableProperty DefaultIconColorProperty =
+        BindableProperty.Create(
+            nameof(DefaultIconColor),
+            typeof(Color),
+            typeof(Pin)
+            );
+    #endregion
 }

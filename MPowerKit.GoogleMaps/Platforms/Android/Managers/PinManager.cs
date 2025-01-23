@@ -122,6 +122,10 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
         {
             OnInfoWindowAnchorChanged(vItem, nItem);
         }
+        else if (propertyName == VPin.DefaultIconColorProperty.PropertyName)
+        {
+            OnIconChanged(vItem, nItem);
+        }
         else if (propertyName == VPin.IconProperty.PropertyName)
         {
             OnIconChanged(vItem, nItem);
@@ -189,7 +193,16 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
     {
         if (vPin.Icon is null)
         {
-            nPin.SetIcon(null);
+            BitmapDescriptor? icon = null;
+
+            if (vPin.DefaultIconColor is not null)
+            {
+                var builder = new PinConfig.Builder();
+                builder.SetBackgroundColor(vPin.DefaultIconColor.ToInt());
+                icon = BitmapDescriptorFactory.FromPinConfig(builder.Build());
+            }
+
+            nPin.SetIcon(icon);
             return;
         }
 

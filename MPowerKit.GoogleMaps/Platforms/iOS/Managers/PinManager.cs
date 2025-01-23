@@ -1,5 +1,7 @@
 ﻿using Google.Maps;
 
+using Microsoft.Maui.Platform;
+
 using UIKit;
 
 using NPin = Google.Maps.Marker;
@@ -130,6 +132,10 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
         {
             OnInfoWindowAnchorChanged(vItem, nItem);
         }
+        else if (propertyName == VPin.DefaultIconColorProperty.PropertyName)
+        {
+            OnIconChanged(vItem, nItem);
+        }
         else if (propertyName == VPin.IconProperty.PropertyName)
         {
             OnIconChanged(vItem, nItem);
@@ -202,8 +208,12 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
     {
         if (pin.Icon is null)
         {
-            nPin.Icon = null;
             nPin.IconView = null;
+
+            nPin.Icon = pin.DefaultIconColor is not null
+                ? NPin.MarkerImage(pin.DefaultIconColor.ToPlatform())
+                : null;
+
             return;
         }
 

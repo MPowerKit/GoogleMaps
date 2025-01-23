@@ -19,6 +19,8 @@ public partial class PinsPageViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    private bool _defaultIcon = true;
+    [ObservableProperty]
     private string _snippet;
     [ObservableProperty]
     private string _title;
@@ -77,6 +79,17 @@ public partial class PinsPageViewModel : ObservableObject
     private ObservableCollection<Pin> _pins = [];
 
     [RelayCommand]
+    private void RandomizeIconColor()
+    {
+        var rnd = new Random();
+        var red = (float)rnd.NextDouble();
+        var green = (float)rnd.NextDouble();
+        var blue = (float)rnd.NextDouble();
+
+        _pin.DefaultIconColor = Color.FromRgb(red, green, blue);
+    }
+
+    [RelayCommand]
     private async Task ChangeIcon()
     {
         var res = await UserDialogs.Instance.ActionSheetAsync(null,
@@ -105,6 +118,8 @@ public partial class PinsPageViewModel : ObservableObject
                 _pin.Icon = "https://picsum.photos/60/90";
                 break;
         }
+
+        DefaultIcon = _pin.Icon is null;
     }
 
     private void SetupPins()

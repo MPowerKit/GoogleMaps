@@ -145,6 +145,8 @@ public class ClusterManager : PinManager
             return base.PlatformView_PinTapped(map, native);
         }
 
+        if (!cluster.IsEnabled) return true;
+
         VirtualView!.SendClusterClick(cluster);
 
         return true;

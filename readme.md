@@ -497,6 +497,7 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |Property|Type|Description|
 |-|-|-|
 |Icon|ImageSource|The MAUI's `ImageSource` that can be used as an icon for pin. This means that you can use different sources, such as url, stream, file etc to set the icon. Also, you can use `ViewImageSource` to provide a custom view as pin icon. If the icon is left unset, a default icon will be displayed.|
+|DefaultIconColor|Color|Changing this property will change color of the default marker image. This property is ignored if you already set the `Icon` property. Default it `null`.|
 |Position|Point|Represents the latitude/longitude position of pin on the map|
 |AnchorX|double|Represents the X coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 0.5|
 |AnchorY|double|Represents the Y coordinate of the pin's anchor. Can take values 0.0-1.0. Default is 1.0|
