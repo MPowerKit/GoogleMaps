@@ -107,12 +107,12 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, MapView
 
     protected virtual void OnStrokeChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
-        nPolygon.StrokeColor = (vPolygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
+        nPolygon.StrokeColor = (vPolygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Blue;
     }
 
     protected virtual void OnFillChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
-        nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Clear;
+        nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? Colors.Blue.WithAlpha(0.4f).ToPlatform();
     }
 
     protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -139,8 +139,8 @@ public static class PolygonExtensions
         native.ZIndex = polygon.ZIndex;
         native.StrokeWidth = (float)polygon.StrokeThickness;
         native.Tappable = polygon.IsEnabled;
-        native.StrokeColor = (polygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Black;
-        native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Clear;
+        native.StrokeColor = (polygon.Stroke as SolidColorBrush)?.Color.ToPlatform() ?? UIColor.Blue;
+        native.FillColor = (polygon.Fill as SolidColorBrush)?.Color.ToPlatform() ?? Colors.Blue.WithAlpha(0.4f).ToPlatform();
         var holes = PolygonAttached.GetHoles(polygon);
         native.Holes = holes?.Select(h => h?.ToPath() ?? new()).ToArray();
 

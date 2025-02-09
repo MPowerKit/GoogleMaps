@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Sample.Views.KmlPage"
+             xmlns:gm="clr-namespace:MPowerKit.GoogleMaps;assembly=MPowerKit.GoogleMaps"
+             xmlns:vm="clr-namespace:Sample.ViewModels"
+             Title="Kml"
+             x:DataType="vm:KmlPageViewModel">
+    <ContentPage.BindingContext>
+        <vm:KmlPageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <Button Text="Choose KML source"
+                Command="{Binding ChangeKmlSourceCommand}" />
+
+        <gm:GoogleMap Kml="{Binding Kml}"
+                      Pins="{Binding Pins, Mode=OneWayToSource}"
+                      Polygons="{Binding Polygons, Mode=OneWayToSource}"
+                      Polylines="{Binding Polylines, Mode=OneWayToSource}"
+                      GroundOverlays="{Binding GroundOverlays, Mode=OneWayToSource}"
+                      AnimateCameraFunc="{Binding AnimateCameraFunc, Mode=OneWayToSource}"
+                      KmlParsedCommand="{Binding KmlParsedCommand}"
+                      Grid.Row="1" />
+    </Grid>
+</ContentPage>

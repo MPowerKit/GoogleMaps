@@ -196,6 +196,8 @@ and your `YourNewLogicManager` should be `typeof(IMapFeatureManager<NativeMapVie
 |ClusterInfoWindowClick|ClusterInfoWindowClickedCommand|Cluster|Raised, when user clicks on cluster's info window. The argument type can only be `Cluster`.|
 |ClusterInfoWindowLongClick|ClusterInfoWindowLongClickedCommand|Cluster|Raised, when user does long press on cluster's info window. The argument type can only be `Cluster`.|
 |ClusterInfoWindowClosed|ClusterInfoWindowClosedCommand|Cluster|Raised, when cluster's info window was closed. The argument type can only be `Cluster`.|
+|KmlParsed|KmlParsedCommand| |Raised, when KML parsing process was finished for both success or fail.|
+|GeoJsonParsed|GeoJsonParsedCommand| |Raised, when GeoJSON parsing process was finished for both success or fail.|
 
 ### Public methods, actions, funcs
 
@@ -258,13 +260,16 @@ Example of usage:
 |PinItemTemplate|DataTemplate|Same as `PolylineItemTemplate`, but designed for pins.|
 |SelectedPin|Pin|Represents selected pin at the moment. `null` if there is no selected pin at the moment.|
 |SelectedPinData|object|This is a `BindingContext` of currently selected pin. `null` if there is no selected pin at the moment.|
-|InfoWindowTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
+|InfoWindowTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as 'Info Window' of the pin. Supports `DataTemplateSelector`. Has lower priority than `InfoWindow` property of the `Pin`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
 |MinClusterSize|int|Minimal size of a cluster. By default is 4.|
 |UseBucketsForClusters|bool|Indicates whether buckets should be used for clusters, such as 10+, 50+ etc. Applicable only if `ClusterIconTemplate` is `null`. By default is `false`.|
 |ClusterAlgorithm|ClusterAlgorithm|Setting this property to the value different from `None` will instruct to use clusterization algorithms. If `None` - clusterization disabled. By default is `None`.|
 |ClusterAnimation|IClusterAnimation|Setting this property will instruct to use animated clusters when zooming in/out. If `null` - animation disabled. By default is `new ClusterAnimation()`.|
 |ClusterIconTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as cluster icon. Supports `DataTemplateSelector`. The template should always be of type `ImageSource`. The `BindingContext` of this template will be the cluster itself. When `null`, the default cluster icon will be shown. By default is `null`.|
 |ClusterInfoWindowTemplate|DataTemplate|Setting this property will instruct to show desired `DataTemplate` as 'Info Window' of the cluster. Supports `DataTemplateSelector`. The `BindingContext` of this template will be the cluster itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
+|ShouldAnimateCameraToSelectedPin|bool|Indicates whether camera should animate to the selected pin. By default is `true`.|
+|Kml|string|Settings this property you can specify KML / KMZ sources to be parsed to represent map objects. Objects will be added to the default map object properties, such as `Pins`, `Polygons` etc. Sources can be: url, file or raw XML string. Changing the KML / KMZ source will remove previously parsed map objects from the map. By default is `null`.|
+|GeoJson|string|Settings this property you can specify GeoJSON sources to be parsed to represent map objects. Objects will be added to the default map object properties, such as `Pins`, `Polygons` etc. Sources can be: url, file or raw JSON string. Changing the GeoJSON source will remove previously parsed map objects from the map. By default is `null`.|
 
 #### Other properties
 
@@ -507,6 +512,7 @@ There 6 types of objects that can be added to the map: `Pin`, `Circle`, `Polylin
 |ShowInfoWindowOnPinSelection|bool|Indicates whether the pin's should be shown when pin selected. Default is `true`.|
 |CanBeSelected|bool|Indicates whether the pin can be selected. Default is `true`.|
 |InfoWindowAnchor|Point|Represents the point in the pin image at which to anchor the info window when it is displayed. Default is `new Point(0.5, 0.0)`.|
+|InfoWindow|View|Setting this property will instruct to show desired view as 'Info Window' of the pin. Has higher priority than `InfoWindowTemplate` property of the `GoogleMap`. Can be shown only when `Pin`'s `CanBeSelected` and `ShowInfoWindowOnPinSelection` both are `true`. The `BindingContext` of this template will be the `BindingContext` of the pin, or if pin does not have `BindingContext` set, this will be the pin itself. When `null`, the default SDK's 'Info Window' will be shown. By default is `null`.|
 |Rotation|double|Represents the rotation of the marker in degrees clockwise about the pin's anchor point. Default is 0.0|
 |IsFlat|bool|Indicates whether the pin should be flat against the map `true` or a billboard facing the camera `false`. Default is `false`.|
 |Opacity|double|Sets the opacity of the pin. Default is 1.0|
@@ -653,7 +659,7 @@ For example:
 
 **Note: You should not change or use `TileProvider` property for this type of tiles.**
 **Note: Default `Opacity` is 0.7 for this type of tiles. Can be changed.**
-**Note: `TileTemplate` and `TileSize` proeprties are ignored.**
+**Note: `TileTemplate` and `TileSize` properties are ignored.**
 
 |Property|Type|Description|
 |-|-|-|

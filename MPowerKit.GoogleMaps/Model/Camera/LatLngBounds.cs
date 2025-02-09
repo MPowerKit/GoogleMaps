@@ -2,6 +2,18 @@
 
 public record struct LatLngBounds(Point SouthWest, Point NorthEast)
 {
+    public readonly IEnumerable<Point> ToPoints()
+    {
+        Point southwest = SouthWest;
+        Point northeast = NorthEast;
+
+        // Calculate the other two corners
+        Point northwest = new(NorthEast.X, SouthWest.Y);
+        Point southeast = new(SouthWest.X, NorthEast.Y);
+
+        return new List<Point>() { northwest, northeast, southeast, southwest };
+    }
+
     public readonly bool Contains(Point point)
     {
         // Check if the point's latitude is between the bounds' latitudes

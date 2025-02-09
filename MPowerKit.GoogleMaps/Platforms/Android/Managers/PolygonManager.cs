@@ -126,13 +126,13 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GMap>
     protected virtual void OnStrokeChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
         nPolygon.StrokeColor = (vPolygon.Stroke as SolidColorBrush)?.Color.ToInt()
-            ?? Android.Graphics.Color.Black.ToArgb();
+            ?? Android.Graphics.Color.Blue.ToArgb();
     }
 
     protected virtual void OnFillChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
         nPolygon.FillColor = (vPolygon.Fill as SolidColorBrush)?.Color.ToInt()
-            ?? Android.Graphics.Color.Transparent.ToArgb();
+            ?? Colors.Blue.WithAlpha(0.4f).ToInt();
     }
 
     protected virtual void OnHolesChanged(VPolygon vPolygon, NPolygon nPolygon)
@@ -163,8 +163,8 @@ public static class PolygonExtensions
 
         options.Clickable(polygon.IsEnabled);
 
-        options.InvokeFillColor((polygon.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Transparent.ToArgb());
-        options.InvokeStrokeColor((polygon.Fill as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Black.ToArgb());
+        options.InvokeFillColor((polygon.Fill as SolidColorBrush)?.Color.ToInt() ?? Colors.Blue.WithAlpha(0.4f).ToInt());
+        options.InvokeStrokeColor((polygon.Stroke as SolidColorBrush)?.Color.ToInt() ?? Android.Graphics.Color.Blue.ToArgb());
         options.InvokeStrokeWidth(context.ToPixels(polygon.StrokeThickness));
         options.InvokeZIndex(polygon.ZIndex);
         options.Visible(polygon.IsVisible);

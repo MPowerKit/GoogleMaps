@@ -61,14 +61,6 @@ public static class BuilderExtensions
                     });
                 });
 #endif
-
-#if IOS
-                events.AddiOS(b => b.FinishedLaunching((a, o) =>
-                {
-                    MapsInitializer.Init(iosApiKey);
-                    return true;
-                }));
-#endif
             });
 
 #if ANDROID || IOS
@@ -86,6 +78,10 @@ public static class BuilderExtensions
 
 #if ANDROID
         builder.Services.AddSingleton<IMapsLifecycle, MapsLifecycle>();
+#endif
+
+#if IOS
+        MapsInitializer.Init(iosApiKey);
 #endif
 
         return builder;

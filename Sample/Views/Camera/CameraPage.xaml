@@ -9,7 +9,7 @@
 
     <Grid RowDefinitions="Auto,*">
         <VerticalStackLayout>
-            <Grid ColumnDefinitions="*,*">
+            <Grid ColumnDefinitions="*,*,*">
                 <VerticalStackLayout>
                     <Label Text="{Binding Value, Source={x:Reference minZoom}, StringFormat='Min zoom {0:F1}'}" />
                     <Slider Minimum="1"
@@ -25,6 +25,15 @@
                             Value="{Binding MaxZoom, Source={x:Reference map}, Mode=TwoWay}"
                             x:Name="maxZoom" />
                 </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Grid.Column="2">
+                    <CheckBox IsChecked="{Binding ShouldAnimateCameraToSelectedPin, Source={x:Reference map}, Mode=TwoWay}" />
+                    <Label Text="Animate camera to selected pin"
+                           LineBreakMode="WordWrap"
+                           VerticalOptions="Center"
+                           Grid.Column="1" />
+                </Grid>
             </Grid>
             <Grid ColumnDefinitions="*,*"
                   ColumnSpacing="5">
@@ -63,7 +72,7 @@
                         VerticalOptions="Center"
                         Grid.Column="1" />
             </Grid>
-            
+
             <Label TextColor="Green"
                    Text="{Binding CameraStartReason}" />
             <Label TextColor="Purple"
@@ -77,6 +86,7 @@
         <!--Min and max zoom properties can be bound by different modes, such as TwoWay etc -->
         <gm:GoogleMap Grid.Row="1"
                       x:Name="map"
+                      Pins="{Binding Pins}"
                       MoveCameraAction="{Binding MoveCameraAction, Mode=OneWayToSource}"
                       AnimateCameraFunc="{Binding AnimateCameraFunc, Mode=OneWayToSource}"
                       MinZoom="{Binding MinZoom, Mode=OneWayToSource}" 

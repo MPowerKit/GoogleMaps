@@ -22,6 +22,8 @@ public partial class GoogleMap : View
         InitCircles();
         InitTiles();
         InitGroundOverlays();
+        InitKml();
+        InitGeoJson();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

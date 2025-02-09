@@ -143,7 +143,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     public int Limit { get { return _limit; } }
 
     /// <summary>
-    /// WARNING: not thread-safe, reinitializes all internal structures.  Use Clear() for a thread-safe
+    /// WARNING: not thread-safe, reinitializes all public structures.  Use Clear() for a thread-safe
     /// delete all.  If you have externally provided exclusive access this method may be used to more
     /// efficiently clear the collection.
     /// </summary>
@@ -493,7 +493,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         private readonly LurchTable<TKey, TValue> _owner;
         private EnumState _state;
 
-        internal Enumerator(LurchTable<TKey, TValue> owner)
+        public Enumerator(LurchTable<TKey, TValue> owner)
         {
             _owner = owner;
             _state = new EnumState();
@@ -564,7 +564,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     {
         private readonly LurchTable<TKey, TValue> _owner;
 
-        internal KeyCollection(LurchTable<TKey, TValue> owner)
+        public KeyCollection(LurchTable<TKey, TValue> owner)
         {
             _owner = owner;
         }
@@ -612,7 +612,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             private readonly LurchTable<TKey, TValue> _owner;
             private EnumState _state;
 
-            internal Enumerator(LurchTable<TKey, TValue> owner)
+            public Enumerator(LurchTable<TKey, TValue> owner)
             {
                 _owner = owner;
                 _state = new EnumState();
@@ -712,7 +712,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     {
         private readonly LurchTable<TKey, TValue> _owner;
 
-        internal ValueCollection(LurchTable<TKey, TValue> owner)
+        public ValueCollection(LurchTable<TKey, TValue> owner)
         {
             _owner = owner;
         }
@@ -763,7 +763,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             private readonly LurchTable<TKey, TValue> _owner;
             private EnumState _state;
 
-            internal Enumerator(LurchTable<TKey, TValue> owner)
+            public Enumerator(LurchTable<TKey, TValue> owner)
             {
                 _owner = owner;
                 _state = new EnumState();

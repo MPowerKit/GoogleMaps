@@ -3,7 +3,7 @@ using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
-
+using Bumptech.Glide.Load.Resource.Gif;
 using Microsoft.Maui.Platform;
 
 using Point = Microsoft.Maui.Graphics.Point;
@@ -109,7 +109,17 @@ public static class Extensions
     public static async Task<BitmapDescriptor> ToBitmapDescriptor(this ImageSource imageSource, IMauiContext mauiContext)
     {
         var drawable = await imageSource.GetPlatformImageAsync(mauiContext);
-        var desc = BitmapDescriptorFactory.FromBitmap(((BitmapDrawable)drawable.Value).Bitmap);
+        Bitmap? bitmap = null;
+        if (drawable?.Value is BitmapDrawable bitmapDrawable)
+        {
+            bitmap = bitmapDrawable.Bitmap;
+        }
+        else if (drawable?.Value is GifDrawable gifDrawable)
+        {
+            bitmap = gifDrawable.FirstFrame;
+        }
+
+        var desc = BitmapDescriptorFactory.FromBitmap(bitmap);
 
         return desc;
     }

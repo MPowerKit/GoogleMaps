@@ -12,13 +12,13 @@
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>MPowerKit.GoogleMaps</Title>
-		<Version>2.0.4</Version>
+		<Version>3.0.0</Version>
 		<Authors>MPowerKit,Alex Dobrynin</Authors>
-		<Description>Google Maps SDK library for .NET MAUI. Allows to interact with map in MVVM manner through bindings or with map control directly.</Description>
+		<Description>Google Maps SDK library for .NET MAUI. Allows to interact with map in MVVM manner through bindings or with map control directly. Includes such features as Pins, Circles, Polylines, Polygones, Ground overlays, Tiles, Clusters, Heat maps, KML, GeoJSON.</Description>
 		<Copyright>MPowerKit</Copyright>
 		<PackageProjectUrl>https://github.com/MPowerKit/GoogleMaps</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/MPowerKit/GoogleMaps</RepositoryUrl>
-		<PackageTags>maui;google maps;google;map;maps;maui google maps;xamarin;xamarin google maps;utils;utilities;google maps utils</PackageTags>
+		<PackageTags>maui;googlemaps;google maps;google;map;maps;maui google maps;xamarin;xamarin google maps;utils;utilities;google maps utils;cluster;clusters;heat map;heatmap;kml;geojson;geo json</PackageTags>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>readme.md</PackageReadmeFile>
 		<PackageIcon>icon.png</PackageIcon>

@@ -338,4 +338,41 @@ public static class ColorExtensions
     {
         return color.ToBrightness() >= 0.5f;
     }
+
+    /// <summary>
+    /// Computes a random color given an integer.
+    /// </summary>
+    /// <param name="color">Color represented as an integer.</param>
+    /// <returns>A random color.</returns>
+    public static string ComputeRandomColor(string color)
+    {
+        var argbColor = Color.FromArgb(color).ToInt();
+        var random = new Random();
+        var red = argbColor.GetColorRed();
+        var green = argbColor.GetColorGreen();
+        var blue = argbColor.GetColorBlue();
+
+        if (red != 0) red = random.Next(red);
+        if (green != 0) green = random.Next(green);
+        if (blue != 0) blue = random.Next(blue);
+
+        return Color.FromRgb(red, green, blue).ToArgbHex(true);
+    }
+
+    /// <summary>
+    /// Converts a color format of the form AABBGGRR to AARRGGBB.
+    /// Should not include #
+    /// </summary>
+    /// <param name="color">Color of the form AABBGGRR.</param>
+    /// <returns>Color of the form AARRGGBB.</returns>
+    public static string AbgrToArgbColor(string color)
+    {
+        color = color.Trim();
+        var span = color.AsSpan();
+        if (color.Length > 6)
+        {
+            return string.Concat(span[0..2], span[6..8], span[4..6], span[2..4]);
+        }
+        return string.Concat(span[4..6], span[2..4], span[0..2]);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using Controls.UserDialogs.Maui;
@@ -18,6 +19,9 @@ public partial class CameraPageViewModel : ObservableObject
             InitialCameraPosition = RandomizeCameraPosition();
         }
     }
+
+    [ObservableProperty]
+    private ObservableCollection<Pin> _pins = [new Pin() { Title = "Title" }];
 
     [ObservableProperty]
     private CameraUpdate? _initialCameraPosition;

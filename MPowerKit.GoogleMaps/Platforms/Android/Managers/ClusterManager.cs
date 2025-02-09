@@ -20,22 +20,14 @@ public class ClusterManager : PinManager
     {
         base.Init(virtualView, platformView, handler);
 
-        OnClusterAlgorithmChanged(virtualView, platformView);
+        platformView.SetInfoWindowAdapter(new ClusterInfoWindowAdapter(virtualView, () => Items));
     }
 
     protected override void VirtualViewPropertyChanged(GoogleMap virtualView, GMap platformView, string? propertyName)
     {
         base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
-        if (propertyName == GoogleMap.ClusterInfoWindowTemplateProperty.PropertyName)
-        {
-            OnClusterInfoWindowTemplateChanged(virtualView, platformView);
-        }
-        else if (propertyName == GoogleMap.ClusterAlgorithmProperty.PropertyName)
-        {
-            OnClusterAlgorithmChanged(virtualView, platformView);
-        }
-        else if (propertyName == GoogleMap.ClusterIconTemplateProperty.PropertyName)
+        if (propertyName == GoogleMap.ClusterIconTemplateProperty.PropertyName)
         {
             OnClusterIconTemplateChanged(virtualView, platformView);
         }
@@ -43,20 +35,6 @@ public class ClusterManager : PinManager
         {
             OnUseBucketsForClustersChanged(virtualView, platformView);
         }
-    }
-
-    protected virtual void OnClusterAlgorithmChanged(GoogleMap virtualView, GMap platformView)
-    {
-        if (virtualView.PrevAlgorithm is ClusterAlgorithm.None
-            && virtualView.ClusterAlgorithm is not ClusterAlgorithm.None)
-        {
-            OnClusterInfoWindowTemplateChanged(virtualView, platformView);
-        }
-    }
-
-    protected virtual void OnClusterInfoWindowTemplateChanged(GoogleMap virtualView, GMap platformView)
-    {
-        OnInfoWindowTemplateChanged(virtualView, platformView);
     }
 
     protected virtual void OnClusterIconTemplateChanged(GoogleMap virtualView, GMap platformView)
@@ -71,19 +49,6 @@ public class ClusterManager : PinManager
     protected virtual void OnUseBucketsForClustersChanged(GoogleMap virtualView, GMap platformView)
     {
         OnClusterIconTemplateChanged(virtualView, platformView);
-    }
-
-    protected override void OnInfoWindowTemplateChanged(GoogleMap virtualView, GMap platformView)
-    {
-        if (virtualView.ClusterInfoWindowTemplate is null
-            || virtualView.ClusterAlgorithm is ClusterAlgorithm.None)
-        {
-            base.OnInfoWindowTemplateChanged(virtualView, platformView);
-            return;
-        }
-
-        platformView.SetInfoWindowAdapter(virtualView.ClusterInfoWindowTemplate is not null
-            ? new ClusterInfoWindowAdapter(virtualView, () => Items) : null);
     }
 
     protected override void AddItemsToPlatformView(IEnumerable<VPin> items)
@@ -198,6 +163,10 @@ public class ClusterInfoWindowAdapter : InfoWindowAdapter
         if (template?.CreateContent() is not View view) return null;
 
         view.BindingContext = cluster;
+
+        var virtualView = Map;
+        view.MaximumWidthRequest = virtualView.Width;
+        view.MaximumHeightRequest = virtualView.Height / 2d;
 
         var platformView = view.ToNative(Map.Handler!.MauiContext!);
 

@@ -1,4 +1,6 @@
-﻿using Google.Maps;
+﻿using Foundation;
+using System.Web;
+using Google.Maps;
 
 using Microsoft.Maui.Platform;
 
@@ -18,7 +20,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
     {
         base.Init(virtualView, platformView, handler);
 
-        OnInfoWindowTemplateChanged(virtualView, platformView);
+        platformView.MarkerInfoWindow = GetInfoWindow;
     }
 
     protected override void Reset(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
@@ -52,16 +54,6 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
         platformView.InfoClosed -= PlatformView_InfoClosed;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, MapView platformView, string? propertyName)
-    {
-        base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
-
-        if (propertyName == GoogleMap.InfoWindowTemplateProperty.PropertyName)
-        {
-            OnInfoWindowTemplateChanged(virtualView, platformView);
-        }
     }
 
     protected override void RemoveItemFromPlatformView(NPin? nItem)
@@ -237,27 +229,37 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, MapView>
         }
     }
 
-    protected virtual void OnInfoWindowTemplateChanged(GoogleMap virtualView, MapView platformView)
-    {
-        platformView.MarkerInfoWindow = virtualView.InfoWindowTemplate is not null ? GetInfoWindow : null;
-    }
-
     protected virtual UIView? GetInfoWindow(MapView map, NPin marker)
     {
         var pin = Items.Single(p => NativeObjectAttachedProperty.GetNativeObject(p) == marker);
 
-        var template = VirtualView!.InfoWindowTemplate;
-
-        while (template is DataTemplateSelector selector)
+        View infoWindow;
+        if (pin.InfoWindow is not null)
         {
-            template = selector.SelectTemplate(pin.BindingContext, VirtualView);
+            infoWindow = pin.InfoWindow;
+        }
+        else
+        {
+
+            var template = VirtualView!.InfoWindowTemplate;
+
+            while (template is DataTemplateSelector selector)
+            {
+                template = selector.SelectTemplate(pin.BindingContext, VirtualView);
+            }
+
+            if (template?.CreateContent() is not View view) return null;
+
+            view.BindingContext = pin.BindingContext ?? pin;
+
+            infoWindow = view;
         }
 
-        if (template?.CreateContent() is not View view) return null;
+        var virtualView = VirtualView!;
+        infoWindow.MaximumWidthRequest = virtualView.Width;
+        infoWindow.MaximumHeightRequest = virtualView.Height / 2d;
 
-        view.BindingContext = pin.BindingContext ?? pin;
-
-        var platformView = view.ToNative(Handler!.MauiContext!);
+        var platformView = infoWindow.ToNative(Handler!.MauiContext!);
 
         return platformView;
     }

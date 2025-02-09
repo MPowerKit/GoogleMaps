@@ -146,7 +146,11 @@ public partial class GoogleMap
     [EditorBrowsable(EditorBrowsableState.Never)]
     public virtual void SendPinClick(Pin pin)
     {
-        if (pin.CanBeSelected)
+        if (SelectedPin == pin && pin.InfoWindowShown)
+        {
+            pin.ShowInfoWindow();
+        }
+        else if (pin.CanBeSelected)
         {
             SelectedPin = pin;
         }

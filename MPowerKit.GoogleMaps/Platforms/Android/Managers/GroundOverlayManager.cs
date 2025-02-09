@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using Android.Gms.Maps.Model;
+﻿using Android.Gms.Maps.Model;
 
 using GMap = Android.Gms.Maps.GoogleMap;
 using NGroundOverlay = Android.Gms.Maps.Model.GroundOverlay;

@@ -11,7 +11,12 @@ namespace Sample.ViewModels;
 
 public partial class PinsPageViewModel : ObservableObject
 {
-    private readonly Pin _pin = new() { Title = "Default pin", Snippet = "Default pin description" };
+    private readonly Pin _pin = new()
+    {
+        Title = "Default pin",
+        Snippet = "Default pin description",
+        DefaultIconColor = Colors.Orange
+    };
 
     public PinsPageViewModel()
     {

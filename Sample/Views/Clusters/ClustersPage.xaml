@@ -107,6 +107,7 @@
         </VerticalStackLayout>
 
         <gm:GoogleMap Pins="{Binding Pins}"
+                      Clusters="{Binding Clusters, Mode=OneWayToSource}"
                       UseBucketsForClusters="{Binding IsChecked, Source={x:Reference buckets}, Mode=TwoWay}"
                       ClusterAlgorithm="{Binding SelectedAlgorithm}"
                       ClusterClickedCommand="{Binding ClusterClickedCommand}"

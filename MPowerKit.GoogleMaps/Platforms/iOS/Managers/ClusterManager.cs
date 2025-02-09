@@ -19,26 +19,11 @@ public class ClusterManager : PinManager
             ? GoogleMap.PinsProperty.PropertyName
             : GoogleMap.ClustersProperty.PropertyName;
 
-    protected override void Init(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
-    {
-        base.Init(virtualView, platformView, handler);
-
-        OnClusterAlgorithmChanged(virtualView, platformView);
-    }
-
     protected override void VirtualViewPropertyChanged(GoogleMap virtualView, MapView platformView, string? propertyName)
     {
         base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
 
-        if (propertyName == GoogleMap.ClusterInfoWindowTemplateProperty.PropertyName)
-        {
-            OnClusterInfoWindowTemplateChanged(virtualView, platformView);
-        }
-        else if (propertyName == GoogleMap.ClusterAlgorithmProperty.PropertyName)
-        {
-            OnClusterAlgorithmChanged(virtualView, platformView);
-        }
-        else if (propertyName == GoogleMap.ClusterIconTemplateProperty.PropertyName)
+        if (propertyName == GoogleMap.ClusterIconTemplateProperty.PropertyName)
         {
             OnClusterIconTemplateChanged(virtualView, platformView);
         }
@@ -46,20 +31,6 @@ public class ClusterManager : PinManager
         {
             OnUseBucketsForClustersChanged(virtualView, platformView);
         }
-    }
-
-    protected virtual void OnClusterAlgorithmChanged(GoogleMap virtualView, MapView platformView)
-    {
-        if (virtualView.PrevAlgorithm is ClusterAlgorithm.None
-            && virtualView.ClusterAlgorithm is not ClusterAlgorithm.None)
-        {
-            OnClusterInfoWindowTemplateChanged(virtualView, platformView);
-        }
-    }
-
-    protected virtual void OnClusterInfoWindowTemplateChanged(GoogleMap virtualView, MapView platformView)
-    {
-        OnInfoWindowTemplateChanged(virtualView, platformView);
     }
 
     protected virtual void OnClusterIconTemplateChanged(GoogleMap virtualView, MapView platformView)
@@ -74,12 +45,6 @@ public class ClusterManager : PinManager
     protected virtual void OnUseBucketsForClustersChanged(GoogleMap virtualView, MapView platformView)
     {
         OnClusterIconTemplateChanged(virtualView, platformView);
-    }
-
-    protected override void OnInfoWindowTemplateChanged(GoogleMap virtualView, MapView platformView)
-    {
-        platformView.MarkerInfoWindow = virtualView.ClusterInfoWindowTemplate is not null
-            || virtualView.InfoWindowTemplate is not null ? GetInfoWindow : null;
     }
 
     protected override UIView? GetInfoWindow(MapView nMap, NPin marker)
@@ -101,6 +66,9 @@ public class ClusterManager : PinManager
         if (template?.CreateContent() is not View view) return null;
 
         view.BindingContext = cluster;
+
+        view.MaximumWidthRequest = virtualView.Width;
+        view.MaximumHeightRequest = virtualView.Height / 2d;
 
         var platformView = view.ToNative(Handler!.MauiContext!);
 

@@ -68,6 +68,11 @@ public class Pin : VisualElement
         {
             Icon.BindingContext = this.BindingContext;
         }
+
+        if (InfoWindow is not null && InfoWindow.BindingContext is null)
+        {
+            InfoWindow.BindingContext = this.BindingContext;
+        }
     }
 
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -78,6 +83,11 @@ public class Pin : VisualElement
             && Icon is not null && Icon.BindingContext is null)
         {
             Icon.BindingContext = this.BindingContext;
+        }
+        else if (propertyName == InfoWindowProperty.PropertyName
+            && InfoWindow is not null && InfoWindow.BindingContext is null)
+        {
+            InfoWindow.BindingContext = this.BindingContext;
         }
     }
 
@@ -230,6 +240,21 @@ public class Pin : VisualElement
         BindableProperty.Create(
             nameof(DefaultIconColor),
             typeof(Color),
+            typeof(Pin)
+            );
+    #endregion
+
+    #region InfoWindow
+    public View InfoWindow
+    {
+        get { return (View)GetValue(InfoWindowProperty); }
+        set { SetValue(InfoWindowProperty, value); }
+    }
+
+    public static readonly BindableProperty InfoWindowProperty =
+        BindableProperty.Create(
+            nameof(InfoWindow),
+            typeof(View),
             typeof(Pin)
             );
     #endregion

@@ -15,7 +15,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
     {
         base.Init(virtualView, platformView, handler);
 
-        OnInfoWindowTemplateChanged(virtualView, platformView);
+        platformView.SetInfoWindowAdapter(new InfoWindowAdapter(virtualView, () => Items));
     }
 
     protected override void Reset(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
@@ -49,16 +49,6 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
         platformView.InfoWindowClose -= PlatformView_InfoWindowClose;
 
         base.UnsubscribeFromEvents(virtualView, platformView, handler);
-    }
-
-    protected override void VirtualViewPropertyChanged(GoogleMap virtualView, GMap platformView, string? propertyName)
-    {
-        base.VirtualViewPropertyChanged(virtualView, platformView, propertyName);
-
-        if (propertyName == GoogleMap.InfoWindowTemplateProperty.PropertyName)
-        {
-            OnInfoWindowTemplateChanged(virtualView, platformView);
-        }
     }
 
     protected override void RemoveItemFromPlatformView(NPin? nItem)
@@ -189,37 +179,45 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
         nPin.SetInfoWindowAnchor((float)vPin.InfoWindowAnchor.X, (float)vPin.InfoWindowAnchor.Y);
     }
 
+    private readonly SemaphoreSlim _sem = new(3, 3);
     protected virtual async Task OnIconChanged(VPin vPin, NPin nPin)
     {
-        if (vPin.Icon is null)
-        {
-            BitmapDescriptor? icon = null;
-
-            if (vPin.DefaultIconColor is not null)
-            {
-                var builder = new PinConfig.Builder();
-                builder.SetBackgroundColor(vPin.DefaultIconColor.ToInt());
-                icon = BitmapDescriptorFactory.FromPinConfig(builder.Build());
-            }
-
-            nPin.SetIcon(icon);
-            return;
-        }
-
+        await _sem.WaitAsync();
         try
         {
-            nPin.SetIcon(await vPin.Icon.ToBitmapDescriptor(Handler!.MauiContext!));
-        }
-        catch (Exception)
-        {
-            nPin.SetIcon(null);
-        }
-    }
+            if (vPin.Icon is null)
+            {
+                BitmapDescriptor? icon = null;
 
-    protected virtual void OnInfoWindowTemplateChanged(GoogleMap virtualView, GMap platformView)
-    {
-        platformView.SetInfoWindowAdapter(virtualView.InfoWindowTemplate is not null
-            ? new InfoWindowAdapter(virtualView, () => Items) : null);
+                if (vPin.DefaultIconColor is not null)
+                {
+                    if (PlatformView!.MapCapabilities.IsAdvancedMarkersAvailable)
+                    {
+                        var builder = new PinConfig.Builder();
+                        builder.SetBackgroundColor(vPin.DefaultIconColor.ToInt());
+                        var config = builder.Build();
+                        icon = BitmapDescriptorFactory.FromPinConfig(config);
+                    }
+                    else icon = BitmapDescriptorFactory.DefaultMarker(vPin.DefaultIconColor.GetHue() * 360f);
+                }
+
+                nPin.SetIcon(icon);
+                return;
+            }
+
+            try
+            {
+                nPin.SetIcon(await vPin.Icon.ToBitmapDescriptor(Handler!.MauiContext!));
+            }
+            catch (Exception ex)
+            {
+                nPin.SetIcon(null);
+            }
+        }
+        finally
+        {
+            _sem.Release();
+        }
     }
 
     protected virtual void PlatformView_PinClick(object? sender, GMap.MarkerClickEventArgs e)
@@ -307,18 +305,32 @@ public class InfoWindowAdapter : Java.Lang.Object, GMap.IInfoWindowAdapter
     {
         var pin = GetPins().Single(p => (NativeObjectAttachedProperty.GetNativeObject(p) as NPin)!.Id == marker.Id);
 
-        var template = Map.InfoWindowTemplate;
-
-        while (template is DataTemplateSelector selector)
+        View infoWindow;
+        if (pin.InfoWindow is not null)
         {
-            template = selector.SelectTemplate(pin.BindingContext, Map);
+            infoWindow = pin.InfoWindow;
+        }
+        else
+        {
+            var template = Map.InfoWindowTemplate;
+
+            while (template is DataTemplateSelector selector)
+            {
+                template = selector.SelectTemplate(pin.BindingContext, Map);
+            }
+
+            if (template?.CreateContent() is not View view) return null;
+
+            view.BindingContext = pin.BindingContext ?? pin;
+
+            infoWindow = view;
         }
 
-        if (template?.CreateContent() is not View view) return null;
+        var virtualView = Map;
+        infoWindow.MaximumWidthRequest = virtualView.Width;
+        infoWindow.MaximumHeightRequest = virtualView.Height / 2d;
 
-        view.BindingContext = pin.BindingContext ?? pin;
-
-        var platformView = view.ToNative(Map.Handler!.MauiContext!);
+        var platformView = infoWindow.ToNative(Map.Handler!.MauiContext!);
 
         return platformView;
     }

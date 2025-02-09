@@ -216,7 +216,7 @@ public static class PolylineExtensions
                 _ => StrokeStyle.GetGradient(gradientBrush.GradientStops[0].Color.ToPlatform(),
                     gradientBrush.GradientStops[1].Color.ToPlatform())
             },
-            _ => StrokeStyle.GetSolidColor(UIColor.Black)
+            _ => StrokeStyle.GetSolidColor(UIColor.Blue)
         };
 
         if (!string.IsNullOrWhiteSpace(texture))

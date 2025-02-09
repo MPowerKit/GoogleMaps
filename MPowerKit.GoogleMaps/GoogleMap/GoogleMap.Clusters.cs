@@ -115,7 +115,7 @@ public partial class GoogleMap
 
     protected virtual void OnUseBucketsChanged()
     {
-        if (ClusterAlgorithm is ClusterAlgorithm.None) return;
+        if (ClusterAlgorithm is ClusterAlgorithm.None || Clusters is null) return;
 
         ClustersIconCache.Clear();
         InflateClustersMarkers(Clusters);

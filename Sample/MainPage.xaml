@@ -36,6 +36,10 @@
                     Clicked="Button_Clicked_10" />
             <Button Text="Clusters"
                     Clicked="Button_Clicked_11" />
+            <Button Text="KML"
+                    Clicked="Button_Clicked_12" />
+            <Button Text="GeoJSON"
+                    Clicked="Button_Clicked_13" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

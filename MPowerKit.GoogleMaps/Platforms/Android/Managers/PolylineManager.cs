@@ -193,7 +193,7 @@ public static class PolylineExtensions
                         gradientBrush.GradientStops[0].Color.ToInt(),
                         gradientBrush.GradientStops[1].Color.ToInt())
             },
-            _ => StrokeStyle.ColorBuilder(Android.Graphics.Color.Black.ToArgb())
+            _ => StrokeStyle.ColorBuilder(Android.Graphics.Color.Blue.ToArgb())
         };
 
         if (!string.IsNullOrWhiteSpace(texture))

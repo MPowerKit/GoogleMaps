@@ -68,4 +68,14 @@ public partial class MainPage
     {
         this.Navigation.PushAsync(new NavigationPage(new ClustersTabbedPage()));
     }
+
+    private void Button_Clicked_12(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new KmlPage()));
+    }
+
+    private void Button_Clicked_13(System.Object sender, System.EventArgs e)
+    {
+        this.Navigation.PushAsync(new NavigationPage(new GeoJsonPage()));
+    }
 }

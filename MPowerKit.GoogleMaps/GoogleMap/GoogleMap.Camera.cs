@@ -25,6 +25,24 @@ public partial class GoogleMap
         MoveCameraAction = MoveCamera;
         AnimateCameraFunc = AnimateCamera;
         ResetMinMaxZoomAction = ResetMinMaxZoom;
+
+        this.PropertyChanged += GoogleMap_Camera_PropertyChanged;
+    }
+
+    private void GoogleMap_Camera_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == SelectedPinProperty.PropertyName)
+        {
+            OnCameraSelectedPinChanged();
+        }
+    }
+
+    protected virtual void OnCameraSelectedPinChanged()
+    {
+        if (SelectedPin is not null && ShouldAnimateCameraToSelectedPin)
+        {
+            AnimateCamera(CameraUpdateFactory.NewLatLng(SelectedPin.Position));
+        }
     }
 
     public virtual void ResetMinMaxZoom()
@@ -72,7 +90,7 @@ public partial class GoogleMap
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void SendCameraChanged(CameraPosition cameraPosition, bool raiseEvent = false)
+    public virtual void SendCameraChanged(CameraPosition cameraPosition, bool raiseEvent = true)
     {
         CameraPosition = cameraPosition;
 
@@ -96,6 +114,22 @@ public partial class GoogleMap
         if (CameraIdleCommand?.CanExecute(region) is true)
             CameraIdleCommand.Execute(region);
     }
+
+    #region ShouldAnimateCameraToSelectedPin
+    public bool ShouldAnimateCameraToSelectedPin
+    {
+        get => (bool)GetValue(ShouldAnimateCameraToSelectedPinProperty);
+        set => SetValue(ShouldAnimateCameraToSelectedPinProperty, value);
+    }
+
+    public static readonly BindableProperty ShouldAnimateCameraToSelectedPinProperty =
+        BindableProperty.Create(
+            nameof(ShouldAnimateCameraToSelectedPin),
+            typeof(bool),
+            typeof(GoogleMap),
+            true
+            );
+    #endregion
 
     #region VisibleRegion
     public VisibleRegion VisibleRegion

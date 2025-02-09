@@ -2,7 +2,9 @@
 using CoreLocation;
 
 using Google.Maps;
+
 using Microsoft.Maui.Platform;
+
 using UIKit;
 
 namespace MPowerKit.GoogleMaps;
@@ -31,7 +33,7 @@ public static class Extensions
 
     public static CoordinateBounds ToNative(this LatLngBounds bounds)
     {
-        return new CoordinateBounds(
+        return new(
             bounds.SouthWest.ToCoord(),
             bounds.NorthEast.ToCoord()
         );
@@ -53,7 +55,7 @@ public static class Extensions
     {
         var platfromView = virtualView.ToPlatform(context);
         var size = (virtualView as IView).Measure(double.PositiveInfinity, double.PositiveInfinity);
-        virtualView.Arrange(new Rect(0, 0, size.Width, size.Height));
+        virtualView.Arrange(new(0, 0, size.Width, size.Height));
 
         platfromView.Bounds = new(0, 0, size.Width, size.Height);
         return platfromView;

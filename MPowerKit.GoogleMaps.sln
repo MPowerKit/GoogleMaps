@@ -7,14 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPowerKit.GoogleMaps", "MPo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{9DCCCAE1-47F0-4916-9573-66E242888CB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPowerKit.GoogleMaps.Utils.iOS", "GoogleMapsUtils\MPowerKit.GoogleMaps.Utils.iOS\MPowerKit.GoogleMaps.Utils.iOS.csproj", "{C04E99C5-244D-4ADB-A59E-C8B511031B47}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPowerKit.GoogleMaps.Utils.Android", "GoogleMapsUtils\MPowerKit.GoogleMaps.Utils.Android\MPowerKit.GoogleMaps.Utils.Android.csproj", "{91B35C97-597C-4F4D-B396-73DEFF43D546}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPowerKit.GoogleMaps.Utils", "GoogleMapsUtils\MPowerKit.GoogleMaps.Utils\MPowerKit.GoogleMaps.Utils.csproj", "{3775BE3F-5D02-4CF8-A6A0-117D80F9627D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilsSample", "UtilsSample\UtilsSample.csproj", "{DE729BBD-B2A3-4DC3-BF7B-A91BEA1DB875}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,22 +23,6 @@ Global
 		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9DCCCAE1-47F0-4916-9573-66E242888CB5}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{C04E99C5-244D-4ADB-A59E-C8B511031B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C04E99C5-244D-4ADB-A59E-C8B511031B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C04E99C5-244D-4ADB-A59E-C8B511031B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C04E99C5-244D-4ADB-A59E-C8B511031B47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91B35C97-597C-4F4D-B396-73DEFF43D546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91B35C97-597C-4F4D-B396-73DEFF43D546}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91B35C97-597C-4F4D-B396-73DEFF43D546}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91B35C97-597C-4F4D-B396-73DEFF43D546}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3775BE3F-5D02-4CF8-A6A0-117D80F9627D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3775BE3F-5D02-4CF8-A6A0-117D80F9627D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3775BE3F-5D02-4CF8-A6A0-117D80F9627D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3775BE3F-5D02-4CF8-A6A0-117D80F9627D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE729BBD-B2A3-4DC3-BF7B-A91BEA1DB875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE729BBD-B2A3-4DC3-BF7B-A91BEA1DB875}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE729BBD-B2A3-4DC3-BF7B-A91BEA1DB875}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE729BBD-B2A3-4DC3-BF7B-A91BEA1DB875}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

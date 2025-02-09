@@ -18,6 +18,20 @@ public partial class ClustersPageViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<Pin> _pins = [];
 
+    public IEnumerable<Cluster> Clusters
+    {
+        get => null;
+        set
+        {
+            if (value is null) return;
+
+            foreach (var cluster in value)
+            {
+                cluster.IsEnabled = true;
+            }
+        }
+    }
+
     [ObservableProperty]
     private TimeSpan _durationIn = TimeSpan.FromMilliseconds(300);
 
