@@ -1,6 +1,6 @@
 # MPowerKit.GoogleMaps
 
-#### Google Maps SDK library for .NET MAUI. Very easy to use. Allows to interact with map in MVVM manner through bindings or with map control directly.
+#### Google Maps SDK library for .NET MAUI. Allows to interact with map in MVVM manner through bindings or with map control directly. Includes such features as Pins, Circles, Polylines, Polygones, Ground overlays, Tiles, Clusters, Heat maps, KML, GeoJSON.
 
 [![Nuget](https://img.shields.io/nuget/v/MPowerKit.GoogleMaps)](https://www.nuget.org/packages/MPowerKit.GoogleMaps)
 
