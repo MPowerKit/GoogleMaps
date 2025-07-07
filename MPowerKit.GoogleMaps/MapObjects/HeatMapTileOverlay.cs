@@ -64,10 +64,10 @@ public class HeatMapTileOverlay : TileOverlay
             nameof(Radius),
             typeof(int),
             typeof(HeatMapTileOverlay),
-#if ANDROID
-            20
-#elif IOS
+#if IOS
             50
+#else
+            20
 #endif
             );
     #endregion
@@ -439,7 +439,7 @@ public class HeatmapTileProvider
 
             if (!buckets.TryGetValue(xBucket, out Dictionary<long, float>? value))
             {
-                value = new Dictionary<long, float>();
+                value = [];
                 buckets[xBucket] = value;
             }
 

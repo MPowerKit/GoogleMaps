@@ -16,7 +16,6 @@ public static class BuilderExtensions
 #if ANDROID
                 events.AddAndroid(android =>
                 {
-                    var service = IPlatformApplication.Current?.Services.GetRequiredService<IMapsLifecycle>();
                     android.OnCreate((a, b) =>
                     {
                         if (a is not MauiAppCompatActivity) return;
