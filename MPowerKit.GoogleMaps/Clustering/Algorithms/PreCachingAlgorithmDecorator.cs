@@ -3,7 +3,6 @@
 /// <summary>
 /// Optimistically fetch clusters for adjacent zoom levels, caching them as necessary.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> to be clustered.</typeparam>
 public class PreCachingAlgorithmDecorator : AbstractAlgorithm, IAlgorithmDecorator
 {
     public IAlgorithm Algorithm { get; }
@@ -12,7 +11,7 @@ public class PreCachingAlgorithmDecorator : AbstractAlgorithm, IAlgorithmDecorat
     private readonly LurchTable<int, IEnumerable<Cluster>> _cache = new(5);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PreCachingAlgorithmDecorator{T}"/> class.
+    /// Initializes a new instance of the <see cref="PreCachingAlgorithmDecorator"/> class.
     /// </summary>
     /// <param name="algorithm">The underlying clustering algorithm to be decorated.</param>
     public PreCachingAlgorithmDecorator(IAlgorithm algorithm)
@@ -213,7 +212,7 @@ public class PreCachingAlgorithmDecorator : AbstractAlgorithm, IAlgorithmDecorat
 
             GetClustersInternal(zoom, token);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Ignore exceptions during precaching.
         }

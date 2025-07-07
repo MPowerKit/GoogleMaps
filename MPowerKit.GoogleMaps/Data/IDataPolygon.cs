@@ -3,7 +3,6 @@
 /// <summary>
 /// An interface containing the common properties of Polygon geometries.
 /// </summary>
-/// <typeparam name="T">The type of Polygon (e.g., GeoJsonPolygon or KmlPolygon).</typeparam>
 public interface IDataPolygon : IGeometry
 {
     /// <summary>

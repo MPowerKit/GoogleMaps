@@ -103,7 +103,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
             items.CollectionChanged -= Items_CollectionChanged;
         }
 
-        RemoveItemsFromPlatformView([..Items]);
+        RemoveItemsFromPlatformView([.. Items]);
     }
 
     protected virtual void RemoveItemsFromPlatformView(IEnumerable<TVItem> items)
@@ -120,7 +120,8 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
         item.PropertyChanging -= Item_PropertyChanging;
         item.PropertyChanged -= Item_PropertyChanged;
 
-        VirtualView!.RemoveLogicalChild(item);
+        item.Parent = null;
+        //VirtualView!.RemoveLogicalChild(item);
         Items.Remove(item);
 
         return NativeObjectAttachedProperty.GetNativeObject(item) as TNItem;
@@ -164,7 +165,10 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
         vItem.PropertyChanging += Item_PropertyChanging;
         vItem.PropertyChanged += Item_PropertyChanged;
         Items.Add(vItem);
+        var prevContext = vItem.BindingContext;
         VirtualView!.AddLogicalChild(vItem);
+        if (prevContext is null)
+            BindableObject.SetInheritedBindingContext(vItem, null);
     }
 
     protected abstract TNItem AddItemToPlatformView(TVItem vItem);

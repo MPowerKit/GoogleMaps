@@ -7,5 +7,5 @@ public class GeoJsonMultiLineString : MultiGeometry
     {
     }
 
-    public List<LineString> LineStrings => Geometries.OfType<LineString>().ToList();
+    public List<LineString> LineStrings => [.. Geometries.OfType<LineString>()];
 }

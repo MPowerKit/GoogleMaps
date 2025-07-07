@@ -262,7 +262,7 @@ public static class MapExtensions
         (
             building.DefaultLevelIndex,
             building.IsUnderground,
-            building.Levels.Select(l => l.ToCrossPlatform()).ToList()
+            [.. building.Levels.Select(l => l.ToCrossPlatform())]
         );
     }
 

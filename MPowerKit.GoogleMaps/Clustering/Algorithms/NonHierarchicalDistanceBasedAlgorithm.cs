@@ -3,7 +3,6 @@
 /// <summary>
 /// A simple clustering algorithm with O(n log n) performance. Resulting clusters are not hierarchical.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> to be clustered.</typeparam>
 public class NonHierarchicalDistanceBasedAlgorithm : AbstractAlgorithm
 {
     /// <summary>
@@ -243,7 +242,7 @@ public class NonHierarchicalDistanceBasedAlgorithm : AbstractAlgorithm
             Lock();
             try
             {
-                return _items.Select(quadItem => quadItem.ClusterItem).ToList();
+                return [.. _items.Select(quadItem => quadItem.ClusterItem)];
             }
             finally
             {
@@ -274,7 +273,6 @@ public class NonHierarchicalDistanceBasedAlgorithm : AbstractAlgorithm
 /// <summary>
 /// Represents an item in the quad tree.
 /// </summary>
-/// <typeparam name="TT">The type of <see cref="IClusterItem"/>.</typeparam>
 public class QuadPinItem : Cluster, IPointItem
 {
     public Pin ClusterItem { get; }

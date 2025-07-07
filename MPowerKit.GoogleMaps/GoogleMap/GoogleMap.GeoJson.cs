@@ -74,10 +74,7 @@ public partial class GoogleMap
                 GeoJsonParser = null;
                 return;
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch { }
 
             ImageSource? source = GeoJson;
 
@@ -228,7 +225,7 @@ public partial class GoogleMap
                 {
                     Polyline polyline = new()
                     {
-                        Points = new(lineGeometry.Points.ToArray()),
+                        Points = new([.. lineGeometry.Points]),
                         StrokeThickness = 1d,
                         BindingContext = feature
                     };
@@ -242,7 +239,7 @@ public partial class GoogleMap
                 {
                     Polygon polygon = new()
                     {
-                        Points = new(polygonGeometry.OuterBoundaryCoordinates.ToArray()),
+                        Points = new([.. polygonGeometry.OuterBoundaryCoordinates]),
                         StrokeThickness = 1d,
                         BindingContext = feature
                     };
@@ -386,7 +383,7 @@ public partial class GoogleMap
             }
         }
 
-        GeoJsonPins = observablePins.ToList();
+        GeoJsonPins = [.. observablePins];
     }
 
     protected virtual void AddGeoJsonPolylines(IEnumerable<Polyline> polylines)
@@ -407,7 +404,7 @@ public partial class GoogleMap
             }
         }
 
-        GeoJsonPolylines = observablePolylines.ToList();
+        GeoJsonPolylines = [.. observablePolylines];
     }
 
     protected virtual void AddGeoJsonPolygons(IEnumerable<Polygon> polygons)
@@ -428,7 +425,7 @@ public partial class GoogleMap
             }
         }
 
-        GeoJsonPolygons = observablePolygons.ToList();
+        GeoJsonPolygons = [.. observablePolygons];
     }
 
     protected virtual void RemoveGeoJsonPins()

@@ -4,13 +4,12 @@
 /// Adapter for screen-based clustering algorithms. This class wraps an existing clustering algorithm
 /// and provides additional functionality for handling map movements and camera changes.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> to be clustered.</typeparam>
 public class ScreenBasedAlgorithmAdapter : AbstractAlgorithm, IAlgorithmDecorator, IScreenBasedAlgorithm
 {
     public IAlgorithm Algorithm { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ScreenBasedAlgorithmAdapter{T}"/> class.
+    /// Initializes a new instance of the <see cref="ScreenBasedAlgorithmAdapter"/> class.
     /// </summary>
     /// <param name="algorithm">The underlying clustering algorithm to be adapted.</param>
     public ScreenBasedAlgorithmAdapter(IAlgorithm algorithm)

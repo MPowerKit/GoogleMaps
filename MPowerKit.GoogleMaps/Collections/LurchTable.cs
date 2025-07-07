@@ -156,7 +156,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             _used = 1;
 
             Array.Clear(_buckets, 0, _hsize);
-            _entries = new[] { new Entry[_allocSize] };
+            _entries = [new Entry[_allocSize]];
             for (int slot = 0; slot < FreeSlots; slot++)
             {
                 var index = Interlocked.CompareExchange(ref _used, _used + 1, _used);
@@ -700,7 +700,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// <summary>
     /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
     /// </summary>
-    public KeyCollection Keys => (LurchTable<TKey, TValue>.KeyCollection)(_keyCollection ??= new KeyCollection(this));
+    public KeyCollection Keys => _keyCollection ??= new KeyCollection(this);
     [Obsolete] ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
     #endregion
 
@@ -851,7 +851,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// <summary>
     /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
     /// </summary>
-    public ValueCollection Values => (LurchTable<TKey, TValue>.ValueCollection)(_valueCollection ??= new ValueCollection(this));
+    public ValueCollection Values => _valueCollection ??= new ValueCollection(this);
     [Obsolete] ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
     #endregion
@@ -1129,7 +1129,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         return InsertResult.NotFound;
     }
 
-    bool Delete<T>(TKey key, ref T value) where T : IRemoveValue<TKey, TValue>
+    private bool Delete<T>(TKey key, ref T value) where T : IRemoveValue<TKey, TValue>
     {
         ObjectDisposedException.ThrowIf(_entries is null, GetType());
 
@@ -1300,13 +1300,13 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
 
     #region Internal Structures
 
-    struct FreeList
+    private struct FreeList
     {
         public int Head;
         public int Tail;
     }
 
-    struct Entry
+    private struct Entry
     {
         public int Prev, Next; // insertion/access sequence ordering
         public int Link;
@@ -1348,8 +1348,8 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     public struct DelInfo : IRemoveValue<TKey, TValue>
     {
         public TValue Value;
-        readonly bool _hasTestValue;
-        readonly TValue _testValue;
+        private readonly bool _hasTestValue;
+        private readonly TValue _testValue;
         public KeyValuePredicate<TKey, TValue>? Condition;
 
         public DelInfo(TValue expected)
@@ -1399,8 +1399,8 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
 
     public struct Add2Info : ICreateOrUpdateValue<TKey, TValue>
     {
-        readonly bool _hasAddValue;
-        readonly TValue _addValue;
+        private readonly bool _hasAddValue;
+        private readonly TValue _addValue;
         public TValue Value;
         public Converter<TKey, TValue> Create;
         public KeyValueUpdate<TKey, TValue> Update;
@@ -1443,8 +1443,8 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     public struct UpdateInfo : ICreateOrUpdateValue<TKey, TValue>
     {
         public TValue Value;
-        readonly bool _hasTestValue;
-        readonly TValue _testValue;
+        private readonly bool _hasTestValue;
+        private readonly TValue _testValue;
 
         public UpdateInfo(TValue expected)
         {

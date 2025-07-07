@@ -7,5 +7,5 @@ public class GeoJsonMultiPolygon : MultiGeometry
     {
     }
 
-    public List<GeoJsonPolygon> Polygons => Geometries.OfType<GeoJsonPolygon>().ToList();
+    public List<GeoJsonPolygon> Polygons => [.. Geometries.OfType<GeoJsonPolygon>()];
 }

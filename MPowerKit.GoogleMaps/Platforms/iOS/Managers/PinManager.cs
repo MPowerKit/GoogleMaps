@@ -1,6 +1,4 @@
-﻿using Foundation;
-using System.Web;
-using Google.Maps;
+﻿using Google.Maps;
 
 using Microsoft.Maui.Platform;
 

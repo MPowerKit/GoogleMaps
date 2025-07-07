@@ -15,5 +15,5 @@ public class KmlMultiTrack : MultiGeometry
     {
     }
 
-    public List<KmlTrack> Tracks => Geometries.OfType<KmlTrack>().ToList();
+    public List<KmlTrack> Tracks => [.. Geometries.OfType<KmlTrack>()];
 }

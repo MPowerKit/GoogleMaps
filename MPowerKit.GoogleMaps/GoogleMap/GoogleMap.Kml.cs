@@ -236,7 +236,7 @@ public partial class GoogleMap
 
             return parser;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
@@ -318,7 +318,7 @@ public partial class GoogleMap
                 {
                     Polyline polyline = new()
                     {
-                        Points = new(lineGeometry.Points.ToArray()),
+                        Points = new([.. lineGeometry.Points]),
                         StrokeThickness = 1d,
                         ZIndex = placemark.ZIndex,
                         IsVisible = placemark.IsVisible,
@@ -337,7 +337,7 @@ public partial class GoogleMap
                 {
                     Polygon polygon = new()
                     {
-                        Points = new(polygonGeometry.OuterBoundaryCoordinates.ToArray()),
+                        Points = new([.. polygonGeometry.OuterBoundaryCoordinates]),
                         ZIndex = placemark.ZIndex,
                         IsVisible = placemark.IsVisible,
                         BindingContext = placemark
@@ -408,7 +408,7 @@ public partial class GoogleMap
         {
             if (KmlParser?.Images?.TryGetValue(icon, out var imageBytes) is true)
             {
-                pin.Icon = ImageSource.FromStream(() => new MemoryStream(imageBytes.ToArray()));
+                pin.Icon = ImageSource.FromStream(() => new MemoryStream([.. imageBytes]));
             }
             else pin.Icon = icon;
         }
@@ -527,7 +527,7 @@ public partial class GoogleMap
             }
         }
 
-        KmlPins = observablePins.ToList();
+        KmlPins = [.. observablePins];
     }
 
     protected virtual void AddKmlPolylines(IEnumerable<Polyline> polylines)
@@ -548,7 +548,7 @@ public partial class GoogleMap
             }
         }
 
-        KmlPolylines = observablePolylines.ToList();
+        KmlPolylines = [.. observablePolylines];
     }
 
     protected virtual void AddKmlPolygons(IEnumerable<Polygon> polygons)
@@ -569,7 +569,7 @@ public partial class GoogleMap
             }
         }
 
-        KmlPolygons = observablePolygons.ToList();
+        KmlPolygons = [.. observablePolygons];
     }
 
     protected virtual void AddKmlGroundOverlays(CancellationToken token = default)
@@ -610,7 +610,7 @@ public partial class GoogleMap
             }
         }
 
-        KmlGroundOverlays = overlays.ToList();
+        KmlGroundOverlays = [.. overlays];
     }
 
     protected virtual void RemoveKmlGroundOverlays()

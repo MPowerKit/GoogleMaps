@@ -151,10 +151,10 @@ public static class KmlStyleParser
     {
         try
         {
-            var xValue = float.Parse(reader.GetAttribute("x"));
-            var yValue = float.Parse(reader.GetAttribute("y"));
-            var xUnits = reader.GetAttribute("xunits");
-            var yUnits = reader.GetAttribute("yunits");
+            var xValue = float.Parse(reader.GetAttribute("x") ?? "");
+            var yValue = float.Parse(reader.GetAttribute("y") ?? "");
+            var xUnits = reader.GetAttribute("xunits") ?? "";
+            var yUnits = reader.GetAttribute("yunits") ?? "";
             style.SetHotSpot(xValue, yValue, xUnits, yUnits);
         }
         catch (NullReferenceException)

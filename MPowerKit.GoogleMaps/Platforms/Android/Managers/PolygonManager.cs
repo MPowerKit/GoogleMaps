@@ -93,7 +93,7 @@ public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, GMap>
 
     protected virtual void OnPointsChanged(VPolygon vPolygon, NPolygon nPolygon)
     {
-        nPolygon.Points = vPolygon.Points.Select(p => p.ToLatLng()).ToList();
+        nPolygon.Points = [.. vPolygon.Points.Select(p => p.ToLatLng())];
     }
 
     protected virtual void OnStrokeLineJoinChanged(VPolygon vPolygon, NPolygon nPolygon)

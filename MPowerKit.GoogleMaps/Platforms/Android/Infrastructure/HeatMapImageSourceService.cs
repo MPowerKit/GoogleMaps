@@ -18,7 +18,7 @@ public class HeatMapImageSourceService : ImageSourceService, IImageSourceService
 
     public static Bitmap GetBitmapFromPixels(IEnumerable<int> pixels, int size)
     {
-        var array = (pixels as int[]) ?? pixels.ToArray();
+        var array = (pixels as int[]) ?? [.. pixels];
 
         Bitmap bitmap = Bitmap.CreateBitmap(size, size, Bitmap.Config.Argb8888!);
         bitmap.SetPixels(array, 0, size, 0, 0, size, size);

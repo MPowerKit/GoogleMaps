@@ -11,7 +11,7 @@ public record struct LatLngBounds(Point SouthWest, Point NorthEast)
         Point northwest = new(NorthEast.X, SouthWest.Y);
         Point southeast = new(SouthWest.X, NorthEast.Y);
 
-        return new List<Point>() { northwest, northeast, southeast, southwest };
+        return [northwest, northeast, southeast, southwest];
     }
 
     public readonly bool Contains(Point point)

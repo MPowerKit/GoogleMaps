@@ -20,7 +20,7 @@ public class HeatMapImageSourceService : ImageSourceService, IImageSourceService
 
     public static UIImage? ImageFromPixels(IEnumerable<int> pixels, int size)
     {
-        var array = (pixels as int[]) ?? pixels.ToArray();
+        var array = (pixels as int[]) ?? [.. pixels];
 
         var length = size * size;
         // Ensure the pixel array has the correct size

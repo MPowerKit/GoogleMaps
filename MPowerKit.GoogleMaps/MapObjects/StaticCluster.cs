@@ -3,14 +3,13 @@
 /// <summary>
 /// Represents a cluster whose center is determined upon creation.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> objects in the cluster.</typeparam>
 public class StaticCluster : Cluster
 {
     private readonly Point _center;
     private readonly HashSet<Pin> _items = [];
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StaticCluster{T}"/> class.
+    /// Initializes a new instance of the <see cref="StaticCluster"/> class.
     /// </summary>
     /// <param name="center">The center of the cluster.</param>
     public StaticCluster(Point center)

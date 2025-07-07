@@ -92,7 +92,7 @@ public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, GMap
 
     protected virtual void OnPointsChanged(VPolyline vPolyline, NPolyline nPolyline)
     {
-        nPolyline.Points = vPolyline.Points.Select(p => p.ToLatLng()).ToList();
+        nPolyline.Points = [.. vPolyline.Points.Select(p => p.ToLatLng())];
     }
 
     protected virtual void OnStrokeLineJoinChanged(VPolyline vPolyline, NPolyline nPolyline)

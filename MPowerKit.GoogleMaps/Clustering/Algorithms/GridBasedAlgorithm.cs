@@ -9,7 +9,6 @@
 /// Smaller grid sizes result in more localized clusters, whereas larger grid sizes lead to broader clusters covering larger areas.
 /// </para>
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> to be clustered.</typeparam>
 public class GridBasedAlgorithm : AbstractAlgorithm
 {
     private readonly HashSet<Pin> _items = [];
@@ -168,7 +167,7 @@ public class GridBasedAlgorithm : AbstractAlgorithm
     /// <summary>
     /// Gets the items in the algorithm.
     /// </summary>
-    public override IEnumerable<Pin> Items => _items.ToList();
+    public override IEnumerable<Pin> Items => [.. _items];
 
     private static long GetCoord(long numCells, double x, double y)
     {

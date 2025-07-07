@@ -4,7 +4,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class DefaultClusterIconTemplateSelector : DataTemplateSelector
 {
-    public static int[] Buckets { get; set; } = { 10, 20, 50, 100, 200, 500, 1000 };
+    public static int[] Buckets { get; set; } = [10, 20, 50, 100, 200, 500, 1000];
 
     protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {

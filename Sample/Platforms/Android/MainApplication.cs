@@ -4,7 +4,7 @@ using Android.Runtime;
 namespace Sample;
 
 [Application]
-[MetaData("com.google.android.geo.API_KEY", Value = "")]
+[MetaData("com.google.android.geo.API_KEY", Value = "AIzaSyBCsqPLN1qKZSO6Q6qlWKdfXiFsSpWmZzQ")]
 public class MainApplication : MauiApplication
 {
     public MainApplication(IntPtr handle, JniHandleOwnership ownership)

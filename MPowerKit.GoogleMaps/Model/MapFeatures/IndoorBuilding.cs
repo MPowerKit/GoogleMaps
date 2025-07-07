@@ -25,6 +25,6 @@ public record IndoorLevel
 
 #if IOS
     [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-    static extern void void_objc_msgSend_IntPtr(System.IntPtr receiver, System.IntPtr selector, System.IntPtr arg0);
+    static extern void void_objc_msgSend_IntPtr(nint receiver, nint selector, nint arg0);
 #endif
 }

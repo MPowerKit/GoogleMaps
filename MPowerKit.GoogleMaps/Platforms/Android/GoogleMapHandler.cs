@@ -55,7 +55,7 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
 
     protected override MapView CreatePlatformView()
     {
-        Lifecycle = MauiContext!.Services.GetRequiredService<IMapsLifecycle>();
+        Lifecycle = Services!.GetRequiredService<IMapsLifecycle>();
 
         var options = new GoogleMapOptions();
         if (!string.IsNullOrWhiteSpace(VirtualView.MapId)) options.InvokeMapId(VirtualView.MapId);
@@ -79,25 +79,6 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         Lifecycle.OnDestroy += MapsLifecycle_OnDestroy;
         Lifecycle.OnLowMemory += MapsLifecycle_OnLowMemory;
         Lifecycle.OnSaveInstanceState += MapsLifecycle_OnSaveInstanceState;
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public virtual void OnMapReady(GMap googleMap)
-    {
-        NativeMap = googleMap;
-
-        if (NativeMap is null) return;
-
-        foreach (var kvp in ManagerMapper)
-        {
-            var manager = kvp.Value.Invoke();
-
-            Managers.Add(kvp.Key, manager);
-
-            manager.Connect(VirtualView, NativeMap, this);
-        }
-
-        VirtualView.SendNativeMapReady();
     }
 
     protected override void DisconnectHandler(MapView platformView)
@@ -124,6 +105,27 @@ public partial class GoogleMapHandler : ViewHandler<GoogleMap, MapView>
         Lifecycle = null;
 
         base.DisconnectHandler(platformView);
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public virtual void OnMapReady(GMap googleMap)
+    {
+        NativeMap = googleMap;
+
+        if (NativeMap is null) return;
+
+        foreach (var kvp in ManagerMapper)
+        {
+            var manager = kvp.Value.Invoke();
+
+            Managers.Add(kvp.Key, manager);
+
+            manager.Connect(VirtualView, NativeMap, this);
+        }
+
+        VirtualView.SendNativeMapReady();
+
+        PlatformView?.OnResume();
     }
 
     protected virtual void MapsLifecycle_OnStart() => PlatformView?.OnStart();

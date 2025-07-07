@@ -173,7 +173,7 @@ public class MapManager : MapFeatureManager<MapView>
 
     protected virtual Task<Stream?> TakeSnapshot()
     {
-        var view = PlatformView!.SnapshotView(true);
+        var view = PlatformView!.SnapshotView(true)!;
 
         var image = view.ToImage();
 
@@ -249,11 +249,11 @@ public static class MapExtensions
     {
         return type switch
         {
-            MapType.None => MapViewType.None,
             MapType.Normal => MapViewType.Normal,
             MapType.Satellite => MapViewType.Satellite,
             MapType.Terrain => MapViewType.Terrain,
-            MapType.Hybrid => MapViewType.Hybrid
+            MapType.Hybrid => MapViewType.Hybrid,
+            _ => MapViewType.None
         };
     }
 
@@ -284,7 +284,7 @@ public static class MapExtensions
         (
             (int)building.DefaultLevelIndex,
             building.Underground,
-            building.Levels.Select(l => l.ToCrossPlatform(map)).ToList()
+            [.. building.Levels.Select(l => l.ToCrossPlatform(map))]
         );
     }
 

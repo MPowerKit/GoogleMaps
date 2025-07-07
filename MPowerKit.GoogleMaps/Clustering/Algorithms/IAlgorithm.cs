@@ -3,7 +3,6 @@
 /// <summary>
 /// Defines the contract for clustering algorithms.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="IClusterItem"/> objects in the algorithm.</typeparam>
 public interface IAlgorithm : IDisposable
 {
     /// <summary>

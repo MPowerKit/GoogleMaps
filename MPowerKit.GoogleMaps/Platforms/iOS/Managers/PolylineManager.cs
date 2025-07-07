@@ -194,7 +194,7 @@ public static class PolylineExtensions
                     : clearStyle);
             }
             var metersPerPixel = pixelDependentDashedPattern ? Distance.MetersPerDevicePixel((polyline.Points[0].X + polyline.Points[^1].X) / 2d, map.Camera.Zoom) : 1d;
-            spans = GeometryUtils.StyleSpans(path, styles.ToArray(), pattern.Select(v => new NSNumber(v * metersPerPixel)).ToArray(), LengthKind.Rhumb);
+            spans = GeometryUtils.StyleSpans(path, [.. styles], [.. pattern.Select(v => new NSNumber(v * metersPerPixel))], LengthKind.Rhumb);
         }
         else
         {
@@ -231,7 +231,7 @@ public static class PolylineExtensions
     }
 
     [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-    static extern void void_objc_msgSend_IntPtr(System.IntPtr receiver, System.IntPtr selector, System.IntPtr arg0);
+    private static extern void void_objc_msgSend_IntPtr(nint receiver, nint selector, nint arg0);
 
     public static StyleSpan ToSpan(this Brush? brush, string? texture)
     {

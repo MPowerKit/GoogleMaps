@@ -134,12 +134,12 @@ public class HeatmapTileProvider
     public const float WorldWidth = 1f;
 
     public static Color[] DefaultGradientColors { get; set; } =
-    {
+    [
         Color.FromRgba(102, 225, 0, 255),
         Color.FromRgba(255, 0, 0, 255)
-    };
+    ];
 
-    public static float[] DefaultGradientStartPoints { get; set; } = { 0.2f, 1f };
+    public static float[] DefaultGradientStartPoints { get; set; } = [0.2f, 1f];
 
     public static readonly Gradient DefaultGradient = new(DefaultGradientColors, DefaultGradientStartPoints);
 
@@ -155,7 +155,7 @@ public class HeatmapTileProvider
 
     public HeatmapTileProvider(IEnumerable<WeightedLatLng> data, Gradient? gradient, int radius, float maxIntensity = 0f)
     {
-        _data = data.ToArray();
+        _data = [.. data];
         _radius = radius;
         _gradient = gradient ?? DefaultGradient;
         _customMaxIntensity = maxIntensity;
@@ -243,7 +243,7 @@ public class HeatmapTileProvider
             throw new ArgumentException("No input points.");
         }
 
-        _data = data as WeightedLatLng[] ?? data.ToArray();
+        _data = data as WeightedLatLng[] ?? [.. data];
         _bounds = GetBounds(_data);
         _tree = new(_bounds);
 

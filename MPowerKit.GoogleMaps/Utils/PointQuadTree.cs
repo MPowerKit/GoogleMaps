@@ -60,7 +60,7 @@ public class PointQuadTree<T> where T : IPointItem
             return;
         }
 
-        _items ??= new HashSet<T>();
+        _items ??= [];
 
         _items.Add(item);
 
@@ -72,13 +72,13 @@ public class PointQuadTree<T> where T : IPointItem
 
     private void Split()
     {
-        _children = new(4)
-        {
+        _children =
+        [
             new(_bounds.MinX, _bounds.MidX, _bounds.MinY, _bounds.MidY, _depth + 1),
             new(_bounds.MidX, _bounds.MaxX, _bounds.MinY, _bounds.MidY, _depth + 1),
             new(_bounds.MinX, _bounds.MidX, _bounds.MidY, _bounds.MaxY, _depth + 1),
             new(_bounds.MidX, _bounds.MaxX, _bounds.MidY, _bounds.MaxY, _depth + 1)
-        };
+        ];
 
         var items = _items!;
         _items = null;
@@ -127,7 +127,7 @@ public class PointQuadTree<T> where T : IPointItem
     {
         var results = new List<T>();
         Search(searchBounds, results);
-        return new List<T>(results);
+        return [.. results];
     }
 
     private void Search(Bounds searchBounds, List<T> results)

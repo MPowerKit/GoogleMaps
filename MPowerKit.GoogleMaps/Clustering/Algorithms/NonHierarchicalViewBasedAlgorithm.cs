@@ -2,10 +2,9 @@
 
 /// <summary>
 /// Algorithm that can be used for managing large numbers of items (>1000 markers). This algorithm works the same way as
-/// <see cref="NonHierarchicalDistanceBasedAlgorithm{T}"/> but operates only in the visible area. It requires
+/// <see cref="NonHierarchicalDistanceBasedAlgorithm"/> but operates only in the visible area. It requires
 /// <see cref="ShouldReclusterOnMapMovement"/> to be true in order to re-render clustering when camera movement changes the visible area.
 /// </summary>
-/// <typeparam name="T">The <see cref="IClusterItem"/> type.</typeparam>
 public class NonHierarchicalViewBasedAlgorithm : NonHierarchicalDistanceBasedAlgorithm, IScreenBasedAlgorithm
 {
     protected double MapWidth { get; set; }
@@ -14,7 +13,7 @@ public class NonHierarchicalViewBasedAlgorithm : NonHierarchicalDistanceBasedAlg
     protected Point? MapCenter { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NonHierarchicalViewBasedAlgorithm{T}"/> class.
+    /// Initializes a new instance of the <see cref="NonHierarchicalViewBasedAlgorithm"/> class.
     /// </summary>
     /// <param name="screenWidth">Map width in dp.</param>
     /// <param name="screenHeight">Map height in dp.</param>

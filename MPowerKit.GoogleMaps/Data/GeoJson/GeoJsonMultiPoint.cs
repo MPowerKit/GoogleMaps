@@ -7,5 +7,5 @@ public class GeoJsonMultiPoint : MultiGeometry
     {
     }
 
-    public List<PointGeometry> Points => Geometries.OfType<PointGeometry>().ToList();
+    public List<PointGeometry> Points => [.. Geometries.OfType<PointGeometry>()];
 }
