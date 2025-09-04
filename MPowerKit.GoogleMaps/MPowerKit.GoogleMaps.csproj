@@ -11,7 +11,7 @@
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>MPowerKit.GoogleMaps</Title>
-		<Version>3.1.0</Version>
+		<Version>3.1.1</Version>
 		<Authors>MPowerKit,Alex Dobrynin</Authors>
 		<Description>Google Maps SDK library for .NET MAUI. Allows to interact with map in MVVM manner through bindings or with map control directly. Includes such features as Pins, Circles, Polylines, Polygones, Ground overlays, Tiles, Clusters, Heat maps, KML, GeoJSON.</Description>
 		<Copyright>MPowerKit</Copyright>
@@ -28,14 +28,14 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="$(TargetFramework.Contains('android'))">
-		<PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="119.2.0.2" />
-		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.10.1.2" />
-		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.2" />
-		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.6.2" />
+		<PackageReference Include="Xamarin.GooglePlayServices.Maps" Version="119.2.0.3" />
+		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.10.1.3" />
+		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.3" />
+		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$(TargetFramework.Contains('ios'))">
-		<PackageReference Include="AdamE.Google.iOS.Maps" Version="9.2.0.5" />
+		<PackageReference Include="AdamE.Google.iOS.Maps" Version="9.2.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>

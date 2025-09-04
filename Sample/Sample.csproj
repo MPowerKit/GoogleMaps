@@ -40,7 +40,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Controls.UserDialogs.Maui" Version="1.8.0" />
+		<PackageReference Include="Controls.UserDialogs.Maui" Version="1.9.0" />
 	</ItemGroup>
 
 	<ItemGroup>
