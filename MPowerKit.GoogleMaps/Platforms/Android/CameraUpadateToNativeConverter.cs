@@ -2,13 +2,13 @@
 
 using Microsoft.Maui.Platform;
 
-using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
 using NCameraUpdate = Android.Gms.Maps.CameraUpdate;
 using NCameraUpdateFactory = Android.Gms.Maps.CameraUpdateFactory;
+using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CameraUpadateToNativeConverter
+public class CameraUpdateToNativeConverter
 {
     public static Dictionary<Type, Func<VCameraUpdate, Context, NCameraUpdate>> CameraUpdateMapper = new()
     {

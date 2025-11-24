@@ -54,18 +54,18 @@ public static class Extensions
 
     public static UIView ToNative(this View virtualView, IMauiContext context)
     {
-        var platfromView = virtualView.ToPlatform(context);
+        var platformView = virtualView.ToPlatform(context);
         var size = (virtualView as IView).Measure(double.PositiveInfinity, double.PositiveInfinity);
         virtualView.Arrange(new(0, 0, size.Width, size.Height));
 
-        platfromView.Bounds = new(0, 0, size.Width, size.Height);
-        return platfromView;
+        platformView.Bounds = new(0, 0, size.Width, size.Height);
+        return platformView;
     }
 
     public static UIImage ToImage(this View virtualView, IMauiContext context)
     {
-        var platfromView = virtualView.ToNative(context);
-        return platfromView.ToImage();
+        var platformView = virtualView.ToNative(context);
+        return platformView.ToImage();
     }
 
     public static UIImage ToImage(this UIView v)

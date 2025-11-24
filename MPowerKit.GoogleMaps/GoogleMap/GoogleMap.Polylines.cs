@@ -29,9 +29,9 @@ public partial class GoogleMap
     }
 
     #region Polylines
-    public IEnumerable<Polyline> Polylines
+    public IEnumerable<Polyline>? Polylines
     {
-        get => (IEnumerable<Polyline>)GetValue(PolylinesProperty);
+        get => (IEnumerable<Polyline>?)GetValue(PolylinesProperty);
         set => SetValue(PolylinesProperty, value);
     }
 
@@ -43,9 +43,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolylinesSource
-    public IEnumerable PolylinesSource
+    public IEnumerable? PolylinesSource
     {
-        get => (IEnumerable)GetValue(PolylinesSourceProperty);
+        get => (IEnumerable?)GetValue(PolylinesSourceProperty);
         set => SetValue(PolylinesSourceProperty, value);
     }
 
@@ -57,9 +57,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolylineItemTemplate
-    public DataTemplate PolylineItemTemplate
+    public DataTemplate? PolylineItemTemplate
     {
-        get => (DataTemplate)GetValue(PolylineItemTemplateProperty);
+        get => (DataTemplate?)GetValue(PolylineItemTemplateProperty);
         set => SetValue(PolylineItemTemplateProperty, value);
     }
 
@@ -71,9 +71,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolylineClickedCommand
-    public ICommand PolylineClickedCommand
+    public ICommand? PolylineClickedCommand
     {
-        get => (ICommand)GetValue(PolylineClickedCommandProperty);
+        get => (ICommand?)GetValue(PolylineClickedCommandProperty);
         set => SetValue(PolylineClickedCommandProperty, value);
     }
 

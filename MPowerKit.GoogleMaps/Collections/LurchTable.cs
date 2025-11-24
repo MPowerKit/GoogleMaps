@@ -19,7 +19,7 @@ public enum LurchTableOrder
 }
 
 /// <summary>
-/// LurchTable stands for "Least Used Recently Concurrent Hash Table" and has definate
+/// LurchTable stands for "Least Used Recently Concurrent Hash Table" and has definite
 /// similarities to both the .NET 4 ConcurrentDictionary as well as Java's LinkedHashMap.
 /// This gives you a thread-safe dictionary/hashtable that stores element ordering by
 /// insertion, updates, or access.  In addition it can be configured to use a 'hard-limit'
@@ -33,17 +33,17 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     public delegate void ItemUpdatedMethod(KeyValuePair<TKey, TValue> previous, KeyValuePair<TKey, TValue> next);
 
     /// <summary> Event raised after an item is removed from the collection </summary>
-    public event Action<KeyValuePair<TKey, TValue>> ItemRemoved;
+    public event Action<KeyValuePair<TKey, TValue>>? ItemRemoved;
     /// <summary> Event raised after an item is updated in the collection </summary>
-    public event ItemUpdatedMethod ItemUpdated;
+    public event ItemUpdatedMethod? ItemUpdated;
     /// <summary> Event raised after an item is added to the collection </summary>
-    public event Action<KeyValuePair<TKey, TValue>> ItemAdded;
+    public event Action<KeyValuePair<TKey, TValue>>? ItemAdded;
 
     private const int OverAlloc = 128;
     private const int FreeSlots = 32;
 
     private readonly IEqualityComparer<TKey> _comparer;
-    private readonly int _hsize, _lsize, _limit;
+    private readonly int _hSize, _lSize, _limit;
     private readonly int _allocSize, _shift, _shiftMask;
     private readonly LurchTableOrder _ordering;
     private readonly object[] _locks;
@@ -100,12 +100,12 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         _allocSize = 1 << _shift;
         _shiftMask = _allocSize - 1;
 
-        _hsize = HashUtilities.SelectPrimeNumber(Math.Max(127, hashSize));
-        _buckets = new int[_hsize];
+        _hSize = HashUtilities.SelectPrimeNumber(Math.Max(127, hashSize));
+        _buckets = new int[_hSize];
 
-        _lsize = HashUtilities.SelectPrimeNumber(lockSize);
-        _locks = new object[_lsize];
-        for (int i = 0; i < _lsize; i++)
+        _lSize = HashUtilities.SelectPrimeNumber(lockSize);
+        _locks = new object[_lSize];
+        for (int i = 0; i < _lSize; i++)
             _locks[i] = new object();
 
         _free = new FreeList[FreeSlots];
@@ -134,11 +134,11 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// </summary>
     public LurchTableOrder Ordering { get { return _ordering; } }
     /// <summary>
-    /// Retrives the key comparer being used by this instance.
+    /// Retrieves the key comparer being used by this instance.
     /// </summary>
     public IEqualityComparer<TKey> Comparer { get { return _comparer; } }
     /// <summary>
-    /// Retrives the record limit allowed in this instance.
+    /// Retrieves the record limit allowed in this instance.
     /// </summary>
     public int Limit { get { return _limit; } }
 
@@ -155,7 +155,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             _count = 0;
             _used = 1;
 
-            Array.Clear(_buckets, 0, _hsize);
+            Array.Clear(_buckets, 0, _hSize);
             _entries = [new Entry[_allocSize]];
             for (int slot = 0; slot < FreeSlots; slot++)
             {
@@ -221,7 +221,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// </returns>
     public bool TryGetValue(TKey key, out TValue value)
     {
-        var hash = _comparer.GetHashCode(key) & int.MaxValue;
+        var hash = _comparer.GetHashCode(key!) & int.MaxValue;
         return InternalGetValue(hash, key, out value);
     }
 
@@ -365,7 +365,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     }
 
     /// <summary>
-    /// Add, update, or fetche a key/value pair from the dictionary via an implementation of the
+    /// Add, update, or fetch a key/value pair from the dictionary via an implementation of the
     /// <see cref="T:CSharpTest.Net.Collections.ICreateOrUpdateValue`2"/> interface.
     /// </summary>
     public bool AddOrUpdate<T>(TKey key, ref T createOrUpdateValue) where T : ICreateOrUpdateValue<TKey, TValue>
@@ -387,7 +387,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// <summary>
     /// Modify the value associated with the result of the provided update method
     /// as an atomic operation, Allows for reading/writing a single record within
-    /// the syncronization lock.
+    /// the synchronization lock.
     /// </summary>
     public bool TryUpdate(TKey key, KeyValueUpdate<TKey, TValue> fnUpdate)
     {
@@ -465,12 +465,12 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         }
 
         state.Unlock();
-        while (++state.Bucket < _hsize)
+        while (++state.Bucket < _hSize)
         {
             if (_buckets[state.Bucket] == 0)
                 continue;
 
-            state.Lock(_locks[state.Bucket % _lsize]);
+            state.Lock(_locks[state.Bucket % _lSize]);
 
             state.Current = _buckets[state.Bucket];
             if (state.Current > 0)
@@ -627,7 +627,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
                 _state.Unlock();
             }
 
-            readonly object IEnumerator.Current => Current;
+            readonly object? IEnumerator.Current => Current;
 
             /// <summary>
             /// Gets the element in the collection at the current position of the enumerator.
@@ -696,7 +696,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         #endregion
     }
 
-    private KeyCollection _keyCollection;
+    private KeyCollection? _keyCollection;
     /// <summary>
     /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
     /// </summary>
@@ -778,7 +778,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
                 _state.Unlock();
             }
 
-            readonly object IEnumerator.Current => Current;
+            readonly object? IEnumerator.Current => Current;
 
             /// <summary>
             /// Gets the element in the collection at the current position of the enumerator.
@@ -847,7 +847,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         #endregion
     }
 
-    private ValueCollection _valueCollection;
+    private ValueCollection? _valueCollection;
     /// <summary>
     /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
     /// </summary>
@@ -881,8 +881,8 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             int hash = _entries[index >> _shift][index & _shiftMask].Hash;
             if (hash >= 0)
             {
-                int bucket = hash % _hsize;
-                lock (_locks[bucket % _lsize])
+                int bucket = hash % _hSize;
+                lock (_locks[bucket % _lSize])
                 {
                     if (index == _entries[0][0].Prev &&
                         hash == _entries[index >> _shift][index & _shiftMask].Hash)
@@ -934,7 +934,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     /// </summary>
     /// <returns>False if no item was available</returns>
     /// <exception cref="System.InvalidOperationException">Raised if the table is unordered</exception>
-    public bool TryDequeue(Predicate<KeyValuePair<TKey, TValue>> predicate, out KeyValuePair<TKey, TValue> value)
+    public bool TryDequeue(Predicate<KeyValuePair<TKey, TValue>>? predicate, out KeyValuePair<TKey, TValue> value)
     {
         if (_ordering == LurchTableOrder.None)
             throw new InvalidOperationException();
@@ -953,8 +953,8 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             int hash = _entries[index >> _shift][index & _shiftMask].Hash;
             if (hash >= 0)
             {
-                int bucket = hash % _hsize;
-                lock (_locks[bucket % _lsize])
+                int bucket = hash % _hSize;
+                lock (_locks[bucket % _lSize])
                 {
                     if (index == _entries[0][0].Prev &&
                         hash == _entries[index >> _shift][index & _shiftMask].Hash)
@@ -1022,12 +1022,12 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
 
     protected enum InsertResult { Inserted = 1, Updated = 2, Exists = 3, NotFound = 4 }
 
-    protected bool InternalGetValue(int hash, TKey key, out TValue value)
+    protected bool InternalGetValue(int hash, TKey key, out TValue? value)
     {
         ObjectDisposedException.ThrowIf(_entries is null, GetType());
 
-        var bucket = hash % _hsize;
-        lock (_locks[bucket % _lsize])
+        var bucket = hash % _hSize;
+        lock (_locks[bucket % _lSize])
         {
             int index = _buckets[bucket];
             while (index != 0)
@@ -1059,7 +1059,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     {
         ObjectDisposedException.ThrowIf(_entries is null, GetType());
 
-        var hash = _comparer.GetHashCode(key) & int.MaxValue;
+        var hash = _comparer.GetHashCode(key!) & int.MaxValue;
 
         var result = InternalInsert(hash, key, out int added, ref value);
 
@@ -1073,14 +1073,14 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     protected InsertResult InternalInsert<T>(int hash, TKey key, out int added, ref T value)
         where T : ICreateOrUpdateValue<TKey, TValue>
     {
-        var bucket = hash % _hsize;
-        lock (_locks[bucket % _lsize])
+        var bucket = hash % _hSize;
+        lock (_locks[bucket % _lSize])
         {
             TValue temp;
             int index = _buckets[bucket];
             while (index != 0)
             {
-                if (hash == _entries[index >> _shift][index & _shiftMask].Hash &&
+                if (hash == _entries![index >> _shift][index & _shiftMask].Hash &&
                     _comparer.Equals(key, _entries[index >> _shift][index & _shiftMask].Key))
                 {
                     temp = _entries[index >> _shift][index & _shiftMask].Value;
@@ -1109,7 +1109,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
             if (value.CreateValue(key, out temp))
             {
                 index = AllocSlot();
-                _entries[index >> _shift][index & _shiftMask].Hash = hash;
+                _entries![index >> _shift][index & _shiftMask].Hash = hash;
                 _entries[index >> _shift][index & _shiftMask].Key = key;
                 _entries[index >> _shift][index & _shiftMask].Value = temp;
                 _entries[index >> _shift][index & _shiftMask].Link = _buckets[bucket];
@@ -1133,9 +1133,9 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     {
         ObjectDisposedException.ThrowIf(_entries is null, GetType());
 
-        int hash = _comparer.GetHashCode(key) & int.MaxValue;
-        int bucket = hash % _hsize;
-        lock (_locks[bucket % _lsize])
+        int hash = _comparer.GetHashCode(key!) & int.MaxValue;
+        int bucket = hash % _hSize;
+        lock (_locks[bucket % _lSize])
         {
             int prev = 0;
             int index = _buckets[bucket];
@@ -1175,7 +1175,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
 
     protected void InternalLink(int index)
     {
-        Interlocked.Exchange(ref _entries[index >> _shift][index & _shiftMask].Prev, 0);
+        Interlocked.Exchange(ref _entries![index >> _shift][index & _shiftMask].Prev, 0);
         Interlocked.Exchange(ref _entries[index >> _shift][index & _shiftMask].Next, ~0);
         var next = Interlocked.Exchange(ref _entries[0][0].Next, index);
         if (next < 0)
@@ -1192,7 +1192,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
         while (true)
         {
             int cmp;
-            int prev = _entries[index >> _shift][index & _shiftMask].Prev;
+            int prev = _entries![index >> _shift][index & _shiftMask].Prev;
             while (prev >= 0 && prev != (cmp = Interlocked.CompareExchange(
                         ref _entries[index >> _shift][index & _shiftMask].Prev, ~prev, prev)))
                 prev = cmp;
@@ -1229,7 +1229,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
     {
         while (true)
         {
-            var allocated = _entries.Length * _allocSize;
+            var allocated = _entries!.Length * _allocSize;
             var previous = _entries;
 
             while (_count + OverAlloc < allocated || _used < allocated)
@@ -1271,11 +1271,11 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
                 //time to grow...
                 if (ReferenceEquals(_entries, previous))
                 {
-                    var arentries = new Entry[_entries.Length + 1][];
-                    _entries.CopyTo(arentries, 0);
-                    arentries[^1] = new Entry[_allocSize];
+                    var arrEntries = new Entry[_entries.Length + 1][];
+                    _entries.CopyTo(arrEntries, 0);
+                    arrEntries[^1] = new Entry[_allocSize];
 
-                    Interlocked.CompareExchange(ref _entries, arentries, previous);
+                    Interlocked.CompareExchange(ref _entries, arrEntries, previous);
                 }
             }
         }
@@ -1283,7 +1283,7 @@ public class LurchTable<TKey, TValue> : IConcurrentDictionary<TKey, TValue>
 
     protected void FreeSlot(ref int index, int ver)
     {
-        _entries[index >> _shift][index & _shiftMask].Key = default;
+        _entries![index >> _shift][index & _shiftMask].Key = default;
         _entries[index >> _shift][index & _shiftMask].Value = default;
         Interlocked.Exchange(ref _entries[index >> _shift][index & _shiftMask].Link, 0);
 

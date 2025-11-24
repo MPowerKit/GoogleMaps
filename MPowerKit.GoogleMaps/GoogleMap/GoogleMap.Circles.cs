@@ -27,9 +27,9 @@ public partial class GoogleMap
     }
 
     #region Circles
-    public IEnumerable<Circle> Circles
+    public IEnumerable<Circle>? Circles
     {
-        get => (IEnumerable<Circle>)GetValue(CirclesProperty);
+        get => (IEnumerable<Circle>?)GetValue(CirclesProperty);
         set => SetValue(CirclesProperty, value);
     }
 
@@ -41,9 +41,9 @@ public partial class GoogleMap
     #endregion
 
     #region CirclesSource
-    public IEnumerable CirclesSource
+    public IEnumerable? CirclesSource
     {
-        get => (IEnumerable)GetValue(CirclesSourceProperty);
+        get => (IEnumerable?)GetValue(CirclesSourceProperty);
         set => SetValue(CirclesSourceProperty, value);
     }
 
@@ -55,9 +55,9 @@ public partial class GoogleMap
     #endregion
 
     #region CircleItemTemplate
-    public DataTemplate CircleItemTemplate
+    public DataTemplate? CircleItemTemplate
     {
-        get => (DataTemplate)GetValue(CircleItemTemplateProperty);
+        get => (DataTemplate?)GetValue(CircleItemTemplateProperty);
         set => SetValue(CircleItemTemplateProperty, value);
     }
 
@@ -69,9 +69,9 @@ public partial class GoogleMap
     #endregion
 
     #region CircleClickedCommand
-    public ICommand CircleClickedCommand
+    public ICommand? CircleClickedCommand
     {
-        get => (ICommand)GetValue(CircleClickedCommandProperty);
+        get => (ICommand?)GetValue(CircleClickedCommandProperty);
         set => SetValue(CircleClickedCommandProperty, value);
     }
 

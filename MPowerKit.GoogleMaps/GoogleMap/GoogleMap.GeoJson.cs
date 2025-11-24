@@ -47,9 +47,12 @@ public partial class GoogleMap
     {
         try
         {
-            GeoJsonCts?.Cancel();
-            GeoJsonCts?.Dispose();
-            GeoJsonCts = null;
+            if (GeoJsonCts is not null)
+            {
+                GeoJsonCts.Cancel();
+                GeoJsonCts.Dispose();
+                GeoJsonCts = null;
+            }
         }
         catch { }
 
@@ -62,6 +65,8 @@ public partial class GoogleMap
 
     protected virtual async Task OnGeoJsonChanged()
     {
+        if (string.IsNullOrWhiteSpace(GeoJson)) return;
+
         GeoJsonCts = new();
 
         var token = GeoJsonCts.Token;
@@ -431,43 +436,43 @@ public partial class GoogleMap
     protected virtual void RemoveGeoJsonPins()
     {
         if (GeoJsonPins?.Count is null or 0
-            || Pins is not ICollection<Pin> changableCollection
-            || changableCollection.Count == 0) return;
+            || Pins is not ICollection<Pin> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var pin in GeoJsonPins)
         {
-            changableCollection.Remove(pin);
+            changeableCollection.Remove(pin);
         }
     }
 
     protected virtual void RemoveGeoJsonPolylines()
     {
         if (GeoJsonPolylines?.Count is null or 0
-            || Polylines is not ICollection<Polyline> changableCollection
-            || changableCollection.Count == 0) return;
+            || Polylines is not ICollection<Polyline> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var polyline in GeoJsonPolylines)
         {
-            changableCollection.Remove(polyline);
+            changeableCollection.Remove(polyline);
         }
     }
 
     protected virtual void RemoveGeoJsonPolygons()
     {
         if (GeoJsonPolygons?.Count is null or 0
-            || Polygons is not ICollection<Polygon> changableCollection
-            || changableCollection.Count == 0) return;
+            || Polygons is not ICollection<Polygon> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var polygon in GeoJsonPolygons)
         {
-            changableCollection.Remove(polygon);
+            changeableCollection.Remove(polygon);
         }
     }
 
     #region GeoJson
-    public string GeoJson
+    public string? GeoJson
     {
-        get => (string)GetValue(GeoJsonProperty);
+        get => (string?)GetValue(GeoJsonProperty);
         set => SetValue(GeoJsonProperty, value);
     }
 
@@ -479,9 +484,9 @@ public partial class GoogleMap
     #endregion
 
     #region GeoJsonParsedCommand
-    public ICommand GeoJsonParsedCommand
+    public ICommand? GeoJsonParsedCommand
     {
-        get => (ICommand)GetValue(GeoJsonParsedCommandProperty);
+        get => (ICommand?)GetValue(GeoJsonParsedCommandProperty);
         set => SetValue(GeoJsonParsedCommandProperty, value);
     }
 

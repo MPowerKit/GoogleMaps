@@ -405,12 +405,12 @@ public class HeatmapTileProvider
 
         for (int i = 0; i < dim; i++)
         {
-            var idim = i * dim;
+            var iDim = i * dim;
 
             for (var j = 0; j < dim; j++)
             {
                 var val = grid[j, i];
-                var index = idim + j;
+                var index = iDim + j;
                 var col = (int)(val * colorMapScaling);
 
                 colors[index] = val != 0f

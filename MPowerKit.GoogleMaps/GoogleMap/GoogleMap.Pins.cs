@@ -17,7 +17,7 @@ public partial class GoogleMap
     public event Action<Pin>? InfoWindowLongClick;
     public event Action<Pin>? InfoWindowClosed;
 
-    protected Pin PrevSelectedPin { get; set; }
+    protected Pin? PrevSelectedPin { get; set; }
 
     protected virtual void InitPins()
     {
@@ -114,7 +114,7 @@ public partial class GoogleMap
 
     protected virtual void SelectedPinDataChanged()
     {
-        var selectedPin = Pins.FirstOrDefault(p => p.BindingContext == SelectedPinData);
+        var selectedPin = Pins?.FirstOrDefault(p => p.BindingContext == SelectedPinData);
         if (selectedPin?.CanBeSelected is true)
         {
             SelectedPin = selectedPin;
@@ -235,9 +235,9 @@ public partial class GoogleMap
     }
 
     #region InfoWindowTemplate
-    public DataTemplate InfoWindowTemplate
+    public DataTemplate? InfoWindowTemplate
     {
-        get => (DataTemplate)GetValue(InfoWindowTemplateProperty);
+        get => (DataTemplate?)GetValue(InfoWindowTemplateProperty);
         set => SetValue(InfoWindowTemplateProperty, value);
     }
 
@@ -250,9 +250,9 @@ public partial class GoogleMap
     #endregion
 
     #region Pins
-    public IEnumerable<Pin> Pins
+    public IEnumerable<Pin>? Pins
     {
-        get => (IEnumerable<Pin>)GetValue(PinsProperty);
+        get => (IEnumerable<Pin>?)GetValue(PinsProperty);
         set => SetValue(PinsProperty, value);
     }
 
@@ -265,9 +265,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinsSource
-    public IEnumerable PinsSource
+    public IEnumerable? PinsSource
     {
-        get => (IEnumerable)GetValue(PinsSourceProperty);
+        get => (IEnumerable?)GetValue(PinsSourceProperty);
         set => SetValue(PinsSourceProperty, value);
     }
 
@@ -279,9 +279,9 @@ public partial class GoogleMap
     #endregion
 
     #region SelectedPin
-    public Pin SelectedPin
+    public Pin? SelectedPin
     {
-        get => (Pin)GetValue(SelectedPinProperty);
+        get => (Pin?)GetValue(SelectedPinProperty);
         set => SetValue(SelectedPinProperty, value);
     }
 
@@ -295,9 +295,9 @@ public partial class GoogleMap
     #endregion
 
     #region SelectedPinData
-    public object SelectedPinData
+    public object? SelectedPinData
     {
-        get => (object)GetValue(SelectedPinDataProperty);
+        get => GetValue(SelectedPinDataProperty);
         set => SetValue(SelectedPinDataProperty, value);
     }
 
@@ -311,9 +311,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinItemTemplate
-    public DataTemplate PinItemTemplate
+    public DataTemplate? PinItemTemplate
     {
-        get => (DataTemplate)GetValue(PinItemTemplateProperty);
+        get => (DataTemplate?)GetValue(PinItemTemplateProperty);
         set => SetValue(PinItemTemplateProperty, value);
     }
 
@@ -325,9 +325,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinClickedCommand
-    public ICommand PinClickedCommand
+    public ICommand? PinClickedCommand
     {
-        get => (ICommand)GetValue(PinClickedCommandProperty);
+        get => (ICommand?)GetValue(PinClickedCommandProperty);
         set => SetValue(PinClickedCommandProperty, value);
     }
 
@@ -339,9 +339,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinDragStartedCommand
-    public ICommand PinDragStartedCommand
+    public ICommand? PinDragStartedCommand
     {
-        get => (ICommand)GetValue(PinDragStartedCommandProperty);
+        get => (ICommand?)GetValue(PinDragStartedCommandProperty);
         set => SetValue(PinDragStartedCommandProperty, value);
     }
 
@@ -353,9 +353,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinDraggedCommand
-    public ICommand PinDraggingCommand
+    public ICommand? PinDraggingCommand
     {
-        get => (ICommand)GetValue(PinDraggingCommandProperty);
+        get => (ICommand?)GetValue(PinDraggingCommandProperty);
         set => SetValue(PinDraggingCommandProperty, value);
     }
 
@@ -367,9 +367,9 @@ public partial class GoogleMap
     #endregion
 
     #region PinDragEndedCommand
-    public ICommand PinDragEndedCommand
+    public ICommand? PinDragEndedCommand
     {
-        get => (ICommand)GetValue(PinDragEndedCommandProperty);
+        get => (ICommand?)GetValue(PinDragEndedCommandProperty);
         set => SetValue(PinDragEndedCommandProperty, value);
     }
 
@@ -381,9 +381,9 @@ public partial class GoogleMap
     #endregion
 
     #region InfoWindowClickedCommand
-    public ICommand InfoWindowClickedCommand
+    public ICommand? InfoWindowClickedCommand
     {
-        get => (ICommand)GetValue(InfoWindowClickedCommandProperty);
+        get => (ICommand?)GetValue(InfoWindowClickedCommandProperty);
         set => SetValue(InfoWindowClickedCommandProperty, value);
     }
 
@@ -395,9 +395,9 @@ public partial class GoogleMap
     #endregion
 
     #region InfoWindowLongClickedCommand
-    public ICommand InfoWindowLongClickedCommand
+    public ICommand? InfoWindowLongClickedCommand
     {
-        get => (ICommand)GetValue(InfoWindowLongClickedCommandProperty);
+        get => (ICommand?)GetValue(InfoWindowLongClickedCommandProperty);
         set => SetValue(InfoWindowLongClickedCommandProperty, value);
     }
 
@@ -409,9 +409,9 @@ public partial class GoogleMap
     #endregion
 
     #region InfoWindowClosedCommand
-    public ICommand InfoWindowClosedCommand
+    public ICommand? InfoWindowClosedCommand
     {
-        get => (ICommand)GetValue(InfoWindowClosedCommandProperty);
+        get => (ICommand?)GetValue(InfoWindowClosedCommandProperty);
         set => SetValue(InfoWindowClosedCommandProperty, value);
     }
 

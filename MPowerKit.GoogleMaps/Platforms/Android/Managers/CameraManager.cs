@@ -178,7 +178,7 @@ public static class CameraExtensions
 
     public static NCameraUpdate ToNative(this VCameraUpdate cameraUpdate, Context context)
     {
-        return new CameraUpadateToNativeConverter().ToNative(cameraUpdate, context);
+        return new CameraUpdateToNativeConverter().ToNative(cameraUpdate, context);
     }
 
     public static NCameraPosition ToNative(this VCameraPosition position)

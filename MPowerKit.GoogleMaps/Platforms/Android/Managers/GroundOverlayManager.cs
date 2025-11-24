@@ -8,7 +8,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGroundOverlay, GMap>
 {
-    protected override IEnumerable<VGroundOverlay> VirtualViewItems => VirtualView!.GroundOverlays;
+    protected override IEnumerable<VGroundOverlay>? VirtualViewItems => VirtualView!.GroundOverlays;
     protected override string VirtualViewItemsPropertyName => GoogleMap.GroundOverlaysProperty.PropertyName;
 
     protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
@@ -37,7 +37,7 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
         return overlay;
     }
 
-    private bool _overlayPositionBanchUpdate;
+    private bool _overlayPositionBunchUpdate;
     protected override void ItemPropertyChanged(VGroundOverlay vItem, NGroundOverlay nItem, string? propertyName)
     {
         base.ItemPropertyChanged(vItem, nItem, propertyName);
@@ -113,7 +113,7 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
 
     protected virtual void OnPositionChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        if (_overlayPositionBanchUpdate) return;
+        if (_overlayPositionBunchUpdate) return;
 
         ngo.Position = vgo.Position.ToLatLng();
         if (vgo.WidthRequest > 0d)
@@ -128,22 +128,22 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
             }
         }
 
-        _overlayPositionBanchUpdate = true;
+        _overlayPositionBunchUpdate = true;
         vgo.OverlayBounds = ngo.Bounds.ToCrossPlatform();
-        _overlayPositionBanchUpdate = false;
+        _overlayPositionBunchUpdate = false;
     }
 
     protected virtual void OnOverlayBoundsChanged(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        if (_overlayPositionBanchUpdate) return;
+        if (_overlayPositionBunchUpdate) return;
 
         ngo.SetPositionFromBounds(vgo.OverlayBounds?.ToNative());
 
-        _overlayPositionBanchUpdate = true;
+        _overlayPositionBunchUpdate = true;
         vgo.Position = ngo.Position.ToCrossPlatformPoint();
         vgo.WidthRequest = ngo.Width;
         vgo.HeightRequest = ngo.Height;
-        _overlayPositionBanchUpdate = false;
+        _overlayPositionBunchUpdate = false;
     }
 
     protected virtual async Task OnImageChanged(VGroundOverlay vgo, NGroundOverlay ngo)
@@ -162,12 +162,12 @@ public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGrou
 
     protected virtual void UpdateBoundsAndPosition(VGroundOverlay vgo, NGroundOverlay ngo)
     {
-        _overlayPositionBanchUpdate = true;
+        _overlayPositionBunchUpdate = true;
         vgo.OverlayBounds = ngo.Bounds.ToCrossPlatform();
         vgo.Position = ngo.Position.ToCrossPlatformPoint();
         vgo.WidthRequest = ngo.Width;
         vgo.HeightRequest = ngo.Height;
-        _overlayPositionBanchUpdate = false;
+        _overlayPositionBunchUpdate = false;
     }
 
     protected virtual void PlatformView_GroundOverlayClick(object? sender, GMap.GroundOverlayClickEventArgs e)
@@ -194,14 +194,14 @@ public static class GroundOverlayExtensions
         options.InvokeTransparency(1f - (float)groundOverlay.Opacity);
         options.InvokeBearing(groundOverlay.Bearing);
         options.Anchor((float)groundOverlay.AnchorX, (float)groundOverlay.AnchorY);
-        groundOverlay.SetupPostionForOptions(options);
+        groundOverlay.SetupPositionForOptions(options);
         // this needs to be here because SDK does not allow to create overlay without any image
         options.InvokeImage(DummyImage(mauiContext));
 
         return options;
     }
 
-    public static void SetupPostionForOptions(this VGroundOverlay groundOverlay, GroundOverlayOptions options)
+    public static void SetupPositionForOptions(this VGroundOverlay groundOverlay, GroundOverlayOptions options)
     {
         if (groundOverlay.OverlayBounds is LatLngBounds bounds)
         {

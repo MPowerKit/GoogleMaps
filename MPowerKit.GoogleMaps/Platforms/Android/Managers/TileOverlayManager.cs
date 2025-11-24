@@ -9,7 +9,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOverlay, GMap>
 {
-    protected override IEnumerable<VTileOverlay> VirtualViewItems => VirtualView!.TileOverlays;
+    protected override IEnumerable<VTileOverlay>? VirtualViewItems => VirtualView!.TileOverlays;
     protected override string VirtualViewItemsPropertyName => GoogleMap.TileOverlaysProperty.PropertyName;
 
     protected override void RemoveItemFromPlatformView(NTileOverlay? nItem)
@@ -17,7 +17,7 @@ public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOver
         nItem?.Remove();
     }
 
-    protected override NTileOverlay AddItemToPlatformView(VTileOverlay vItem)
+    protected override NTileOverlay? AddItemToPlatformView(VTileOverlay vItem)
     {
         return PlatformView!.AddTileOverlay(ToOptions(vItem, Handler!.MauiContext!));
     }
@@ -133,7 +133,7 @@ public class CommonTileProvider : Java.Lang.Object, ITileProvider
 
             return new(_tileSize, _tileSize, bitmap.ToArray());
         }
-        catch (Exception ex)
+        catch
         {
             Console.WriteLine($"Cannot find or load resource");
         }

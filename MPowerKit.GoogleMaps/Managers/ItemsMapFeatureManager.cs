@@ -9,7 +9,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
 {
     protected List<TVItem> Items { get; set; } = [];
 
-    protected abstract IEnumerable<TVItem> VirtualViewItems { get; }
+    protected abstract IEnumerable<TVItem>? VirtualViewItems { get; }
     protected abstract string VirtualViewItemsPropertyName { get; }
 
     protected override void Init(GoogleMap virtualView, TNMap platformView, GoogleMapHandler handler)
@@ -158,7 +158,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
         }
     }
 
-    protected virtual void AddItem(TVItem vItem, TNItem nItem)
+    protected virtual void AddItem(TVItem vItem, TNItem? nItem)
     {
         NativeObjectAttachedProperty.SetNativeObject(vItem, nItem);
 
@@ -171,7 +171,7 @@ public abstract class ItemsMapFeatureManager<TVItem, TNItem, TNMap>
             BindableObject.SetInheritedBindingContext(vItem, null);
     }
 
-    protected abstract TNItem AddItemToPlatformView(TVItem vItem);
+    protected abstract TNItem? AddItemToPlatformView(TVItem vItem);
 
     protected virtual void Item_PropertyChanging(object sender, PropertyChangingEventArgs e)
     {

@@ -66,6 +66,8 @@ public partial class GoogleMap
 
     protected virtual async Task OnKmlChanged()
     {
+        if (string.IsNullOrWhiteSpace(Kml)) return;
+
         KmlCts = new();
 
         ImageSource? source = null;
@@ -76,7 +78,7 @@ public partial class GoogleMap
             {
                 source = Kml;
             }
-            catch (Exception ex)
+            catch
             {
                 return;
             }
@@ -219,7 +221,12 @@ public partial class GoogleMap
             Dictionary<string, byte[]> images = [];
             foreach (var entry in zip.Entries)
             {
-                using var entryStream = entry.Open();
+                using var entryStream =
+#if NET10_0_OR_GREATER
+                    await entry.OpenAsync(token);
+#else
+                    entry.Open();
+#endif
                 if (parser is null && entry.Name.EndsWith(".kml", StringComparison.OrdinalIgnoreCase))
                 {
                     parser = ParseKmlStream(entryStream);
@@ -616,55 +623,55 @@ public partial class GoogleMap
     protected virtual void RemoveKmlGroundOverlays()
     {
         if (KmlGroundOverlays?.Count is null or 0
-            || GroundOverlays is not ICollection<GroundOverlay> changableCollection
-            || changableCollection.Count == 0) return;
+            || GroundOverlays is not ICollection<GroundOverlay> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var overlay in KmlGroundOverlays.ToList())
         {
-            changableCollection.Remove(overlay);
+            changeableCollection.Remove(overlay);
         }
     }
 
     protected virtual void RemoveKmlPins()
     {
         if (KmlPins?.Count is null or 0
-            || Pins is not ICollection<Pin> changableCollection
-            || changableCollection.Count == 0) return;
+            || Pins is not ICollection<Pin> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var pin in KmlPins.ToList())
         {
-            changableCollection.Remove(pin);
+            changeableCollection.Remove(pin);
         }
     }
 
     protected virtual void RemoveKmlPolylines()
     {
         if (KmlPolylines?.Count is null or 0
-            || Polylines is not ICollection<Polyline> changableCollection
-            || changableCollection.Count == 0) return;
+            || Polylines is not ICollection<Polyline> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var polyline in KmlPolylines.ToList())
         {
-            changableCollection.Remove(polyline);
+            changeableCollection.Remove(polyline);
         }
     }
 
     protected virtual void RemoveKmlPolygons()
     {
         if (KmlPolygons?.Count is null or 0
-            || Polygons is not ICollection<Polygon> changableCollection
-            || changableCollection.Count == 0) return;
+            || Polygons is not ICollection<Polygon> changeableCollection
+            || changeableCollection.Count == 0) return;
 
         foreach (var polygon in KmlPolygons.ToList())
         {
-            changableCollection.Remove(polygon);
+            changeableCollection.Remove(polygon);
         }
     }
 
     #region Kml
-    public string Kml
+    public string? Kml
     {
-        get => (string)GetValue(KmlProperty);
+        get => (string?)GetValue(KmlProperty);
         set => SetValue(KmlProperty, value);
     }
 
@@ -676,9 +683,9 @@ public partial class GoogleMap
     #endregion
 
     #region KmlParsedCommand
-    public ICommand KmlParsedCommand
+    public ICommand? KmlParsedCommand
     {
-        get => (ICommand)GetValue(KmlParsedCommandProperty);
+        get => (ICommand?)GetValue(KmlParsedCommandProperty);
         set => SetValue(KmlParsedCommandProperty, value);
     }
 

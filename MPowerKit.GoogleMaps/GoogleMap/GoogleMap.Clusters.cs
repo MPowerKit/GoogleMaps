@@ -132,7 +132,7 @@ public partial class GoogleMap
         }
     }
 
-    protected virtual void OnClusterAlgorithmChanged()
+    protected virtual Task OnClusterAlgorithmChanged()
     {
         ScreenBasedAlgorithm = ClusterAlgorithm switch
         {
@@ -146,7 +146,7 @@ public partial class GoogleMap
 
         PreviousCameraPosition = CameraPosition;
 
-        Recluster();
+        return Recluster();
     }
 
     protected virtual void OnClustersPinsChanging()
@@ -157,7 +157,7 @@ public partial class GoogleMap
         }
     }
 
-    protected virtual void OnClustersPinsChanged()
+    protected virtual async Task OnClustersPinsChanged()
     {
         if (Pins is INotifyCollectionChanged collectionChanged)
         {
@@ -166,7 +166,7 @@ public partial class GoogleMap
 
         if (ClusterAlgorithm is ClusterAlgorithm.None) return;
 
-        Recluster();
+        await Recluster();
     }
 
     protected virtual void Clusters_Pins_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -176,7 +176,7 @@ public partial class GoogleMap
         Recluster();
     }
 
-    protected virtual void ReclusterIfNeeded()
+    protected virtual async Task ReclusterIfNeeded()
     {
         if (ClusterAlgorithm is ClusterAlgorithm.None || CameraPosition is null) return;
 
@@ -185,17 +185,17 @@ public partial class GoogleMap
         // delegate clustering to the algorithm
         if (ScreenBasedAlgorithm!.ShouldReclusterOnMapMovement)
         {
-            Recluster();
+            await Recluster();
         }
         // Don't re-compute clusters if the map has just been panned/tilted/rotated.
         else if (PreviousCameraPosition?.Zoom != newPosition.Zoom)
         {
             //PreviousCameraPosition = newPosition;
-            Recluster();
+            await Recluster();
         }
     }
 
-    public virtual async void Recluster()
+    public virtual async Task Recluster()
     {
         if (PrevAlgorithm is not ClusterAlgorithm.None && ClusterAlgorithm is ClusterAlgorithm.None)
         {
@@ -209,8 +209,11 @@ public partial class GoogleMap
 
         try
         {
-            ReclusterCts?.Cancel();
-            ReclusterCts?.Dispose();
+            if (ReclusterCts is not null)
+            {
+                await ReclusterCts.CancelAsync();
+                ReclusterCts.Dispose();
+            }
         }
         catch { }
 
@@ -315,16 +318,16 @@ public partial class GoogleMap
         if (markers?.Count is null or 0) return null;
 
         var maxDistance = ScreenBasedAlgorithm!.MaxDistanceBetweenClusteredItems;
-        double minDistSquared = maxDistance * maxDistance;
+        double minDistanceSquared = maxDistance * maxDistance;
 
         Point? closest = null;
         foreach (var candidate in markers)
         {
-            var dist = DistanceSquared(candidate, point);
-            if (dist < minDistSquared)
+            var distance = DistanceSquared(candidate, point);
+            if (distance < minDistanceSquared)
             {
                 closest = candidate;
-                minDistSquared = dist;
+                minDistanceSquared = distance;
             }
         }
         return closest;
@@ -357,9 +360,9 @@ public partial class GoogleMap
                 return algo.GetClusters(CameraPosition.Zoom, token);
             }, token);
         }
-        catch (Exception ex)
+        catch
         {
-            return Enumerable.Empty<Cluster>();
+            return [];
         }
     }
 
@@ -483,9 +486,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterAnimation
-    public IClusterAnimation ClusterAnimation
+    public IClusterAnimation? ClusterAnimation
     {
-        get => (IClusterAnimation)GetValue(ClusterAnimationProperty);
+        get => (IClusterAnimation?)GetValue(ClusterAnimationProperty);
         set => SetValue(ClusterAnimationProperty, value);
     }
 
@@ -515,9 +518,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterIconTemplate
-    public DataTemplate ClusterIconTemplate
+    public DataTemplate? ClusterIconTemplate
     {
-        get => (DataTemplate)GetValue(ClusterIconTemplateProperty);
+        get => (DataTemplate?)GetValue(ClusterIconTemplateProperty);
         set => SetValue(ClusterIconTemplateProperty, value);
     }
 
@@ -530,9 +533,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterInfoWindowTemplate
-    public DataTemplate ClusterInfoWindowTemplate
+    public DataTemplate? ClusterInfoWindowTemplate
     {
-        get => (DataTemplate)GetValue(ClusterInfoWindowTemplateProperty);
+        get => (DataTemplate?)GetValue(ClusterInfoWindowTemplateProperty);
         set => SetValue(ClusterInfoWindowTemplateProperty, value);
     }
 
@@ -545,9 +548,9 @@ public partial class GoogleMap
     #endregion
 
     #region Clusters
-    public IEnumerable<Cluster> Clusters
+    public IEnumerable<Cluster>? Clusters
     {
-        get => (IEnumerable<Cluster>)GetValue(ClustersProperty);
+        get => (IEnumerable<Cluster>?)GetValue(ClustersProperty);
         protected set => SetValue(ClustersProperty, value);
     }
 
@@ -560,9 +563,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterClickedCommand
-    public ICommand ClusterClickedCommand
+    public ICommand? ClusterClickedCommand
     {
-        get => (ICommand)GetValue(ClusterClickedCommandProperty);
+        get => (ICommand?)GetValue(ClusterClickedCommandProperty);
         set => SetValue(ClusterClickedCommandProperty, value);
     }
 
@@ -574,9 +577,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterInfoWindowClickedCommand
-    public ICommand ClusterInfoWindowClickedCommand
+    public ICommand? ClusterInfoWindowClickedCommand
     {
-        get => (ICommand)GetValue(ClusterInfoWindowClickedCommandProperty);
+        get => (ICommand?)GetValue(ClusterInfoWindowClickedCommandProperty);
         set => SetValue(ClusterInfoWindowClickedCommandProperty, value);
     }
 
@@ -588,9 +591,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterInfoWindowLongClickedCommand
-    public ICommand ClusterInfoWindowLongClickedCommand
+    public ICommand? ClusterInfoWindowLongClickedCommand
     {
-        get => (ICommand)GetValue(ClusterInfoWindowLongClickedCommandProperty);
+        get => (ICommand?)GetValue(ClusterInfoWindowLongClickedCommandProperty);
         set => SetValue(ClusterInfoWindowLongClickedCommandProperty, value);
     }
 
@@ -602,9 +605,9 @@ public partial class GoogleMap
     #endregion
 
     #region ClusterInfoWindowClosedCommand
-    public ICommand ClusterInfoWindowClosedCommand
+    public ICommand? ClusterInfoWindowClosedCommand
     {
-        get => (ICommand)GetValue(ClusterInfoWindowClosedCommandProperty);
+        get => (ICommand?)GetValue(ClusterInfoWindowClosedCommandProperty);
         set => SetValue(ClusterInfoWindowClosedCommandProperty, value);
     }
 

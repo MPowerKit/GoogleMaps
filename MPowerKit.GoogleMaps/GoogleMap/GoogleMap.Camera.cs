@@ -207,9 +207,9 @@ public partial class GoogleMap
     #endregion
 
     #region InitialCameraPosition
-    public CameraUpdate InitialCameraPosition
+    public CameraUpdate? InitialCameraPosition
     {
-        get => (CameraUpdate)GetValue(InitialCameraPositionProperty);
+        get => (CameraUpdate?)GetValue(InitialCameraPositionProperty);
         set => SetValue(InitialCameraPositionProperty, value);
     }
 
@@ -267,9 +267,9 @@ public partial class GoogleMap
     #endregion
 
     #region CameraMoveStartedCommand
-    public ICommand CameraMoveStartedCommand
+    public ICommand? CameraMoveStartedCommand
     {
-        get => (ICommand)GetValue(CameraMoveStartedCommandProperty);
+        get => (ICommand?)GetValue(CameraMoveStartedCommandProperty);
         set => SetValue(CameraMoveStartedCommandProperty, value);
     }
 
@@ -281,9 +281,9 @@ public partial class GoogleMap
     #endregion
 
     #region CameraMoveCanceledCommand
-    public ICommand CameraMoveCanceledCommand
+    public ICommand? CameraMoveCanceledCommand
     {
-        get => (ICommand)GetValue(CameraMoveCanceledCommandProperty);
+        get => (ICommand?)GetValue(CameraMoveCanceledCommandProperty);
         set => SetValue(CameraMoveCanceledCommandProperty, value);
     }
 
@@ -295,9 +295,9 @@ public partial class GoogleMap
     #endregion
 
     #region CameraMoveCommand
-    public ICommand CameraMoveCommand
+    public ICommand? CameraMoveCommand
     {
-        get => (ICommand)GetValue(CameraMoveCommandProperty);
+        get => (ICommand?)GetValue(CameraMoveCommandProperty);
         set => SetValue(CameraMoveCommandProperty, value);
     }
 
@@ -309,9 +309,9 @@ public partial class GoogleMap
     #endregion
 
     #region CameraPositionChangedCommand
-    public ICommand CameraPositionChangedCommand
+    public ICommand? CameraPositionChangedCommand
     {
-        get => (ICommand)GetValue(CameraPositionChangedCommandProperty);
+        get => (ICommand?)GetValue(CameraPositionChangedCommandProperty);
         set => SetValue(CameraPositionChangedCommandProperty, value);
     }
 
@@ -323,9 +323,9 @@ public partial class GoogleMap
     #endregion
 
     #region CameraIdleCommand
-    public ICommand CameraIdleCommand
+    public ICommand? CameraIdleCommand
     {
-        get => (ICommand)GetValue(CameraIdleCommandProperty);
+        get => (ICommand?)GetValue(CameraIdleCommandProperty);
         set => SetValue(CameraIdleCommandProperty, value);
     }
 

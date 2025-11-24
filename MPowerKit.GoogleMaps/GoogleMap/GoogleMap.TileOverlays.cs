@@ -12,9 +12,9 @@ public partial class GoogleMap
     }
 
     #region TileOverlays
-    public IEnumerable<TileOverlay> TileOverlays
+    public IEnumerable<TileOverlay>? TileOverlays
     {
-        get => (IEnumerable<TileOverlay>)GetValue(TileOverlaysProperty);
+        get => (IEnumerable<TileOverlay>?)GetValue(TileOverlaysProperty);
         set => SetValue(TileOverlaysProperty, value);
     }
 
@@ -26,9 +26,9 @@ public partial class GoogleMap
     #endregion
 
     #region TileOverlaysSource
-    public IEnumerable TileOverlaysSource
+    public IEnumerable? TileOverlaysSource
     {
-        get => (IEnumerable)GetValue(TileOverlaysSourceProperty);
+        get => (IEnumerable?)GetValue(TileOverlaysSourceProperty);
         set => SetValue(TileOverlaysSourceProperty, value);
     }
 
@@ -40,9 +40,9 @@ public partial class GoogleMap
     #endregion
 
     #region TileOverlayItemTemplate
-    public DataTemplate TileOverlayItemTemplate
+    public DataTemplate? TileOverlayItemTemplate
     {
-        get => (DataTemplate)GetValue(TileOverlayItemTemplateProperty);
+        get => (DataTemplate?)GetValue(TileOverlayItemTemplateProperty);
         set => SetValue(TileOverlayItemTemplateProperty, value);
     }
 

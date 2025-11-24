@@ -129,9 +129,9 @@ public partial class GoogleMap
     #endregion
 
     #region FocusedBuilding
-    public IndoorBuilding FocusedBuilding
+    public IndoorBuilding? FocusedBuilding
     {
-        get => (IndoorBuilding)GetValue(FocusedBuildingProperty);
+        get => (IndoorBuilding?)GetValue(FocusedBuildingProperty);
         protected set => SetValue(FocusedBuildingProperty, value);
     }
 
@@ -144,9 +144,9 @@ public partial class GoogleMap
     #endregion
 
     #region ActiveLevel
-    public IndoorLevel ActiveLevel
+    public IndoorLevel? ActiveLevel
     {
-        get => (IndoorLevel)GetValue(ActiveLevelProperty);
+        get => (IndoorLevel?)GetValue(ActiveLevelProperty);
         protected set => SetValue(ActiveLevelProperty, value);
     }
 
@@ -311,9 +311,9 @@ public partial class GoogleMap
     #endregion
 
     #region MapStyleJson
-    public string MapStyleJson
+    public string? MapStyleJson
     {
-        get => (string)GetValue(MapStyleJsonProperty);
+        get => (string?)GetValue(MapStyleJsonProperty);
         set => SetValue(MapStyleJsonProperty, value);
     }
 
@@ -340,9 +340,9 @@ public partial class GoogleMap
     #endregion
 
     #region PoiClickedCommand
-    public ICommand PoiClickedCommand
+    public ICommand? PoiClickedCommand
     {
-        get => (ICommand)GetValue(PoiClickedCommandProperty);
+        get => (ICommand?)GetValue(PoiClickedCommandProperty);
         set => SetValue(PoiClickedCommandProperty, value);
     }
 
@@ -354,9 +354,9 @@ public partial class GoogleMap
     #endregion
 
     #region MapClickedCommand
-    public ICommand MapClickedCommand
+    public ICommand? MapClickedCommand
     {
-        get => (ICommand)GetValue(MapClickedCommandProperty);
+        get => (ICommand?)GetValue(MapClickedCommandProperty);
         set => SetValue(MapClickedCommandProperty, value);
     }
 
@@ -368,9 +368,9 @@ public partial class GoogleMap
     #endregion
 
     #region MapLongClickedCommand
-    public ICommand MapLongClickedCommand
+    public ICommand? MapLongClickedCommand
     {
-        get => (ICommand)GetValue(MapLongClickedCommandProperty);
+        get => (ICommand?)GetValue(MapLongClickedCommandProperty);
         set => SetValue(MapLongClickedCommandProperty, value);
     }
 
@@ -382,9 +382,9 @@ public partial class GoogleMap
     #endregion
 
     #region IndoorBuildingFocusedCommand
-    public ICommand IndoorBuildingFocusedCommand
+    public ICommand? IndoorBuildingFocusedCommand
     {
-        get => (ICommand)GetValue(IndoorBuildingFocusedCommandProperty);
+        get => (ICommand?)GetValue(IndoorBuildingFocusedCommandProperty);
         set => SetValue(IndoorBuildingFocusedCommandProperty, value);
     }
 
@@ -396,9 +396,9 @@ public partial class GoogleMap
     #endregion
 
     #region IndoorLevelActivatedCommand
-    public ICommand IndoorLevelActivatedCommand
+    public ICommand? IndoorLevelActivatedCommand
     {
-        get => (ICommand)GetValue(IndoorLevelActivatedCommandProperty);
+        get => (ICommand?)GetValue(IndoorLevelActivatedCommandProperty);
         set => SetValue(IndoorLevelActivatedCommandProperty, value);
     }
 
@@ -410,9 +410,9 @@ public partial class GoogleMap
     #endregion
 
     #region MapCapabilitiesChangedCommand
-    public ICommand MapCapabilitiesChangedCommand
+    public ICommand? MapCapabilitiesChangedCommand
     {
-        get => (ICommand)GetValue(MapCapabilitiesChangedCommandProperty);
+        get => (ICommand?)GetValue(MapCapabilitiesChangedCommandProperty);
         set => SetValue(MapCapabilitiesChangedCommandProperty, value);
     }
 

@@ -27,9 +27,9 @@ public partial class GoogleMap
     }
 
     #region GroundOverlays
-    public IEnumerable<GroundOverlay> GroundOverlays
+    public IEnumerable<GroundOverlay>? GroundOverlays
     {
-        get => (IEnumerable<GroundOverlay>)GetValue(GroundOverlaysProperty);
+        get => (IEnumerable<GroundOverlay>?)GetValue(GroundOverlaysProperty);
         set => SetValue(GroundOverlaysProperty, value);
     }
 
@@ -41,9 +41,9 @@ public partial class GoogleMap
     #endregion
 
     #region GroundOverlaysSource
-    public IEnumerable GroundOverlaysSource
+    public IEnumerable? GroundOverlaysSource
     {
-        get => (IEnumerable)GetValue(GroundOverlaysSourceProperty);
+        get => (IEnumerable?)GetValue(GroundOverlaysSourceProperty);
         set => SetValue(GroundOverlaysSourceProperty, value);
     }
 
@@ -55,9 +55,9 @@ public partial class GoogleMap
     #endregion
 
     #region GroundOverlayItemTemplate
-    public DataTemplate GroundOverlayItemTemplate
+    public DataTemplate? GroundOverlayItemTemplate
     {
-        get => (DataTemplate)GetValue(GroundOverlayItemTemplateProperty);
+        get => (DataTemplate?)GetValue(GroundOverlayItemTemplateProperty);
         set => SetValue(GroundOverlayItemTemplateProperty, value);
     }
 
@@ -69,9 +69,9 @@ public partial class GoogleMap
     #endregion
 
     #region GroundOverlayClickedCommand
-    public ICommand GroundOverlayClickedCommand
+    public ICommand? GroundOverlayClickedCommand
     {
-        get => (ICommand)GetValue(GroundOverlayClickedCommandProperty);
+        get => (ICommand?)GetValue(GroundOverlayClickedCommandProperty);
         set => SetValue(GroundOverlayClickedCommandProperty, value);
     }
 

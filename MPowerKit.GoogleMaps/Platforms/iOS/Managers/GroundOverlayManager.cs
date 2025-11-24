@@ -7,7 +7,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class GroundOverlayManager : ItemsMapFeatureManager<VGroundOverlay, NGroundOverlay, MapView>
 {
-    protected override IEnumerable<VGroundOverlay> VirtualViewItems => VirtualView!.GroundOverlays;
+    protected override IEnumerable<VGroundOverlay>? VirtualViewItems => VirtualView!.GroundOverlays;
     protected override string VirtualViewItemsPropertyName => GoogleMap.GroundOverlaysProperty.PropertyName;
 
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)
@@ -168,7 +168,7 @@ public static class GroundOverlayExtensions
             Opacity = (float)groundOverlay.Opacity
         };
 
-        groundOverlay.SetupPostionForOverlay(native);
+        groundOverlay.SetupPositionForOverlay(native);
 
         if (groundOverlay.IsVisible)
         {
@@ -178,7 +178,7 @@ public static class GroundOverlayExtensions
         return native;
     }
 
-    public static void SetupPostionForOverlay(this VGroundOverlay groundOverlay, NGroundOverlay overlay)
+    public static void SetupPositionForOverlay(this VGroundOverlay groundOverlay, NGroundOverlay overlay)
     {
         if (groundOverlay.OverlayBounds is LatLngBounds bounds)
         {

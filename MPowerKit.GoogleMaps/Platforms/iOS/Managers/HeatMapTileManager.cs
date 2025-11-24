@@ -30,7 +30,7 @@ public class HeatMapTileProvider : SyncTileLayer
     {
         _provider = provider;
         _tileSize = tileSize;
-        _emptyImage = HeatMapTileProvider.EmptyImage(tileSize);
+        _emptyImage = EmptyImage(tileSize);
     }
 
     public override UIImage? Tile(nuint x, nuint y, nuint zoom)

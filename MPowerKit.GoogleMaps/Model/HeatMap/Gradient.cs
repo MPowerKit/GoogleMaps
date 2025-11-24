@@ -36,7 +36,7 @@ public class Gradient
         }
 
         ColorMapSize = colorMapSize;
-        Colors = colors.Select(c => c.ToInt()).ToArray();
+        Colors = [.. colors.Select(c => c.ToInt())];
         StartPoints = startPoints;
     }
 

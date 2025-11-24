@@ -3,7 +3,9 @@ using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
+
 using Bumptech.Glide.Load.Resource.Gif;
+
 using Microsoft.Maui.Platform;
 
 using Point = Microsoft.Maui.Graphics.Point;
@@ -67,26 +69,25 @@ public static class Extensions
 
     public static Android.Views.View ToNative(this View virtualView, IMauiContext context)
     {
-        var platfromView = virtualView.ToPlatform(context);
+        var platformView = virtualView.ToPlatform(context);
         var size = (virtualView as IView).Measure(double.PositiveInfinity, double.PositiveInfinity);
         virtualView.Arrange(new Rect(0, 0, size.Width, size.Height));
 
-        var width = (int)platfromView.Context.ToPixels(size.Width);
-        var height = (int)platfromView.Context.ToPixels(size.Height);
+        var width = (int)platformView.Context.ToPixels(size.Width);
+        var height = (int)platformView.Context.ToPixels(size.Height);
 
-        platfromView.Measure(
+        platformView.Measure(
             Android.Views.View.MeasureSpec.MakeMeasureSpec(width, MeasureSpecMode.Exactly),
-            Android.Views.View.MeasureSpec.MakeMeasureSpec(height, MeasureSpecMode.Exactly)
-        );
-        platfromView.Layout(0, 0, width, height);
+            Android.Views.View.MeasureSpec.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
+        platformView.Layout(0, 0, width, height);
 
-        return platfromView;
+        return platformView;
     }
 
     public static Bitmap ToBitmap(this View virtualView, IMauiContext context)
     {
-        var platfromView = virtualView.ToNative(context);
-        return platfromView.ToBitmap();
+        var platformView = virtualView.ToNative(context);
+        return platformView.ToBitmap();
     }
 
     public static Bitmap ToBitmap(this Android.Views.View v)
@@ -119,9 +120,7 @@ public static class Extensions
             bitmap = gifDrawable.FirstFrame;
         }
 
-        var desc = BitmapDescriptorFactory.FromBitmap(bitmap);
-
-        return desc;
+        return BitmapDescriptorFactory.FromBitmap(bitmap);
     }
 
     public static Bitmap GetBitmap(this string file, Context context)

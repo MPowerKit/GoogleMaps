@@ -10,7 +10,7 @@ public partial class GoogleMap
 {
     protected List<Element> AllChildren { get; } = [];
 
-    public virtual IEnumerable<View> MapObjects => new ReadOnlyCollection<View>(AllChildren.OfType<View>().ToList());
+    public virtual IEnumerable<View> MapObjects => new ReadOnlyCollection<View>([.. AllChildren.OfType<View>()]);
 
     protected virtual void InitItems()
     {
@@ -100,7 +100,7 @@ public partial class GoogleMap
         base.OnChildRemoved(child, oldLogicalIndex);
     }
 
-    protected virtual void ClearSource<T>(IEnumerable source, BindableProperty property)
+    protected virtual void ClearSource<T>(IEnumerable? source, BindableProperty property)
         where T : VisualElement
     {
         if (source is INotifyCollectionChanged collectionChanged)
@@ -110,13 +110,13 @@ public partial class GoogleMap
 
         if (property is null) return;
 
-        var mapObjects = GetValue(property) as ObservableCollection<T>;
+        var mapObjects = GetValue(property) as ObservableRangeCollection<T>;
 
         mapObjects?.Clear();
         SetValue(property, null);
     }
 
-    protected virtual void InitSource<T>(IEnumerable source, DataTemplate itemTemplate, BindableProperty property)
+    protected virtual void InitSource<T>(IEnumerable? source, DataTemplate? itemTemplate, BindableProperty property)
         where T : VisualElement
     {
         if (source is null || itemTemplate is null || property is null) return;
@@ -126,7 +126,7 @@ public partial class GoogleMap
             collectionChanged.CollectionChanged += Source_CollectionChanged<T>;
         }
 
-        ObservableCollection<T> mapObjects = [];
+        ObservableRangeCollection<T> mapObjects = [];
 
         SetValue(property, mapObjects);
 
@@ -143,14 +143,14 @@ public partial class GoogleMap
         { typeof(Pin), (PinsProperty, PinsSourceProperty, PinItemTemplateProperty) },
     };
 
-    protected virtual (ObservableCollection<T>?, IEnumerable?, DataTemplate?) GetMapObjectsAndTemplate<T>()
+    protected virtual (ObservableRangeCollection<T>?, IEnumerable?, DataTemplate?) GetMapObjectsAndTemplate<T>()
         where T : VisualElement
     {
         var key = typeof(T);
         if (MapObjectsAndTemplateProperties.TryGetValue(key, out var properties))
         {
-            var items = GetValue(properties.items) as ObservableCollection<T>;
-            var itemsSource = GetValue(properties.items) as IEnumerable;
+            var items = GetValue(properties.items) as ObservableRangeCollection<T>;
+            var itemsSource = GetValue(properties.itemsSource) as IEnumerable;
             var template = GetValue(properties.template) as DataTemplate;
             return (items, itemsSource, template);
         }
@@ -168,14 +168,14 @@ public partial class GoogleMap
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                AddMapObjects(e.NewItems!, mapObjects!, e.NewStartingIndex, itemTemplate!);
+                AddMapObjects(e.NewItems!, mapObjects, e.NewStartingIndex, itemTemplate);
                 break;
             case NotifyCollectionChangedAction.Remove:
-                RemoveMapObjects(e.OldItems!, mapObjects!, e.OldStartingIndex);
+                RemoveMapObjects(e.OldItems!, mapObjects, e.OldStartingIndex);
                 break;
             case NotifyCollectionChangedAction.Replace:
-                RemoveMapObjects(e.OldItems!, mapObjects!, e.OldStartingIndex);
-                AddMapObjects(e.NewItems!, mapObjects!, e.NewStartingIndex, itemTemplate!);
+                RemoveMapObjects(e.OldItems!, mapObjects, e.OldStartingIndex);
+                AddMapObjects(e.NewItems!, mapObjects, e.NewStartingIndex, itemTemplate);
                 break;
             case NotifyCollectionChangedAction.Move:
                 break;
@@ -185,10 +185,12 @@ public partial class GoogleMap
         }
     }
 
-    protected virtual void AddMapObjects<T>(IEnumerable source, IList<T> dest, int fromIndex, DataTemplate itemTemplate)
+    protected virtual void AddMapObjects<T>(IEnumerable source, ObservableRangeCollection<T> destination, int fromIndex, DataTemplate itemTemplate)
         where T : VisualElement
     {
         var index = fromIndex;
+
+        List<T> items = [];
 
         foreach (var item in source)
         {
@@ -206,28 +208,33 @@ public partial class GoogleMap
                 throw new InvalidOperationException($"{typeName}ItemTemplate must return a {typeName}");
             mo.BindingContext = item;
 
-            dest.Insert(index++, mo);
+            items.Add(mo);
         }
+
+        destination.InsertRange(index, items);
     }
 
-    protected virtual void RemoveMapObjects<T>(IEnumerable source, IList<T> dest, int fromIndex)
+    protected virtual void RemoveMapObjects<T>(IEnumerable source, ObservableRangeCollection<T> destination, int fromIndex)
         where T : VisualElement
     {
         var index = fromIndex;
 
-        foreach (var item in source)
+        int count = 0;
+        foreach (var _ in source)
         {
-            dest.RemoveAt(index);
+            count++;
         }
+
+        destination.RemoveRange(index, count);
     }
 
-    protected virtual void ResetMapObjects<T>(IEnumerable? source, IList<T>? dest, DataTemplate? itemTemplate)
+    protected virtual void ResetMapObjects<T>(IEnumerable? source, ObservableRangeCollection<T>? destination, DataTemplate? itemTemplate)
         where T : VisualElement
     {
-        if (source is null || dest is null || itemTemplate is null) return;
+        if (source is null || destination is null || itemTemplate is null) return;
 
-        dest.Clear();
+        destination.Clear();
 
-        AddMapObjects(source, dest, 0, itemTemplate);
+        AddMapObjects(source, destination, 0, itemTemplate);
     }
 }

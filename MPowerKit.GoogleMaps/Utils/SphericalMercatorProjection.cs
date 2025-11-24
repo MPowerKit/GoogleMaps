@@ -17,8 +17,8 @@ public class SphericalMercatorProjection
     public Point ToPoint(Point latLng)
     {
         var x = latLng.Y / 360d + 0.5;
-        var siny = Math.Sin(Distance.DegreesToRadians(latLng.X));
-        var y = 0.5 * Math.Log((1d + siny) / (1d - siny)) / -(2d * Math.PI) + 0.5;
+        var sinY = Math.Sin(Distance.DegreesToRadians(latLng.X));
+        var y = 0.5 * Math.Log((1d + sinY) / (1d - sinY)) / -(2d * Math.PI) + 0.5;
 
         return new(x * _worldWidth, y * _worldWidth);
     }

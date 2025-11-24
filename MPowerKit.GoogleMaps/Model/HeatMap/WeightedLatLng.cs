@@ -2,7 +2,7 @@
 
 public readonly struct WeightedLatLng : IPointItem
 {
-    private static readonly SphericalMercatorProjection Projection = new(HeatmapTileProvider.WorldWidth);
+    private static readonly SphericalMercatorProjection _projection = new(HeatmapTileProvider.WorldWidth);
 
     /// <summary>
     /// Constructor for WeightedLatLng.
@@ -11,7 +11,7 @@ public readonly struct WeightedLatLng : IPointItem
     /// <param name="intensity">Intensity to use: should be greater than or equal to 0. Default value is 1.</param>
     public WeightedLatLng(Point latLng, float intensity = 1f)
     {
-        Point = Projection.ToPoint(latLng);
+        Point = _projection.ToPoint(latLng);
         Intensity = intensity >= 0f ? intensity : 1f;
     }
 

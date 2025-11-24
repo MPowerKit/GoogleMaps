@@ -29,9 +29,9 @@ public partial class GoogleMap
     }
 
     #region Polygons
-    public IEnumerable<Polygon> Polygons
+    public IEnumerable<Polygon>? Polygons
     {
-        get => (IEnumerable<Polygon>)GetValue(PolygonsProperty);
+        get => (IEnumerable<Polygon>?)GetValue(PolygonsProperty);
         set => SetValue(PolygonsProperty, value);
     }
 
@@ -43,9 +43,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolygonsSource
-    public IEnumerable PolygonsSource
+    public IEnumerable? PolygonsSource
     {
-        get => (IEnumerable)GetValue(PolygonsSourceProperty);
+        get => (IEnumerable?)GetValue(PolygonsSourceProperty);
         set => SetValue(PolygonsSourceProperty, value);
     }
 
@@ -57,9 +57,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolygonItemTemplate
-    public DataTemplate PolygonItemTemplate
+    public DataTemplate? PolygonItemTemplate
     {
-        get => (DataTemplate)GetValue(PolygonItemTemplateProperty);
+        get => (DataTemplate?)GetValue(PolygonItemTemplateProperty);
         set => SetValue(PolygonItemTemplateProperty, value);
     }
 
@@ -71,9 +71,9 @@ public partial class GoogleMap
     #endregion
 
     #region PolygonClickedCommand
-    public ICommand PolygonClickedCommand
+    public ICommand? PolygonClickedCommand
     {
-        get => (ICommand)GetValue(PolygonClickedCommandProperty);
+        get => (ICommand?)GetValue(PolygonClickedCommandProperty);
         set => SetValue(PolygonClickedCommandProperty, value);
     }
 

@@ -8,7 +8,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 {
-    protected override IEnumerable<VPin> VirtualViewItems => VirtualView!.Pins;
+    protected override IEnumerable<VPin>? VirtualViewItems => VirtualView!.Pins;
     protected override string VirtualViewItemsPropertyName => GoogleMap.PinsProperty.PropertyName;
 
     protected override void Init(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)
@@ -58,9 +58,9 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
 
     protected override NPin AddItemToPlatformView(VPin vItem)
     {
-        var npin = PlatformView!.AddMarker(vItem.ToNative());
-        OnIconChanged(vItem, npin);
-        return npin;
+        var nPin = PlatformView!.AddMarker(vItem.ToNative());
+        OnIconChanged(vItem, nPin);
+        return nPin;
     }
 
     protected override void ItemPropertyChanged(VPin vItem, NPin nItem, string? propertyName)
@@ -209,7 +209,7 @@ public class PinManager : ItemsMapFeatureManager<VPin, NPin, GMap>
             {
                 nPin.SetIcon(await vPin.Icon.ToBitmapDescriptor(Handler!.MauiContext!));
             }
-            catch (Exception ex)
+            catch
             {
                 nPin.SetIcon(null);
             }

@@ -215,9 +215,9 @@ public class Pin : VisualElement
     #endregion
 
     #region Icon
-    public ImageSource Icon
+    public ImageSource? Icon
     {
-        get { return (ImageSource)GetValue(IconProperty); }
+        get { return (ImageSource?)GetValue(IconProperty); }
         set { SetValue(IconProperty, value); }
     }
 

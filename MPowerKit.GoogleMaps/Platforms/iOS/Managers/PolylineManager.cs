@@ -14,7 +14,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class PolylineManager : ItemsMapFeatureManager<VPolyline, NPolyline, MapView>
 {
-    protected override IEnumerable<VPolyline> VirtualViewItems => VirtualView!.Polylines;
+    protected override IEnumerable<VPolyline>? VirtualViewItems => VirtualView!.Polylines;
     protected override string VirtualViewItemsPropertyName => GoogleMap.PolylinesProperty.PropertyName;
 
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)

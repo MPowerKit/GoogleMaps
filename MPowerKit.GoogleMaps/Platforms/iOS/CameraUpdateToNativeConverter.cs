@@ -3,7 +3,7 @@ using VCameraUpdate = MPowerKit.GoogleMaps.CameraUpdate;
 
 namespace MPowerKit.GoogleMaps;
 
-public class CameraUpadateToNativeConverter
+public class CameraUpdateToNativeConverter
 {
     public static Dictionary<Type, Func<VCameraUpdate, NCameraUpdate>> CameraUpdateMapper = new()
     {

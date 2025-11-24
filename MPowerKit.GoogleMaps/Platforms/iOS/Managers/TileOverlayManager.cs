@@ -7,7 +7,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class TileOverlayManager : ItemsMapFeatureManager<VTileOverlay, NTileOverlay, MapView>
 {
-    protected override IEnumerable<VTileOverlay> VirtualViewItems => VirtualView!.TileOverlays;
+    protected override IEnumerable<VTileOverlay>? VirtualViewItems => VirtualView!.TileOverlays;
     protected override string VirtualViewItemsPropertyName => GoogleMap.TileOverlaysProperty.PropertyName;
 
     protected override void RemoveItemFromPlatformView(NTileOverlay? nItem)
@@ -134,7 +134,7 @@ public class CommonTileProvider : NTileOverlay
 
                 return imageResult.Value;
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine($"Cannot find or load resource");
             }

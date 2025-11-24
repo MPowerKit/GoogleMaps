@@ -12,7 +12,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class CircleManager : ItemsMapFeatureManager<VCircle, NCircle, GMap>
 {
-    protected override IEnumerable<VCircle> VirtualViewItems => VirtualView!.Circles;
+    protected override IEnumerable<VCircle>? VirtualViewItems => VirtualView!.Circles;
     protected override string VirtualViewItemsPropertyName => GoogleMap.CirclesProperty.PropertyName;
 
     protected override void SubscribeToEvents(GoogleMap virtualView, GMap platformView, GoogleMapHandler handler)

@@ -12,7 +12,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class PolygonManager : ItemsMapFeatureManager<VPolygon, NPolygon, MapView>
 {
-    protected override IEnumerable<VPolygon> VirtualViewItems => VirtualView!.Polygons;
+    protected override IEnumerable<VPolygon>? VirtualViewItems => VirtualView!.Polygons;
     protected override string VirtualViewItemsPropertyName => GoogleMap.PolygonsProperty.PropertyName;
 
     protected override void SubscribeToEvents(GoogleMap virtualView, MapView platformView, GoogleMapHandler handler)

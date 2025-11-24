@@ -48,21 +48,21 @@ public class GeoJsonFeature : Feature
                     PolygonStyle.Stroke = kvp.Value;
                     break;
                 case "stroke-opacity":
-                    double? strkOpct = double.TryParse(kvp.Value, out var strokeOpacity) ? strokeOpacity : null;
-                    LineStringStyle.StrokeOpacity = strkOpct;
-                    PolygonStyle.StrokeOpacity = strkOpct;
+                    double? strokeOpacity = double.TryParse(kvp.Value, out var parsedStrokeOpacity) ? parsedStrokeOpacity : null;
+                    LineStringStyle.StrokeOpacity = strokeOpacity;
+                    PolygonStyle.StrokeOpacity = strokeOpacity;
                     break;
                 case "stroke-width":
-                    double? wdth = double.TryParse(kvp.Value, out var width) ? width : null;
-                    LineStringStyle.StrokeWidth = wdth;
-                    PolygonStyle.StrokeWidth = wdth;
+                    double? width = double.TryParse(kvp.Value, out var parsedWidth) ? parsedWidth : null;
+                    LineStringStyle.StrokeWidth = width;
+                    PolygonStyle.StrokeWidth = width;
                     break;
                 case "fill":
                     PolygonStyle.Fill = kvp.Value;
                     break;
                 case "fill-opacity":
-                    double? fllOpct = double.TryParse(kvp.Value, out var fillOpacity) ? fillOpacity : null;
-                    PolygonStyle.FillOpacity = fllOpct;
+                    double? fillOpacity = double.TryParse(kvp.Value, out var parsedFillOpacity) ? parsedFillOpacity : null;
+                    PolygonStyle.FillOpacity = fillOpacity;
                     break;
             }
         }

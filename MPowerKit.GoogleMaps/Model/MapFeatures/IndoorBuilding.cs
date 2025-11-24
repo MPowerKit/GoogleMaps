@@ -19,12 +19,12 @@ public record IndoorLevel
         //NativeMap.IndoorDisplay.ActiveLevel = (NativeIndoorLevel as Google.Maps.IndoorLevel);
         //ToDo: This is workaround. remove when property is added
         var level = NativeIndoorLevel as Google.Maps.IndoorLevel;
-        void_objc_msgSend_IntPtr(NativeMap.IndoorDisplay.Handle, ObjCRuntime.Selector.GetHandle("setActiveLevel:"), level.Handle);
+        void_objc_msgSend_IntPtr(NativeMap.IndoorDisplay.Handle, ObjCRuntime.Selector.GetHandle("setActiveLevel:"), level!.Handle);
 #endif
     }
 
 #if IOS
     [System.Runtime.InteropServices.DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-    static extern void void_objc_msgSend_IntPtr(nint receiver, nint selector, nint arg0);
+    private static extern void void_objc_msgSend_IntPtr(nint receiver, nint selector, nint arg0);
 #endif
 }

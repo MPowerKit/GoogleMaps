@@ -273,8 +273,8 @@ public static class MapExtensions
         {
             NativeMap = map,
             NativeIndoorLevel = level,
-            Name = level.Name,
-            ShortName = level.ShortName
+            Name = level.Name ?? "",
+            ShortName = level.ShortName ?? ""
         };
     }
 

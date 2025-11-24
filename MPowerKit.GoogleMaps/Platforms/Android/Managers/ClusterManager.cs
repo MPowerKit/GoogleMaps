@@ -6,7 +6,7 @@ namespace MPowerKit.GoogleMaps;
 
 public class ClusterManager : PinManager
 {
-    protected override IEnumerable<VPin> VirtualViewItems =>
+    protected override IEnumerable<VPin>? VirtualViewItems =>
         VirtualView!.ClusterAlgorithm is ClusterAlgorithm.None
             ? VirtualView.Pins
             : VirtualView.Clusters;
@@ -66,10 +66,10 @@ public class ClusterManager : PinManager
         {
             if (item.Size < minClusterSize)
             {
-                foreach (var vpin in item.Items)
+                foreach (var vPin in item.Items)
                 {
-                    var npin = base.AddItemToPlatformView(vpin);
-                    AddItem(vpin, npin);
+                    var nPin = base.AddItemToPlatformView(vPin);
+                    AddItem(vPin, nPin);
                 }
                 continue;
             }

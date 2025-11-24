@@ -150,7 +150,7 @@ public static class CameraExtensions
     }
     public static Google.Maps.CameraUpdate ToNative(this CameraUpdate cameraUpdate)
     {
-        return new CameraUpadateToNativeConverter().ToNative(cameraUpdate);
+        return new CameraUpdateToNativeConverter().ToNative(cameraUpdate);
     }
 
     public static NCameraPosition ToNative(this VCameraPosition position)

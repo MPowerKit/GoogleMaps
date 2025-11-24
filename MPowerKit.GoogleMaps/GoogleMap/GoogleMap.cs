@@ -53,9 +53,9 @@ public partial class GoogleMap : View
     #endregion
 
     #region NativeMapReadyCommand
-    public ICommand NativeMapReadyCommand
+    public ICommand? NativeMapReadyCommand
     {
-        get => (ICommand)GetValue(NativeMapReadyCommandProperty);
+        get => (ICommand?)GetValue(NativeMapReadyCommandProperty);
         set => SetValue(NativeMapReadyCommandProperty, value);
     }
 
